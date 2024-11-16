@@ -10,11 +10,18 @@ fi
 
 basedir=$1
 chipdir=${basedir}/connectedhomeip
-amebadir=${basedir}/ambd_matter/
+amebadir=${basedir}/ameba-rtos-d
 
 cd ${chipdir}
 source ${chipdir}/scripts/bootstrap.sh
 source ${chipdir}/scripts/activate.sh
+
+cd ${amebadir}
+
+chmod u+x matter_setup.sh
+.//matter_setup.sh amebad
+
+cp ${amebadir}/component/common/application/matter/tools/docker/amebad/platform_autoconf.h ${amebadir}/project/realtek_amebaD_va0_example/inc/inc_hp
 
 echo "Build project_lp"
 cd ${amebadir}/project/realtek_amebaD_va0_example/GCC-RELEASE/project_lp

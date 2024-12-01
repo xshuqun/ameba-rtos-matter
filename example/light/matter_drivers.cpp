@@ -3,6 +3,8 @@
 #include <led_driver.h>
 #include <gpio_irq_api.h>
 
+#undef ECDSA
+
 #include <app-common/zap-generated/attribute-type.h>
 #include <app-common/zap-generated/attributes/Accessors.h>
 #include <app-common/zap-generated/ids/Attributes.h>
@@ -18,6 +20,9 @@ using chip::Protocols::InteractionModel::Status;
 #elif defined(CONFIG_PLATFORM_8721D)
 #define PWM_LED         PB_5
 #define GPIO_IRQ_PIN    PA_12
+#elif defined(CONFIG_PLATFORM_8735B)
+#define PWM_LED         PE_0
+#define GPIO_IRQ_PIN    PA_3
 #endif
 
 MatterLED led;

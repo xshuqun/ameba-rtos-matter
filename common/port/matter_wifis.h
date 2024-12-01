@@ -32,7 +32,9 @@ extern rtw_mode_t wifi_mode;
 /******************************************************
  *               WiFi Security
  ******************************************************/
+#if defined(CONFIG_PLATFORM_8710C) || defined(CONFIG_PLATFORM_8721D)
 #define RTW_SECURITY_WPA_WPA2_MIXED    RTW_SECURITY_WPA_WPA2_MIXED_PSK
+#endif
 
 /******************************************************
  *               WiFi Connection Status

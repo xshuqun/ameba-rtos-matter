@@ -1,5 +1,5 @@
 #include <platform_opts.h>
-#include <platform/platform_stdlib.h>
+#include <platform_stdlib.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,6 +28,8 @@ extern int FreeRTOS_errno;
 #elif defined(CONFIG_PLATFORM_8721D)
 #define MATTER_SW_RTC_TIMER_ID     TIMER2
 int FreeRTOS_errno = 0;
+#elif defined(CONFIG_PLATFORM_8735B)
+extern int FreeRTOS_errno;
 #endif
 
 #define errno FreeRTOS_errno
@@ -37,7 +39,10 @@ extern void vTaskDelay(const TickType_t xTicksToDelay);
 static gtimer_t matter_rtc_timer;
 static uint64_t current_us = 0;
 static volatile uint32_t rtc_counter = 0;
+static uint64_t last_current_us = 0;
+static uint64_t last_global_us = 0;
 
+#if defined(CONFIG_PLATFORM_8710C) || defined(CONFIG_PLATFORM_8721D)
 BOOL UTILS_ValidateTimespec(const struct timespec *const pxTimespec)
 {
     BOOL xReturn = FALSE;
@@ -54,6 +59,7 @@ BOOL UTILS_ValidateTimespec(const struct timespec *const pxTimespec)
 
     return xReturn;
 }
+#endif
 
 #if defined(CONFIG_PLATFORM_8721D)
 bool UTILS_ValidateTimespec(const struct timespec *const pxTimespec);
@@ -142,6 +148,7 @@ int _nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
     return iStatus;
 }
 
+#if defined(CONFIG_PLATFORM_8710C) || defined(CONFIG_PLATFORM_8721D)
 void __clock_gettime(struct timespec *tp)
 {
     unsigned int update_tick = 0;
@@ -162,6 +169,7 @@ void __clock_gettime(struct timespec *tp)
     tp->tv_sec = current_sec;
     tp->tv_nsec = current_usec*1000;
 }
+#endif
 
 time_t _time(time_t *tloc)
 {
@@ -215,18 +223,36 @@ void matter_rtc_write(long long time)
 uint64_t ameba_get_clock_time(void)
 {
 #if defined(CONFIG_PLATFORM_8710C)
+    uint64_t current_us = 0;
     uint64_t global_us = 0;
+    // Read current timer value in microseconds
     current_us = gtimer_read_us(&matter_rtc_timer);
-    global_us = ((uint64_t)rtc_counter * US_OVERFLOW_MAX) + (current_us);
+    // Check if the timer has wrapped around
+    if (current_us < last_current_us)
+    {
+        // Timer wrapped around, increment global_us and adjust last_global_us
+        global_us = last_global_us + 1;
+    }
+    else
+    {
+        // Calculate global_us based on the rtc_counter and current_us
+        global_us = ((uint64_t)rtc_counter * US_OVERFLOW_MAX) + current_us;
+        last_current_us = current_us;
+    }
+
+    last_global_us = global_us;
+
     return global_us;
-#elif defined(CONFIG_PLATFORM_8721D)
-    return ((xTaskGetTickCount()) * configTICK_RATE_HZ);
+#elif defined(CONFIG_PLATFORM_8721D) || defined(CONFIG_PLATFORM_8735B)
+    return (uint64_t)((xTaskGetTickCount()) * configTICK_RATE_HZ);
 #endif
 }
 
+#if defined(CONFIG_PLATFORM_8710C) || defined(CONFIG_PLATFORM_8721D)
 static void matter_timer_rtc_callback(void)
 {
     rtc_counter++;
+    last_current_us = 0;
 }
 
 void matter_timer_init(void)
@@ -237,6 +263,7 @@ void matter_timer_init(void)
 #endif
     gtimer_start_periodical(&matter_rtc_timer, US_OVERFLOW_MAX, (void *)matter_timer_rtc_callback, (uint32_t) &matter_rtc_timer);
 }
+#endif
 
 #ifdef __cplusplus
 }

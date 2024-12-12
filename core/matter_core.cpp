@@ -3,6 +3,7 @@
 
 #if defined(CONFIG_PLATFORM_8735B)
 #include <mbedtls_memory.h>
+#include <mbedtls/platform.h>
 #endif
 #include <matter_core.h>
 #include <matter_events.h>
@@ -276,8 +277,6 @@ CHIP_ERROR matter_core_init(void)
 #if defined(CONFIG_ENABLE_AMEBA_OPHOURS) && (CONFIG_ENABLE_AMEBA_OPHOURS == 1)
     matter_op_hours();
 #endif
-
-    start_hourly_timer();
 
     // Start a task to run the CHIP Device event loop.
     err = PlatformMgr().StartEventLoopTask();

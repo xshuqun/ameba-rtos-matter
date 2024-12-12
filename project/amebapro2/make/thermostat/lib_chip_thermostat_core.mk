@@ -7,7 +7,7 @@ OS := $(shell uname)
 
 SDKROOTDIR         := $(shell pwd)/../../..
 CHIPDIR             = $(SDKROOTDIR)/third_party/connectedhomeip
-OUTPUT_DIR          = $(CHIPDIR)/examples/all-clusters-app/ameba/build/chip
+OUTPUT_DIR          = $(CHIPDIR)/examples/thermostat/ameba/build/chip
 
 MATTER_DIR          = $(SDKROOTDIR)/component/application/matter
 MATTER_BUILDDIR     = $(MATTER_DIR)/project/amebapro2
@@ -30,6 +30,13 @@ LD = $(CROSS_COMPILE)gcc
 GDB = $(CROSS_COMPILE)gdb
 OBJCOPY = $(CROSS_COMPILE)objcopy
 OBJDUMP = $(CROSS_COMPILE)objdump
+
+# Initialize target name and target object files
+# -------------------------------------------------------------------
+
+OBJ_DIR=$(TARGET)/Debug/obj
+BIN_DIR=$(TARGET)/Debug/bin
+INFO_DIR=$(TARGET)/Debug/info
 
 # Build Definition
 # -------------------------------------------------------------------
@@ -87,13 +94,12 @@ CHIP_CXXFLAGS += $(INCLUDES)
 #                            RULES TO GENERATE TARGETS                        #
 #*****************************************************************************#
 
-# Define the Rules to build the core targets
 all: GENERATE_NINJA
 
 GENERATE_NINJA:
 	echo "INSTALL CHIP..." && \
 	echo $(BASEDIR) && \
-	if [ ! d "$(OUTPUT_DIR")" ]; then mkdir -p "$(OUTPUT_DIR)"; fi && \
+	mkdir -p $(OUTPUT_DIR) && \
 	echo > $(OUTPUT_DIR)/args.gn && \
 	echo "import(\"//args.gni\")" >> $(OUTPUT_DIR)/args.gn && \
 	echo target_cflags_c  = [$(foreach word,$(CHIP_CFLAGS),\"$(word)\",)] | sed -e 's/=\"/=\\"/g;s/\"\"/\\"\"/g;' >> $(OUTPUT_DIR)/args.gn && \
@@ -105,7 +111,6 @@ GENERATE_NINJA:
 	if [ $(CHIP_ENABLE_OTA_REQUESTOR) -eq 0 ]; then echo chip_enable_ota_requestor = "false" >> $(OUTPUT_DIR)/args.gn; else echo chip_enable_ota_requestor = "true" >> $(OUTPUT_DIR)/args.gn; fi && \
 	if [ $(CHIP_ENABLE_CHIPOBLE) -eq 0 ]; then echo chip_config_network_layer_ble = "false" >> $(OUTPUT_DIR)/args.gn; else echo chip_config_network_layer_ble = "true" >> $(OUTPUT_DIR)/args.gn; fi && \
 	if [ $(CHIP_ENABLE_IPV4) -eq 0 ]; then echo chip_inet_config_enable_ipv4 = "false" >> $(OUTPUT_DIR)/args.gn; else echo chip_inet_config_enable_ipv4 = "true" >> $(OUTPUT_DIR)/args.gn; fi && \
-	echo chip_build_libshell = "true" >> $(OUTPUT_DIR)/args.gn && \
 	echo chip_support_enable_storage_api_audit = "false" >> $(OUTPUT_DIR)/args.gn && \
 	echo chip_use_transitional_commissionable_data_provider = "true" >> $(OUTPUT_DIR)/args.gn && \
 	echo chip_logging = "true" >> $(OUTPUT_DIR)/args.gn && \

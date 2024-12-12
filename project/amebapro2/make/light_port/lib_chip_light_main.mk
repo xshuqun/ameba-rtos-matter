@@ -11,6 +11,7 @@ CODEGENDIR          = $(OUTPUT_DIR)/codegen
 
 MATTER_DIR          = $(SDKROOTDIR)/component/application/matter
 MATTER_BUILDDIR     = $(MATTER_DIR)/project/amebapro2
+MATTER_EXAMPLEDIR   = $(MATTER_DIR)/examples
 MATTER_INCLUDE      = $(MATTER_BUILDDIR)/Makefile.include.matter
 MATTER_INCLUDE_HDR  = $(MATTER_BUILDDIR)/Makefile.include.hdr.list
 
@@ -57,9 +58,7 @@ include $(MATTER_INCLUDE_HDR)
 # Ameba Matter Porting Layer Include folder list
 # -------------------------------------------------------------------
 
-INCLUDES += -I$(MATTER_DIR)/core
-INCLUDES += -I$(MATTER_DIR)/driver
-INCLUDES += -I$(MATTER_DIR)/example/light
+INCLUDES += -I$(MATTER_EXAMPLEDIR)/light
 
 # Matter (CHIP) Include folder list
 # -------------------------------------------------------------------
@@ -89,6 +88,7 @@ INCLUDES += -I$(CODEGENDIR)
 SRC_C =
 SRC_C += $(CHIPDIR)/examples/platform/ameba/route_hook/ameba_route_hook.c
 SRC_C += $(CHIPDIR)/examples/platform/ameba/route_hook/ameba_route_table.c
+SRC_C += $(MATTER_DIR)/common/mbedtls/mbedtls_memory.c
 
 SRC_CPP = 
 SRC_CPP += $(CHIPDIR)/examples/providers/DeviceInfoProviderImpl.cpp
@@ -107,6 +107,8 @@ SRC_CPP += $(CHIPDIR)/src/app/util/attribute-table.cpp
 SRC_CPP += $(CHIPDIR)/src/app/util/binding-table.cpp
 SRC_CPP += $(CHIPDIR)/src/app/util/DataModelHandler.cpp
 SRC_CPP += $(CHIPDIR)/src/app/util/ember-compatibility-functions.cpp
+SRC_CPP += $(CHIPDIR)/src/app/util/ember-global-attribute-access-interface.cpp
+SRC_CPP += $(CHIPDIR)/src/app/util/ember-io-storage.cpp
 SRC_CPP += $(CHIPDIR)/src/app/util/generic-callback-stubs.cpp
 SRC_CPP += $(CHIPDIR)/src/app/util/util.cpp
 SRC_CPP += $(CHIPDIR)/src/app/util/privilege-storage.cpp
@@ -131,11 +133,13 @@ SRC_CPP += $(MATTER_DIR)/core/matter_ota_initializer.cpp
 endif
 
 # lighting-app source files
-SRC_CPP += $(MATTER_DIR)/driver/led_driver.cpp
-SRC_CPP += $(MATTER_DIR)/example/light/example_matter_light.cpp
-SRC_CPP += $(MATTER_DIR)/example/light/matter_drivers.cpp
+SRC_CPP += $(MATTER_DIR)/drivers/device/led_driver.cpp
+SRC_CPP += $(MATTER_EXAMPLEDIR)/light/example_matter_light.cpp
+SRC_CPP += $(MATTER_EXAMPLEDIR)/light/matter_drivers.cpp
 
 SRC_CPP += $(MATTER_DIR)/api/matter_api.cpp
+SRC_CPP += $(MATTER_DIR)/api/matter_log_api.cpp
+SRC_CPP += $(MATTER_DIR)/core/matter_device_utils.cpp
 
 #lib_version
 VER_C += $(TARGET)_version.c

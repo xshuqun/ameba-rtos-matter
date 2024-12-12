@@ -1,4 +1,5 @@
 SHELL = /bin/bash
+
 OS := $(shell uname)
 
 # Directory
@@ -6,11 +7,12 @@ OS := $(shell uname)
 
 SDKROOTDIR         := $(shell pwd)/../../..
 CHIPDIR             = $(SDKROOTDIR)/third_party/connectedhomeip
-OUTPUT_DIR          = $(CHIPDIR)/examples/all-clusters-app/ameba/build/chip
+OUTPUT_DIR          = $(CHIPDIR)/examples/thermostat/ameba/build/chip
 CODEGENDIR          = $(OUTPUT_DIR)/codegen
 
 MATTER_DIR          = $(SDKROOTDIR)/component/application/matter
 MATTER_BUILDDIR     = $(MATTER_DIR)/project/amebapro2
+MATTER_EXAMPLEDIR   = $(MATTER_DIR)/examples
 MATTER_INCLUDE      = $(MATTER_BUILDDIR)/Makefile.include.matter
 MATTER_INCLUDE_HDR  = $(MATTER_BUILDDIR)/Makefile.include.hdr.list
 
@@ -47,14 +49,18 @@ INFO_DIR=$(TARGET)/Debug/info
 
 CHIP_ENABLE_AMEBA_DLOG = $(shell grep "\#define CONFIG_ENABLE_AMEBA_DLOG " $(MATTER_DIR)/common/include/platform_opts_matter.h | tr -s '[:space:]' | cut -d' ' -f3)
 CHIP_ENABLE_OTA_REQUESTOR = $(shell grep 'chip_enable_ota_requestor' $(OUTPUT_DIR)/args.gn | cut -d' ' -f3)
-CHIP_ENABLE_SHELL = $(shell grep 'chip_build_libshell' $(OUTPUT_DIR)/args.gn | cut -d' ' -f3)
 
 # Include folder list
 # -------------------------------------------------------------------
 
 include $(MATTER_INCLUDE_HDR)
 
-# CHIP Include folder list
+# Ameba Matter Porting Layer Include folder list
+# -------------------------------------------------------------------
+
+INCLUDES += -I$(MATTER_EXAMPLEDIR)/thermostat
+
+# Matter (CHIP) Include folder list
 # -------------------------------------------------------------------
 
 INCLUDES += -I$(CHIPDIR)/examples/platform/ameba
@@ -71,13 +77,9 @@ INCLUDES += -I$(CHIPDIR)/third_party/nlassert/repo/include
 INCLUDES += -I$(CHIPDIR)/third_party/nlio/repo/include
 INCLUDES += -I$(CHIPDIR)/third_party/nlunit-test/repo/src
 INCLUDES += -I$(CHIPDIR)/zzz_generated/app-common
-INCLUDES += -I$(CHIPDIR)/zzz_generated/all-clusters-app
-INCLUDES += -I$(CHIPDIR)/zzz_generated/all-clusters-app/zap-generated
-INCLUDES += -I$(CHIPDIR)/examples/all-clusters-app/all-clusters-common
-INCLUDES += -I$(CHIPDIR)/examples/all-clusters-app/all-clusters-common/include
-INCLUDES += -I$(CHIPDIR)/examples/all-clusters-app/ameba/main/include
-INCLUDES += -I$(CHIPDIR)/examples/all-clusters-app/ameba/build/chip/gen/include
-INCLUDES += -I$(CHIPDIR)/examples/microwave-oven-app/microwave-oven-common/include
+INCLUDES += -I$(CHIPDIR)/examples/thermostat/thermostat-common
+INCLUDES += -I$(CHIPDIR)/examples/thermostat/ameba/main/include
+INCLUDES += -I$(CHIPDIR)/examples/thermostat/ameba/build/chip/gen/include
 INCLUDES += -I$(CODEGENDIR)
 
 # Source file list
@@ -86,7 +88,6 @@ INCLUDES += -I$(CODEGENDIR)
 SRC_C =
 SRC_C += $(CHIPDIR)/examples/platform/ameba/route_hook/ameba_route_hook.c
 SRC_C += $(CHIPDIR)/examples/platform/ameba/route_hook/ameba_route_table.c
-SRC_C += $(MATTER_DIR)/examples/chiptest/example_matter.c
 SRC_C += $(MATTER_DIR)/common/mbedtls/mbedtls_memory.c
 
 SRC_CPP = 
@@ -124,47 +125,28 @@ SRC_CPP += $(CODEGENDIR)/zap-generated/IMClusterCommandHandler.cpp
 SRC_CPP += $(CHIPDIR)/zzz_generated/app-common/app-common/zap-generated/attributes/Accessors.cpp
 SRC_CPP += $(CHIPDIR)/zzz_generated/app-common/app-common/zap-generated/cluster-objects.cpp
 
-# all-clusters-app clusters source files
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/air-quality-instance.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/bridged-actions-stub.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/concentration-measurement-instances.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/dishwasher-alarm-stub.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/dishwasher-mode.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/fan-stub.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/laundry-dryer-controls-delegate-impl.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/laundry-washer-controls-delegate-impl.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/laundry-washer-mode.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/microwave-oven-mode.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/operational-state-delegate-impl.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/oven-modes.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/oven-operational-state-delegate.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/resource-monitoring-delegates.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/rvc-operational-state-delegate-impl.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/rvc-modes.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/static-supported-modes-manager.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/static-supported-temperature-levels.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/smco-stub.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/tcc-mode.cpp
-SRC_CPP += $(CHIPDIR)/examples/microwave-oven-app/microwave-oven-common/src/microwave-oven-device.cpp
-
-# all-clusters-app ameba source files
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/ameba/main/chipinterface.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/ameba/main/BindingHandler.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/ameba/main/ManualOperationCommand.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/ameba/main/DeviceCallbacks.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/ameba/main/SmokeCOAlarmManager.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/ameba/main/CHIPDeviceManager.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/ameba/main/Globals.cpp
-SRC_CPP += $(CHIPDIR)/examples/all-clusters-app/ameba/main/LEDWidget.cpp
-
+# porting layer source files
+SRC_CPP += $(MATTER_DIR)/core/matter_core.cpp
+SRC_CPP += $(MATTER_DIR)/core/matter_interaction.cpp
 ifeq ($(CHIP_ENABLE_OTA_REQUESTOR), true)
-SRC_CPP += $(CHIPDIR)/examples/platform/ameba/ota/OTAInitializer.cpp
+SRC_CPP += $(MATTER_DIR)/core/matter_ota_initializer.cpp
 endif
-SRC_CPP += $(CHIPDIR)/examples/platform/ameba/shell/launch_shell.cpp
-SRC_CPP += $(CHIPDIR)/examples/platform/ameba/test_event_trigger/AmebaTestEventTriggerDelegate.cpp
+
+# thermostat-app source files
+SRC_CPP += $(MATTER_DIR)/drivers/device/thermostat_driver.cpp
+SRC_CPP += $(MATTER_DIR)/drivers/device/thermostat_ui_driver.cpp
+SRC_CPP += $(MATTER_EXAMPLEDIR)/thermostat/example_matter_thermostat.cpp
+SRC_CPP += $(MATTER_EXAMPLEDIR)/thermostat/matter_drivers.cpp
 
 SRC_CPP += $(MATTER_DIR)/api/matter_api.cpp
+SRC_CPP += $(MATTER_DIR)/api/matter_log_api.cpp
 SRC_CPP += $(MATTER_DIR)/core/matter_device_utils.cpp
+
+SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_diagnosticlogs_provider_delegate_impl.cpp
+SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_logging_faultlog.cpp
+SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_logging_insert_logs.cpp
+SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_logging_redirect_handler.cpp
+SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_logging_redirect_wrapper.cpp
 
 #lib_version
 VER_C += $(TARGET)_version.c
@@ -204,11 +186,6 @@ include $(MATTER_INCLUDE)
 
 CFLAGS += -DCHIP_PROJECT=1
 
-# Matter Shell Flags
-ifeq ($(CHIP_ENABLE_SHELL), true)
-CFLAGS += -DCONFIG_ENABLE_CHIP_SHELL=1
-endif
-
 # Others
 CFLAGS += -DCHIP_ADDRESS_RESOLVE_IMPL_INCLUDE_HEADER=\"lib/address_resolve/AddressResolve_DefaultImpl.h\"
 CFLAGS += -DUSE_ZAP_CONFIG
@@ -240,6 +217,12 @@ prerequirement:
 	@rm -f $(TARGET)_version*.o
 	@echo const char $(TARGET)_rev[] = \"$(TARGET)_ver_`git rev-parse HEAD`_`date +%Y/%m/%d-%T`\"\; > $(TARGET)_version.c
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $(VER_C) -o $(VER_O)
+	@if [ ! -d $(ARM_GCC_TOOLCHAIN) ]; then \
+		echo ===========================================================; \
+		echo Toolchain not found, \"make toolchain\" first!; \
+		echo ===========================================================; \
+		exit -1; \
+	fi
 	@echo ===========================================================
 	@echo Build $(TARGET)
 	@echo ===========================================================
@@ -248,19 +231,19 @@ prerequirement:
 	mkdir -p $(INFO_DIR)
 
 $(SRC_OO): %_$(TARGET).oo : %.cpp | prerequirement
-	$(CPP) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
-	$(CPP) $(CPPFLAGS) $(INCLUDES) -c $< -MM -MT $@ -MF $(OBJ_DIR)/$(notdir $(patsubst %.oo,%.d,$@))
+	$(CC) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
+	$(CC) $(CPPFLAGS) $(INCLUDES) -c $< -MM -MT $@ -MF $(OBJ_DIR)/$(notdir $(patsubst %.oo,%.d,$@))
 	cp $@ $(OBJ_DIR)/$(notdir $@)
-	#cp $*_$(TARGET).ii $(INFO_DIR)
-	#cp $*_$(TARGET).s $(INFO_DIR)
+	cp $*_$(TARGET).ii $(INFO_DIR)
+	cp $*_$(TARGET).s $(INFO_DIR)
 	chmod 777 $(OBJ_DIR)/$(notdir $@)
 
 $(SRC_O): %_$(TARGET).o : %.c | prerequirement
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -MM -MT $@ -MF $(OBJ_DIR)/$(notdir $(patsubst %.o,%.d,$@))
 	cp $@ $(OBJ_DIR)/$(notdir $@)
-	#cp $*_$(TARGET).i $(INFO_DIR)
-	#cp $*_$(TARGET).s $(INFO_DIR)
+	cp $*_$(TARGET).i $(INFO_DIR)
+	cp $*_$(TARGET).s $(INFO_DIR)
 	chmod 777 $(OBJ_DIR)/$(notdir $@)
 
 -include $(DEPENDENCY_LIST)

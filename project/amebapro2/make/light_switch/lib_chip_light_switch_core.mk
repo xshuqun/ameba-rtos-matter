@@ -7,7 +7,7 @@ OS := $(shell uname)
 
 SDKROOTDIR         := $(shell pwd)/../../..
 CHIPDIR             = $(SDKROOTDIR)/third_party/connectedhomeip
-OUTPUT_DIR          = $(CHIPDIR)/examples/all-clusters-app/ameba/build/chip
+OUTPUT_DIR          = $(CHIPDIR)/examples/light-switch-app/ameba/build/chip
 
 MATTER_DIR          = $(SDKROOTDIR)/component/application/matter
 MATTER_BUILDDIR     = $(MATTER_DIR)/project/amebapro2
@@ -30,6 +30,13 @@ LD = $(CROSS_COMPILE)gcc
 GDB = $(CROSS_COMPILE)gdb
 OBJCOPY = $(CROSS_COMPILE)objcopy
 OBJDUMP = $(CROSS_COMPILE)objdump
+
+# Initialize target name and target object files
+# -------------------------------------------------------------------
+
+OBJ_DIR=$(TARGET)/Debug/obj
+BIN_DIR=$(TARGET)/Debug/bin
+INFO_DIR=$(TARGET)/Debug/info
 
 # Build Definition
 # -------------------------------------------------------------------
@@ -78,6 +85,9 @@ include $(MATTER_INCLUDE)
 
 CFLAGS += -DCHIP_PROJECT=1
 
+# Matter Shell Flags
+CFLAGS += -DCHIP_SHELL_MAX_TOKENS=11
+
 CHIP_CFLAGS = $(CFLAGS)
 CHIP_CFLAGS += $(INCLUDES)
 CHIP_CXXFLAGS += $(CFLAGS)
@@ -87,13 +97,12 @@ CHIP_CXXFLAGS += $(INCLUDES)
 #                            RULES TO GENERATE TARGETS                        #
 #*****************************************************************************#
 
-# Define the Rules to build the core targets
 all: GENERATE_NINJA
 
 GENERATE_NINJA:
 	echo "INSTALL CHIP..." && \
 	echo $(BASEDIR) && \
-	if [ ! d "$(OUTPUT_DIR")" ]; then mkdir -p "$(OUTPUT_DIR)"; fi && \
+	mkdir -p $(OUTPUT_DIR) && \
 	echo > $(OUTPUT_DIR)/args.gn && \
 	echo "import(\"//args.gni\")" >> $(OUTPUT_DIR)/args.gn && \
 	echo target_cflags_c  = [$(foreach word,$(CHIP_CFLAGS),\"$(word)\",)] | sed -e 's/=\"/=\\"/g;s/\"\"/\\"\"/g;' >> $(OUTPUT_DIR)/args.gn && \

@@ -69,14 +69,6 @@ $(AIR_PURIFIER_FILE): $(AIR_PURIFIER_ZAP)
 	@python3 $(CHIPDIR)/src/app/zap_cluster_list.py --zap_file $^ > $(CHIPDIR)/examples/air-purifier-app/ameba/build/chip/codegen/cluster-file.txt
 	@python3 $(MATTER_TOOLDIR)/codegen_helpers/parse_clusters.py --cluster_file $@ --chip_path $(CHIPDIR)
 
-$(CHEF_FILE): $(CHEF_ZAP)
-	@mkdir -p $(CHIPDIR)/examples/chef-app/ameba/build/chip/codegen/zap-generated
-	@python3 $(CHIPDIR)/scripts/tools/zap/generate.py --no-prettify-output --templates src/app/zap-templates/matter-idl-server.json --output-dir examples/chef-app/ameba/build/chip/codegen/zap-generated  $^
-	@python3 $(CHIPDIR)/scripts/tools/zap/generate.py --no-prettify-output --templates src/app/zap-templates/app-templates.json --output-dir examples/chef-app/ameba/build/chip/codegen/zap-generated $^
-	@python3 $(CHIPDIR)/scripts/codegen.py --generator cpp-app --output-dir $(CHIPDIR)/examples/chef-app/ameba/build/chip/codegen --expected-outputs $(MATTER_TOOLDIR)/codegen_helpers/expected.outputs $(CHIPDIR)/examples/chef-app/chef-common/chef-app.matter
-	@python3 $(CHIPDIR)/src/app/zap_cluster_list.py --zap_file $^ > $(CHIPDIR)/examples/chef-app/ameba/build/chip/codegen/cluster-file.txt
-	@python3 $(MATTER_TOOLDIR)/codegen_helpers/parse_clusters.py --cluster_file $@ --chip_path $(CHIPDIR)
-
 $(LIGHTING_FILE): $(LIGHTING_ZAP)
 	@mkdir -p $(CHIPDIR)/examples/lighting-app/ameba/build/chip/codegen/zap-generated
 	@python3 $(CHIPDIR)/scripts/tools/zap/generate.py --no-prettify-output --templates src/app/zap-templates/matter-idl-server.json --output-dir examples/lighting-app/ameba/build/chip/codegen/zap-generated  $^
@@ -91,14 +83,6 @@ $(LIGHT_SWITCH_FILE): $(LIGHT_SWITCH_ZAP)
 	@python3 $(CHIPDIR)/scripts/tools/zap/generate.py --no-prettify-output --templates src/app/zap-templates/app-templates.json --output-dir examples/light-switch-app/ameba/build/chip/codegen/zap-generated $^
 	@python3 $(CHIPDIR)/scripts/codegen.py --generator cpp-app --output-dir $(CHIPDIR)/examples/light-switch-app/ameba/build/chip/codegen --expected-outputs $(MATTER_TOOLDIR)/codegen_helpers/expected.outputs $(CHIPDIR)/examples/light-switch-app/light-switch-common/light-switch-app.matter
 	@python3 $(CHIPDIR)/src/app/zap_cluster_list.py --zap_file $^ > $(CHIPDIR)/examples/light-switch-app/ameba/build/chip/codegen/cluster-file.txt
-	@python3 $(MATTER_TOOLDIR)/codegen_helpers/parse_clusters.py --cluster_file $@ --chip_path $(CHIPDIR)
-
-$(OTAR_FILE): $(OTAR_ZAP)
-	@mkdir -p $(CHIPDIR)/examples/ota-requestor-app/ameba/build/chip/codegen/zap-generated
-	@python3 $(CHIPDIR)/scripts/tools/zap/generate.py --no-prettify-output --templates src/app/zap-templates/matter-idl-server.json --output-dir examples/ota-requestor-app/ameba/build/chip/codegen/zap-generated  $^
-	@python3 $(CHIPDIR)/scripts/tools/zap/generate.py --no-prettify-output --templates src/app/zap-templates/app-templates.json --output-dir examples/ota-requestor-app/ameba/build/chip/codegen/zap-generated $^
-	@python3 $(CHIPDIR)/scripts/codegen.py --generator cpp-app --output-dir $(CHIPDIR)/examples/ota-requestor-app/ameba/build/chip/codegen --expected-outputs $(MATTER_TOOLDIR)/codegen_helpers/expected.outputs $(CHIPDIR)/examples/ota-requestor-app/ota-requestor-common/ota-requestor-app.matter
-	@python3 $(CHIPDIR)/src/app/zap_cluster_list.py --zap_file $^ > $(CHIPDIR)/examples/ota-requestor-app/ameba/build/chip/codegen/cluster-file.txt
 	@python3 $(MATTER_TOOLDIR)/codegen_helpers/parse_clusters.py --cluster_file $@ --chip_path $(CHIPDIR)
 
 $(AIRCON_FILE): $(AIRCON_ZAP)
@@ -211,11 +195,6 @@ bridge_dm: $(BRIDGE_DM_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/bridge_dm/lib_chip_bridge_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/bridge_dm/lib_chip_bridge_main.mk all
 
-.PHONY: chef
-chef: $(CHEF_FILE)
-	$(MAKE) -f $(MATTER_MAKEDIR)/chef/lib_chip_chef_core.mk all
-	$(MAKE) -f $(MATTER_MAKEDIR)/chef/lib_chip_chef_main.mk all
-
 .PHONY: dishwasher_port
 dishwasher_port: $(DISHWASHER_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/dishwasher/lib_chip_dishwasher_core.mk all
@@ -261,11 +240,6 @@ microwaveoven_port: $(MICROWAVEOVEN_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/microwaveoven/lib_chip_microwaveoven_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/microwaveoven/lib_chip_microwaveoven_main.mk all
 
-.PHONY: otar
-otar: $(OTAR_FILE)
-	$(MAKE) -f $(MATTER_MAKEDIR)/otar/lib_chip_otar_core.mk all
-	$(MAKE) -f $(MATTER_MAKEDIR)/otar/lib_chip_otar_main.mk all
-
 .PHONY: refrigerator_port
 refrigerator_port: $(REFRIGERATOR_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/refrigerator/lib_chip_refrigerator_core.mk all
@@ -284,6 +258,34 @@ thermostat_port: $(THERMOSTAT_FILE)
 .PHONY: clean_matter_libs
 clean_matter_libs:
 	@$(MAKE) -f $(MATTER_MAKEDIR)/all_clusters/lib_chip_main.mk clean
-	@$(MAKE) -f $(MATTER_MAKEDIR)/all_clusters/lib_chip.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/aircon/lib_chip_aircon_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/air_purifier/lib_chip_air_purifier_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/bridge_dm/lib_chip_bridge_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/dishwasher/lib_chip_dishwasher_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/fan/lib_chip_fan_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/generic_switch/lib_chip_generic_switch_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/laundrywasher/lib_chip_laundrywasher_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/light/lib_chip_light_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/light_dm/lib_chip_light_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKEDIR)/light_port/lib_chip_light_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/light_switch/lib_chip_light_switch_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/microwaveoven/lib_chip_microwaveoven_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/refrigerator/lib_chip_refrigerator_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/temperature_sensor/lib_chip_temp_sensor_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/thermostat/lib_chip_thermostat_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/all_clusters/lib_chip.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/aircon/lib_chip_aircon_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/air_purifier/lib_chip_air_purifier_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/bridge_dm/lib_chip_bridge_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/dishwasher/lib_chip_dishwasher_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/fan/lib_chip_fan_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/generic_switch/lib_chip_generic_switch_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/laundrywasher/lib_chip_laundrywasher_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/light/lib_chip_light_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/light_dm/lib_chip_light_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKEDIR)/light_port/lib_chip_light_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/light_switch/lib_chip_light_switch_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/microwaveoven/lib_chip_microwaveoven_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/refrigerator/lib_chip_refrigerator_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/thermostat/lib_chip_thermostat_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/temperature_sensor/lib_chip_temp_sensor_core.mk clean

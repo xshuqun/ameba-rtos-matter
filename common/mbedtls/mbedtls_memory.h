@@ -15,9 +15,17 @@
 #ifndef __MBEDTLS_MEMORY_H__
 #define __MBEDTLS_MEMORY_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * @brief  This module defines a custom memory allocation function for mbed TLS.
  */
 void* app_mbedtls_calloc_func(size_t nelements, size_t elementSize);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __MBEDTLS_MEMORY_H__ */

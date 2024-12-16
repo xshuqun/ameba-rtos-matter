@@ -96,6 +96,15 @@
 #define MATTER_KVS_BEGIN_ADDR                   (0x400000 - 0x13000)    // 0x3ED000 ~ 0x3FB000 : 56K
 #define MATTER_KVS_BEGIN_ADDR2                  (0x400000 - 0x1E000)    // 0x3E6000 ~ 0x3ED000 : 24K
 
+/* For any upgrades in DCT */
+#define DCT_UPDATE_ENABLE                       0
+#if defined(DCT_UPDATE_ENABLE) && DCT_UPDATE_ENABLE
+#define MODULE_NUM_OLD                          13
+#define MODULE_NUM2_OLD                         6
+#define DCT_BEGIN_ADDR_OLD                      (0x400000 - 0x13000)
+#define DCT_BEGIN_ADDR2_OLD                     (0x400000 - 0x1A000)
+#endif
+
 #elif defined(CONFIG_PLATFORM_8721D)
 
 /* Matter Flash Layout

@@ -28,6 +28,8 @@
 #include <temperature_sensor/example_matter_temp_sensor.h>
 #elif defined(CONFIG_EXAMPLE_MATTER_THERMOSTAT) && (CONFIG_EXAMPLE_MATTER_THERMOSTAT == 1)
 #include <thermostat/example_matter_thermostat.h>
+#elif defined(CONFIG_EXAMPLE_MATTER_HVAC_DEVICE) && (CONFIG_EXAMPLE_MATTER_HVAC_DEVICE == 1)
+#include <hvac_device/example_matter_hvac_device.h>
 #endif
 
 /*
@@ -64,6 +66,8 @@ void matter_example_entry(void)
     example_matter_temp_sensor();
 #elif defined(CONFIG_EXAMPLE_MATTER_THERMOSTAT) && (CONFIG_EXAMPLE_MATTER_THERMOSTAT == 1)
     example_matter_thermostat();
+#elif defined(CONFIG_EXAMPLE_MATTER_HVAC_DEVICE) && (CONFIG_EXAMPLE_MATTER_HVAC_DEVICE == 1)
+    //example_matter_task_init();
 #endif
 }
 

@@ -2,6 +2,16 @@
 
 #include <support/logging/CHIPLogging.h>
 
+void MatterThermostatUI::SetEp(EndpointId ep)
+{
+    mEp = ep;
+}
+
+EndpointId MatterThermostatUI::GetEp(void)
+{
+    return mEp;
+}
+
 void MatterThermostatUI::Init(void)
 {
     // init UI driver code here

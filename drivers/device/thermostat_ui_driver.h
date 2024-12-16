@@ -9,10 +9,17 @@
 #pragma once
 
 #include <platform_stdlib.h>
+#include <app/util/attribute-table.h>
+
+using namespace ::chip;
+using namespace ::chip::app;
 
 class MatterThermostatUI
 {
 public:
+    void SetEp(EndpointId ep);
+    EndpointId GetEp(void);
+
     void Init(void);
     void deInit(void);
     void UpdateDisplay(void);
@@ -30,4 +37,5 @@ private:
     uint16_t mOccupiedCoolingSetpoint;
     uint16_t mOccupiedHeatingSetpoint;
     uint8_t mSystemMode;
+    EndpointId mEp;
 };

@@ -2,6 +2,16 @@
 
 #include <support/logging/CHIPLogging.h>
 
+void MatterFan::SetEp(EndpointId ep)
+{
+    mEp = ep;
+}
+
+EndpointId MatterFan::GetEp(void)
+{
+    return mEp;
+}
+
 void MatterFan::Init(PinName pin)
 {
     mPwm_obj                        = (pwmout_t*) pvPortMalloc(sizeof(pwmout_t));
@@ -14,6 +24,7 @@ void MatterFan::Init(PinName pin)
 
 void MatterFan::deInit(void)
 {
+    pwmout_free(mPwm_obj);
     vPortFree(mPwm_obj);
 }
 

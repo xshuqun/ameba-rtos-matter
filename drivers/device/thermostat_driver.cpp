@@ -2,6 +2,16 @@
 
 #include <support/logging/CHIPLogging.h>
 
+void MatterThermostat::SetEp(EndpointId ep)
+{
+    mEp = ep;
+}
+
+EndpointId MatterThermostat::GetEp(void)
+{
+    return mEp;
+}
+
 void MatterThermostat::Init(void)
 {
     // init thermostat driver code

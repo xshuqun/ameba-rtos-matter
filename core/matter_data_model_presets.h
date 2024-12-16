@@ -31,8 +31,11 @@ void matter_cluster_groups_server(ClusterConfig *clusterConfig);
 void matter_cluster_scenes_server(ClusterConfig *clusterConfig);
 void matter_cluster_onoff_server(ClusterConfig *clusterConfig);
 void matter_cluster_level_control_server(ClusterConfig *clusterConfig);
-void matter_cluster_level_control_server(ClusterConfig *clusterConfig);
-
+void matter_cluster_thermostat_server(ClusterConfig *clusterConfig);
+void matter_cluster_thermostat_ui_server(ClusterConfig *clusterConfig);
+void matter_cluster_fan_control_server(ClusterConfig *clusterConfig);
+void matter_cluster_temperature_measurement_server(ClusterConfig *clusterConfig);
+void matter_cluster_relative_humidity_measurement_server(ClusterConfig *clusterConfig);
 } // Clusters
 
 namespace Endpoints {
@@ -42,6 +45,9 @@ namespace Endpoints {
  ******************************************************/
 void matter_root_node_preset(EndpointConfig *rootNodeEndpointConfig);
 void matter_dimmable_light_preset(EndpointConfig *dimmableLightEndpointConfig);
+void matter_fan_preset(EndpointConfig *FanEndpointConfig);
+void matter_thermostat_preset(EndpointConfig *ThermostatEndpointConfig);
+void matter_room_air_conditioner_preset(EndpointConfig *RoomAirConEndpointConfig);
 void matter_aggregator_preset(EndpointConfig *aggregatorEndpointConfig);
 
 } // Endpoints

@@ -10,12 +10,17 @@
 
 #include <platform_stdlib.h>
 #include <pwmout_api.h>
-
 #include <app/util/attribute-table.h>
+
+using namespace ::chip;
+using namespace ::chip::app;
 
 class MatterFan
 {
 public:
+    void SetEp(EndpointId ep);
+    EndpointId GetEp(void);
+
     void Init(PinName pin);
     void deInit(void);
     void setFanMode(uint8_t mode);
@@ -29,4 +34,5 @@ private:
     uint8_t mPercent;
     uint8_t mSpeed;
     uint8_t mMaxSpeed = 10;
+    EndpointId mEp;
 };

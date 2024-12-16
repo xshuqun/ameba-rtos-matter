@@ -35,6 +35,7 @@ void MatterRoomAirCon::FanControl::Init(PinName pin)
 
 void MatterRoomAirCon::FanControl::deInit(void)
 {
+    pwmout_free(mPwm_obj);
     vPortFree(mPwm_obj);
 }
 

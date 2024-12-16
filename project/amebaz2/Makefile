@@ -67,6 +67,9 @@ REFRIGERATOR_ZAP	= $(MATTER_EXAMPLEDIR)/refrigerator/refrigerator-app.zap
 TEMP_SENSOR_FILE	= $(MATTER_EXAMPLEDIR)/temperature_sensor/build/chip/codegen/cluster-file.txt
 TEMP_SENSOR_ZAP		= $(MATTER_EXAMPLEDIR)/temperature_sensor/temp-sensor-app.zap
 
+HVAC_DEVICE_FILE	= $(MATTER_EXAMPLEDIR)/hvac_device/build/chip/codegen/cluster-file.txt
+HVAC_DEVICE_ZAP		= $(MATTER_EXAMPLEDIR)/hvac_device/hvac-device-app.zap
+
 #*****************************************************************************#
 #                      RULES TO MAKE MATTER DIRS                              #
 #*****************************************************************************#
@@ -206,6 +209,16 @@ copy_gen_files_light_dm:
 	@cp $(MATTER_EXAMPLEDIR)/light_dm/endpoint_config.h $(CHIPDIR)/examples/lighting-app/ameba/build/chip/codegen/zap-generated
 	@cp $(MATTER_EXAMPLEDIR)/light_dm/gen_config.h $(CHIPDIR)/examples/lighting-app/ameba/build/chip/codegen/zap-generated
 
+$(HVAC_DEVICE_FILE): $(HVAC_DEVICE_ZAP)
+	@mkdir -p $(MATTER_EXAMPLEDIR)/hvac_device/build/chip/codegen/zap-generated
+	@python3 $(CHIPDIR)/scripts/tools/zap/generate.py --no-prettify-output --templates src/app/zap-templates/matter-idl-server.json -z $(CHIPDIR)/src/app/zap-templates/zcl/zcl.json --output-dir $(MATTER_EXAMPLEDIR)/hvac_device/build/chip/codegen/zap-generated  $^
+	@python3 $(CHIPDIR)/scripts/tools/zap/generate.py --no-prettify-output --templates src/app/zap-templates/app-templates.json -z $(CHIPDIR)/src/app/zap-templates/zcl/zcl.json --output-dir $(MATTER_EXAMPLEDIR)/hvac_device/build/chip/codegen/zap-generated $^
+	@python3 $(CHIPDIR)/scripts/codegen.py --generator cpp-app --output-dir $(MATTER_EXAMPLEDIR)/hvac_device/build/chip/codegen --expected-outputs $(MATTER_TOOLDIR)/codegen_helpers/expected.outputs $(MATTER_EXAMPLEDIR)/hvac_device/hvac-device-app.matter
+	@python3 $(CHIPDIR)/src/app/zap_cluster_list.py --zap_file $^ > $@
+	@python3 $(MATTER_TOOLDIR)/codegen_helpers/parse_clusters.py --cluster_file $@ --chip_path $(CHIPDIR)
+	@cp $(MATTER_EXAMPLEDIR)/hvac_device/endpoint_config.h $(MATTER_EXAMPLEDIR)/hvac_device/build/chip/codegen/zap-generated
+	@cp $(MATTER_EXAMPLEDIR)/hvac_device/gen_config.h $(MATTER_EXAMPLEDIR)/hvac_device/build/chip/codegen/zap-generated
+
 #*****************************************************************************#
 #                         MATTER MAKE DEFINES                                 #
 #*****************************************************************************#
@@ -300,6 +313,11 @@ thermostat_port: toolchain_matter $(THERMOSTAT_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/thermostat/lib_chip_thermostat_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/thermostat/lib_chip_thermostat_main.mk all
 
+.PHONY: hvac_device_port
+hvac_device_port: toolchain_matter  $(HVAC_DEVICE_FILE)
+	$(MAKE) -f $(MATTER_MAKEDIR)/hvac_device/lib_chip_hvac_device_core.mk all
+	$(MAKE) -f $(MATTER_MAKEDIR)/hvac_device/lib_chip_hvac_device_main.mk all
+
 .PHONY: clean_matter_libs
 clean_matter_libs:
 	@$(MAKE) -f $(MATTER_MAKEDIR)/all_clusters/lib_chip_main.mk clean
@@ -320,6 +338,7 @@ clean_matter_libs:
 	@$(MAKE) -f $(MATTER_MAKEDIR)/refrigerator/lib_chip_refrigerator_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKEDIR)/temperature_sensor/lib_chip_temp_sensor_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKEDIR)/thermostat/lib_chip_thermostat_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/hvac_device/lib_chip_hvac_device_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKEDIR)/all_clusters/lib_chip.mk clean
 	@$(MAKE) -f $(MATTER_MAKEDIR)/aircon/lib_chip_aircon_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKEDIR)/air_purifier/lib_chip_air_purifier_core.mk clean
@@ -338,4 +357,5 @@ clean_matter_libs:
 	@$(MAKE) -f $(MATTER_MAKEDIR)/refrigerator/lib_chip_refrigerator_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKEDIR)/thermostat/lib_chip_thermostat_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKEDIR)/temperature_sensor/lib_chip_temp_sensor_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKEDIR)/hvac_device/lib_chip_hvac_device_core.mk clean
 	rm -rf $(MATTER_BUILDDIR)/lib_main*

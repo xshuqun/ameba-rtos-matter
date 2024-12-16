@@ -50,6 +50,45 @@ void fATchipapp2(void *arg)
 #endif
 }
 
+#if CONFIG_EXAMPLE_MATTER_HVAC_DEVICE
+#include <hvac_device/example_matter_hvac_device.h>
+void fATchipdevice(void *arg)
+{
+    int argc = 0;
+    char *argv[MAX_ARGC] = {0};
+
+    if (!arg) {
+        goto help;
+    } else {
+        argc = parse_param(arg, argv);
+        if (argc < 2) {
+            goto help;
+        }
+    }
+
+    if (argv[1] != NULL) {
+        if (strcmp(argv[1], "thermostat") == 0) {
+            example_matter_task_init(0);
+            return;
+        } else if (strcmp(argv[1], "fan") == 0) {
+            example_matter_task_init(1);
+            return;
+        } else if (strcmp(argv[1], "aircon") == 0) {
+            example_matter_task_init(2);
+            return;
+        }
+        else {
+            goto help;
+        }
+    }
+
+help:
+    printf("[ATMD] Usage: ATMD=device\n\r");
+    printf("              device: aircon/fan/thermostat\n\r");
+    return;
+}
+#endif
+
 #if defined(CONFIG_PLATFORM_8710C)
 void fATmattershell(void *arg)
 {
@@ -181,6 +220,9 @@ log_item_t at_matter_items[] = {
     {"ATM$", fATchipapp, {NULL, NULL}},
     {"ATM%", fATchipapp1, {NULL, NULL}},
     {"ATM^", fATchipapp2, {NULL, NULL}},
+#if CONFIG_EXAMPLE_MATTER_HVAC_DEVICE
+    {"ATMD", fATchipdevice, {NULL, NULL}},
+#endif
     {"ATMH", fATmatterhelp, {NULL, NULL}},
     {"ATMS", fATmattershell, {NULL, NULL}},
 #if defined(CONFIG_ENABLE_AMEBA_DLOG_TEST) && (CONFIG_ENABLE_AMEBA_DLOG_TEST == 1)

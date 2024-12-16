@@ -13,15 +13,6 @@
 #include <app/clusters/identify-server/identify-server.h>
 #include <platform/CHIPDeviceLayer.h>
 
-/******************************************************
- *               Device Types
- ******************************************************/
-typedef enum {
-    THERMOSTAT_DEVICE = 1,
-    FAN_DEVICE,
-    AIRCON_DEVICE
-} DeviceType;
-
 /**
  * @brief  Callback function for starting the identify process.
  * @param[in]  identify: Pointer to the Identify structure.
@@ -41,19 +32,19 @@ void matter_driver_on_identify_stop(Identify *identify);
 void matter_driver_on_trigger_effect(Identify *identify);
 
 /**
- * @brief  Initialize the fan driver.
+ * @brief  Initialize the Room Aircon driver.
  * @return  CHIP_NO_ERROR set successfully, CHIP_ERROR_INTERNAL otherwise (if necessary).
  */
-CHIP_ERROR matter_driver_fan_init(void);
-
-/**
- * @brief  Set the startup values for the fan.
- * @return  CHIP_NO_ERROR set successfully, CHIP_ERROR_INTERNAL otherwise.
- */
-CHIP_ERROR matter_driver_fan_set_startup_value(void);
+CHIP_ERROR matter_driver_room_aircon_init(void);
 
 /**
  * @brief  Update uplink handler when receiving commands from Matter Controller.
  * @param[in]  event: Pointer to the AppEvent structure containing event details.
  */
 void matter_driver_uplink_update_handler(AppEvent *aEvent);
+
+/**
+ * @brief  Update downlink handler when receiving commands from external (e.g., GPIO, PWM).
+ * @param[in]  event: Pointer to the AppEvent structure containing event details.
+ */
+void matter_driver_downlink_update_handler(AppEvent *aEvent);

@@ -67,6 +67,9 @@ REFRIGERATOR_ZAP	= $(MATTER_EXAMPLEDIR)/refrigerator/refrigerator-app.zap
 TEMP_SENSOR_FILE	= $(MATTER_EXAMPLEDIR)/temperature_sensor/build/chip/codegen/cluster-file.txt
 TEMP_SENSOR_ZAP		= $(MATTER_EXAMPLEDIR)/temperature_sensor/temp-sensor-app.zap
 
+HVAC_DEVICE_FILE	= $(MATTER_EXAMPLEDIR)/hvac_device/build/chip/codegen/cluster-file.txt
+HVAC_DEVICE_ZAP		= $(MATTER_EXAMPLEDIR)/hvac_device/hvac_device-app.zap
+
 #*****************************************************************************#
 #                      RULES TO MAKE MATTER DIRS                              #
 #*****************************************************************************#
@@ -206,6 +209,16 @@ copy_gen_files_light_dm:
 	@cp $(MATTER_EXAMPLEDIR)/light_dm/endpoint_config.h $(CHIPDIR)/examples/lighting-app/ameba/build/chip/codegen/zap-generated
 	@cp $(MATTER_EXAMPLEDIR)/light_dm/gen_config.h $(CHIPDIR)/examples/lighting-app/ameba/build/chip/codegen/zap-generated
 
+$(HVAC_DEVICE_FILE): $(HVAC_DEVICE_ZAP)
+	@mkdir -p $(OUTPUT_DIR)/codegen/zap-generated
+	@python3 $(CHIPDIR)/scripts/tools/zap/generate.py --no-prettify-output --templates src/app/zap-templates/matter-idl-server.json -z $(CHIPDIR)/src/app/zap-templates/zcl/zcl.json --output-dir $(OUTPUT_DIR)/codegen/zap-generated  $^
+	@python3 $(CHIPDIR)/scripts/tools/zap/generate.py --no-prettify-output --templates src/app/zap-templates/app-templates.json -z $(CHIPDIR)/src/app/zap-templates/zcl/zcl.json --output-dir $(OUTPUT_DIR)/codegen/zap-generated $^
+	@python3 $(CHIPDIR)/scripts/codegen.py --generator cpp-app --output-dir $(OUTPUT_DIR)/codegen --expected-outputs $(MATTER_TOOLDIR)/codegen_helpers/expected.outputs $(BASEDIR)/customized-app.matter
+	@python3 $(CHIPDIR)/src/app/zap_cluster_list.py --zap_file $^ > $@
+	@python3 $(MATTER_TOOLDIR)/codegen_helpers/parse_clusters.py --cluster_file $@ --chip_path $(CHIPDIR)
+	@cp endpoint_config.h $(OUTPUT_DIR)/codegen/zap-generated
+	@cp gen_config.h $(OUTPUT_DIR)/codegen/zap-generated
+
 #*****************************************************************************#
 #                         MATTER MAKE DEFINES                                 #
 #*****************************************************************************#
@@ -299,6 +312,12 @@ temp_sensor_port: toolchain_matter $(TEMP_SENSOR_FILE)
 thermostat_port: toolchain_matter $(THERMOSTAT_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/thermostat/lib_chip_thermostat_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/thermostat/lib_chip_thermostat_main.mk all
+
+.PHONY: hvac_device
+hvac_device: toolchain  $(HVAC_DEVICE_FILE)
+	export
+	$(MAKE) -f $(MATTER_MAKEDIR)/hvac_device/lib_chip_hvac_device_core.mk all
+	$(MAKE) -f $(MATTER_MAKEDIR)/hvac_device/lib_chip_hvac_device_main.mk all
 
 .PHONY: clean_matter_libs
 clean_matter_libs:

@@ -99,7 +99,7 @@ SECTIONS
 	{
 		. = ALIGN(0x04);
 		__ram_img_signature__ = .;
-		KEEP(*(.start.ram.sign*))		
+		KEEP(*(.start.ram.sign*))
 	} > RAM_IMG_SIGN
 
 	/* Non-secure callable function */
@@ -132,7 +132,7 @@ SECTIONS
 	.psram.data : AT (__psram_etext)
 	{
 		. = ALIGN(16);
-	    __psram_etext = .; 
+		__psram_etext = .;
 		__psram_data_start__ = .;
 
 		*(.psram.data*)
@@ -147,7 +147,7 @@ SECTIONS
 		__fw_img_start__ = .;
 		__data_start__ = .;
 		*(vtable)
-		*(.sram.data*)		
+		*(.sram.data*)
 		*(.data*)
 
 		. = ALIGN(4);
@@ -199,7 +199,7 @@ SECTIONS
 		__psram_code_text_start__ = .;
 
 		*(.psram.text*)
-		
+
 		__psram_code_text_end__ = .;
 	} > PSRAM
 
@@ -248,13 +248,13 @@ SECTIONS
 		. = ALIGN(4);
 		__ram_code_rodata_start__ = .;
 
-		/* SPI flash controller related code should be located in SRAM, never locates them in XIP */		
+		/* SPI flash controller related code should be located in SRAM, never locates them in XIP */
 		*hal_spic*.o(.rodata*)
 
 		/* LPDDR controller related code should be located in SRAM, never locates them in LPDDR */
 		*hal_lpcram*.o(.rodata*)
 
-		*ram_start*.o(.rodata*)	
+		*ram_start*.o(.rodata*)
 		*hal_sys_ctrl*.o(.rodata*)
 		*rtl8710c_pinmux_patch*.o(.rodata*)
 		*hal_syson*.o(.rodata*)
@@ -279,7 +279,7 @@ SECTIONS
 
 		/* put RO data sections need to be encrypted here */
 		*(.xip.sec_rodata*)
-		
+
 		__xip_code_text_end__ = .;
 	} > XIP_FLASH_C
 
@@ -293,7 +293,7 @@ SECTIONS
 
 		*(.rodata*)
 		*(.rodata.str1*)
-		
+
 		. = ALIGN(4);
 		__xip_code_rodata_end__ = .;
 	} > XIP_FLASH_P
@@ -306,7 +306,8 @@ SECTIONS
 		*(.sys_restore.bss*)
 		*(.ram.bss.noinit*)
 	} > DTCM_RAM
-	
+
+	/* .psram.bss must be after .psram.data and .psram.text, because the region after .psram.bss will be used as heap */
 	.psram.bss :
 	{
 		. = ALIGN(16);
@@ -319,7 +320,8 @@ SECTIONS
 		. = ALIGN(32);
 		__eram_bss_end__ = .;
 	} > PSRAM
-	
+
+	/* .bss must be after .data and .text, because the region after .bss will be used as heap */
 	.bss :
 	{
 		. = ALIGN(16);
@@ -358,4 +360,10 @@ SECTIONS
 
 	/* Check if data + heap + stack exceeds RAM limit */
 /* TODO:	ASSERT(__StackLimit >= __HeapLimit, "region RAM overflowed with stack") */
+	ASSERT(__bss_start__ >= __ram_code_text_end__, "sram heap will overwrite sram text")
+	ASSERT(__bss_start__ >= __ram_code_rodata_end__, "sram heap will overwrite sram rodata")
+	ASSERT(__bss_start__ >= __data_end__, "sram heap will overwrite sram data")
+	ASSERT(__psram_bss_start__ >= __psram_code_text_end__, "psram heap will overwrite psram text")
+	ASSERT(__psram_bss_start__ >= __psram_code_rodata_end__, "psram heap will overwrite psram rodata")
+	ASSERT(__psram_bss_start__ >= __psram_data_end__, "psram heap will overwrite psram data")
 }

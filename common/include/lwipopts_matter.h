@@ -57,12 +57,6 @@ extern "C" {
 #undef LWIP_PBUF_FROM_CUSTOM_POOLS
 #define LWIP_PBUF_FROM_CUSTOM_POOLS     0
 
-#undef PBUF_POOL_SIZE
-#define PBUF_POOL_SIZE                  40
-
-#undef PBUF_POOL_BUFSIZE
-#define PBUF_POOL_BUFSIZE               1500
-
 /* UDP and Timeout Options */
 #undef MEMP_NUM_UDP_PCB
 #define MEMP_NUM_UDP_PCB                10

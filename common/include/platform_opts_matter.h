@@ -91,22 +91,12 @@
 #define CONFIG_USE_AZURE_EMBEDDED_C             0
 
 /* Matter layout */
-#undef FAST_RECONNECT_DATA
-#undef BT_FTL_PHY_ADDR0
-#undef BT_FTL_PHY_ADDR1
-#undef BT_FTL_BKUP_ADDR
-#undef UART_SETTING_SECTOR
 #undef DCT_BEGIN_ADDR
 #undef MATTER_KVS_BEGIN_ADDR
 #undef MATTER_KVS_BEGIN_ADDR2
 
-#define FAST_RECONNECT_DATA                     (0x400000 - 0x1000)     // 0x3FF000
-#define BT_FTL_PHY_ADDR0                        (0x400000 - 0x2000)     // 0x3FE000
-#define BT_FTL_PHY_ADDR1                        (0x400000 - 0x3000)     // 0x3FD000
-#define BT_FTL_BKUP_ADDR                        (0x400000 - 0x4000)     // 0x3FC000
-#define UART_SETTING_SECTOR                     (0x400000 - 0x5000)     // 0x3FB000
-#define MATTER_KVS_BEGIN_ADDR                   (0x400000 - 0x13000)    // 0x3ED000 ~ 0x3FB000 : 56K
-#define MATTER_KVS_BEGIN_ADDR2                  (0x400000 - 0x1E000)    // 0x3E6000 ~ 0x3ED000 : 24K
+#define MATTER_KVS_BEGIN_ADDR                   (0x600000 - 0x55000)    // 0x3ED000 ~ 0x3FB000 : 56K
+#define MATTER_KVS_BEGIN_ADDR2                  (0x600000 - 0x90000)    // 0x3E6000 ~ 0x3ED000 : 24K
 
 #elif defined(CONFIG_PLATFORM_8721D)
 

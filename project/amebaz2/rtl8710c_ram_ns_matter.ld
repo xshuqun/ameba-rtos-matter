@@ -97,10 +97,13 @@ SECTIONS
 	.psram.data : AT (__psram_etext)
 	{
 		. = ALIGN(16);
-	    __psram_etext = .;
+		__psram_etext = .;
 		__psram_data_start__ = .;
 
 		*(.psram.data*)
+
+		/* CLIP */
+		*libclip.a: (.data*)
 
 		__psram_data_end__ = .;
 
@@ -141,22 +144,15 @@ SECTIONS
 		/*. += 0xE0; */
 	} > XIP_FLASH_P
 
-	.psram.code_text :
-	{
-		. = ALIGN(16);
-		__psram_code_text_start__ = .;
-
-		*(.psram.text*)
-		
-		__psram_code_text_end__ = .;
-	} > PSRAM
-
 	.psram.code_rodata :
 	{
 		. = ALIGN(16);
 		__psram_code_rodata_start__ = .;
 
 		*(.psram.rodata*)
+
+		/* CLIP */
+		*libclip.a: (.rodata*)
 
 		. = ALIGN(4);
 		__psram_code_rodata_end__ = .;
@@ -182,6 +178,22 @@ SECTIONS
 		*hal_syson*.o(.text*)
 		*hal_pinmux*.o(.text*)
 		*sys_irq*.o(.text*)
+		*rtl8710ca_ops*.o(.text*)
+		*rtw_xmit*.o(.text*)
+		*rtw_recv*.o(.text*)
+		*rtl8710c_rxdesc*.o(.text*)
+		*rtl8710c_xmit*.o(.text*)
+		*tcp_in*.o(.text*)
+		*tcp_out*.o(.text*)
+		*api_msg*.o(.text*)
+		*def*.o(.text*)
+		*igmp*.o(.text*)
+		*sys_arch*.o(.text*)
+		*netbuf*.o(.text*)
+		*inet_chksum*.o(.text*)
+
+		/* CLIP */
+		*libclibc.a: (.text*)
 
 		*(.lpddr.text*)
 		*(.sram.text*)
@@ -223,7 +235,8 @@ SECTIONS
 
 		*(.xip.text*)
 
-		*(.text*)
+		//*(.text*)
+		*main*.o(.text*)
 
 		/* put RO data sections need to be encrypted here */
 		*(.xip.sec_rodata*)
@@ -243,41 +256,56 @@ SECTIONS
 		*(.rodata*)
 		*(.rodata.str1*)
 
-        /* Add This for C++ support */
-        . = ALIGN(4);
-        __preinit_array_start = .;
-        KEEP(*(.preinit_array))
-        __preinit_array_end = .;
-        . = ALIGN(4);
-        __init_array_start = .;
-        KEEP(*(SORT(.init_array.*)))
-        KEEP(*(.init_array))
-        __init_array_end = .;
-        . = ALIGN(4);
-        __fini_array_start = .;
-        KEEP(*(SORT(.fini_array.*)))
-        KEEP(*(.fini_array))
-        __fini_array_end = .;
-        /*-----------------*/
+		/* Add This for C++ support */
+		. = ALIGN(4);
+		__preinit_array_start = .;
+		KEEP(*(.preinit_array))
+		__preinit_array_end = .;
+		. = ALIGN(4);
+		__init_array_start = .;
+		KEEP(*(SORT(.init_array.*)))
+		KEEP(*(.init_array))
+		__init_array_end = .;
+		. = ALIGN(4);
+		__fini_array_start = .;
+		KEEP(*(SORT(.fini_array.*)))
+		KEEP(*(.fini_array))
+		__fini_array_end = .;
+		/*-----------------*/
 
 		. = ALIGN(4);
 		__xip_code_rodata_end__ = .;
 	} > XIP_FLASH_P
 
-    /* Add This for C++ support */
-    .ARM.extab  :
-    {
-        *(.ARM.extab* .gnu.linkonce.armextab.*)
+	/* Add This for C++ support */
+	.ARM.extab  :
+	{
+		*(.ARM.extab* .gnu.linkonce.armextab.*)
 
-    } > XIP_FLASH_P
+	} > XIP_FLASH_P
 
-    .ARM.exidx :
-    {
-        __exidx_start = .;
-        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-        __exidx_end = .;
-    } > XIP_FLASH_P
+	.ARM.exidx :
+	{
+		__exidx_start = .;
+		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
+		__exidx_end = .;
+	} > XIP_FLASH_P
 	/*-----------------*/
+
+	.psram.code_text :
+	{
+		. = ALIGN(16);
+		__psram_code_text_start__ = .;
+
+		*(.psram.text*)
+		*(.text*)
+		*(CODE)
+
+		/* CLIP */
+		*libclip.a: (EXCLUDE_FILE (*bignum.c.obj *ecp.c.obj *ecp_curves.c.obj *cmsis_os.c.obj *rsa.c.obj *sha256.c.obj) .text*)
+
+		__psram_code_text_end__ = .;
+	} > PSRAM
 
 	.system_restore_data :
 	{
@@ -294,7 +322,13 @@ SECTIONS
 		. = ALIGN(16);
 		__psram_bss_start__ = .;
 
+		*mem*.o(.bss* COMMON)
+		*memp*.o(.bss* COMMON)
+
 		*(.psram.bss*)
+
+		/* CLIP */
+		*libclip.a: (.bss*)
 
 		__psram_bss_end__ = .;
 
@@ -353,4 +387,10 @@ SECTIONS
 
 	/* Check if data + heap + stack exceeds RAM limit */
 /* TODO:	ASSERT(__StackLimit >= __HeapLimit, "region RAM overflowed with stack") */
+	ASSERT(__bss_start__ >= __ram_code_text_end__, "sram heap will overwrite sram text")
+	ASSERT(__bss_start__ >= __ram_code_rodata_end__, "sram heap will overwrite sram rodata")
+	ASSERT(__bss_start__ >= __data_end__, "sram heap will overwrite sram data")
+	ASSERT(__psram_bss_start__ >= __psram_code_text_end__, "psram heap will overwrite psram text")
+	ASSERT(__psram_bss_start__ >= __psram_code_rodata_end__, "psram heap will overwrite psram rodata")
+	ASSERT(__psram_bss_start__ >= __psram_data_end__, "psram heap will overwrite psram data")
 }

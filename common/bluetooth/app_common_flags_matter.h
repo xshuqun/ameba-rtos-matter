@@ -18,12 +18,12 @@
 #include <platform_opts_bt_matter.h>
 
 /** @brief  Config local address type: 0-pulic address, 1-static random address, 2-random resolvable private address */
-#if defined(CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER
+#if ((defined(CONFIG_BLE_MATTER_ADAPTER) && CONFIG_BLE_MATTER_ADAPTER) || \
+     (defined(CONFIG_BT_MESH_DEVICE_MATTER) && CONFIG_BT_MESH_DEVICE_MATTER))
 #undef F_BT_LE_USE_RANDOM_ADDR
+#undef F_BT_STATIC_RANDOM_ADDR_CUSTOM
 #define F_BT_LE_USE_RANDOM_ADDR             1
-#elif defined(CONFIG_BT_MESH_DEVICE_MATTER) && CONFIG_BT_MESH_DEVICE_MATTER
-#undef F_BT_LE_USE_STATIC_RANDOM_ADDR
-#define F_BT_LE_USE_STATIC_RANDOM_ADDR      1
+#define F_BT_STATIC_RANDOM_ADDR_CUSTOM      1
 #endif
 
 #endif /* _APP_COMMON_FLAGS_MATTER__H_ */

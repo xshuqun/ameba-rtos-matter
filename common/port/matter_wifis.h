@@ -224,12 +224,10 @@ int matter_wifi_get_rssi(int *prssi);
 /**
  * @brief  Get the security type of the specified WLAN index.
  * @param[in]  wlan_idx: The WLAN index.
- * @param[out]  alg: Pointer to store the security algorithm.
- * @param[out]  key_idx: Pointer to store the key index.
- * @param[out]  passphrase: Pointer to store the passphrase.
+ * @param[out]  wifi_security: Pointer to store the wifi security algorithm.
  * @return  Non-zero on success, zero on failure.
  */
-int matter_wifi_get_security_type(uint8_t wlan_idx, uint16_t *alg, uint8_t *key_idx, uint8_t *passphrase);
+int matter_wifi_get_security_type(uint8_t wlan_idx, uint32_t *wifi_security);
 
 /**
  * @brief  Get the current WiFi settings of the specified WLAN index.

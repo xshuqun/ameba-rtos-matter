@@ -8,6 +8,8 @@
 #include <chiptest/example_matter.h>
 #elif defined(CONFIG_EXAMPLE_MATTER_AIRCON) && (CONFIG_EXAMPLE_MATTER_AIRCON == 1)
 #include <aircon/example_matter_aircon.h>
+#elif defined(CONFIG_EXAMPLE_MATTER_AIRQUALITY_SENSOR) && (CONFIG_EXAMPLE_MATTER_AIRQUALITY_SENSOR == 1)
+#include <airquality_sensor/example_matter_airquality_sensor.h>
 #elif defined(CONFIG_EXAMPLE_MATTER_BRIDGE) && (CONFIG_EXAMPLE_MATTER_BRIDGE == 1)
 #include <bridge_dm/example_matter_bridge.h>
 #elif defined(CONFIG_EXAMPLE_MATTER_DISHWASHER) && (CONFIG_EXAMPLE_MATTER_DISHWASHER == 1)
@@ -44,6 +46,8 @@ void matter_example_entry(void)
     example_matter_task();
 #elif defined(CONFIG_EXAMPLE_MATTER_AIRCON) && (CONFIG_EXAMPLE_MATTER_AIRCON == 1)
     example_matter_aircon();
+#elif defined(CONFIG_EXAMPLE_MATTER_AIRQUALITY_SENSOR) && (CONFIG_EXAMPLE_MATTER_AIRQUALITY_SENSOR == 1)
+    example_matter_airquality_sensor();
 #elif defined(CONFIG_EXAMPLE_MATTER_BRIDGE) && (CONFIG_EXAMPLE_MATTER_BRIDGE == 1)
     example_matter_bridge();
 #elif defined(CONFIG_EXAMPLE_MATTER_DISHWASHER) && (CONFIG_EXAMPLE_MATTER_DISHWASHER == 1)

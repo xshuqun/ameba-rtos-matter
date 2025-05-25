@@ -74,6 +74,7 @@ SRC_CPP += $(MATTER_EXAMPLEDIR)/$(DEVICE_TYPE)/matter_drivers.cpp
 SRC_CPP += $(MATTER_EXAMPLEDIR)/$(DEVICE_TYPE)/matter_consoles.cpp
 SRC_CPP += $(MATTER_DRIVER)/ameba_app_cluster_init.cpp
 SRC_CPP += $(MATTER_DRIVER)/air_quality/ameba_air_quality_manager.cpp
+SRC_CPP += $(MATTER_DRIVER)/resource_monitoring/ameba_activated_carbon_filter_manager.cpp
 
 # Matter Mandatory Common Source file list
 # -------------------------------------------------------------------
@@ -163,7 +164,7 @@ prerequirement:
 $(SRC_OO): %_$(TARGET).oo : %.cpp | prerequirement
 	$(CC) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
 	$(CC) $(CPPFLAGS) $(INCLUDES) -c $< -MM -MT $@ -MF $(OBJ_DIR)/$(notdir $(patsubst %.oo,%.d,$@))
-	mv $@ $(OBJ_DIR)/$(notdir $@)
+	cp $@ $(OBJ_DIR)/$(notdir $@)
 	cp $*_$(TARGET).ii $(INFO_DIR)
 	cp $*_$(TARGET).s $(INFO_DIR)
 	chmod 777 $(OBJ_DIR)/$(notdir $@)
@@ -171,7 +172,7 @@ $(SRC_OO): %_$(TARGET).oo : %.cpp | prerequirement
 $(SRC_O): %_$(TARGET).o : %.c | prerequirement
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -MM -MT $@ -MF $(OBJ_DIR)/$(notdir $(patsubst %.o,%.d,$@))
-	mv $@ $(OBJ_DIR)/$(notdir $@)
+	cp $@ $(OBJ_DIR)/$(notdir $@)
 	cp $*_$(TARGET).i $(INFO_DIR)
 	cp $*_$(TARGET).s $(INFO_DIR)
 	chmod 777 $(OBJ_DIR)/$(notdir $@)

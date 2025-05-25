@@ -26,6 +26,8 @@
 #define CONFIG_EXAMPLE_MATTER_TEMP_SENSOR       0
 #define CONFIG_EXAMPLE_MATTER_THERMOSTAT        0
 
+#define AMEBA_MATTER_SERVER_ATCMD               1
+
 /** CONFIG_ENABLE_AMEBA_CRYPTO is declared and enabled in Makefile.include.matter
  */
 #if defined(CONFIG_ENABLE_AMEBA_CRYPTO) && CONFIG_ENABLE_AMEBA_CRYPTO

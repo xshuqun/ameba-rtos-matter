@@ -18,17 +18,5 @@
  */
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void matter_console(char **argv);
-void matter_console_airqual_help(void);
-void matter_console_airqual_set_airquality(int value);
-
-void matter_console_acfremon_help(void);
-void matter_console_acfremon_set_condition(int value);
-void matter_console_acfremon_set_changeindication(int value);
-#ifdef __cplusplus
-}
-#endif
+#include <air_quality/ameba_air_quality_manager.h>
+#include <resource_monitoring/ameba_activated_carbon_filter_manager.h>

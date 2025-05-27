@@ -478,6 +478,16 @@ int matter_wifi_is_up(rtw_interface_t interface)
     return wifi_is_up(interface);
 }
 
+int matter_wifi_is_station_mode(void)
+{
+    if (wifi_mode == RTW_MODE_STA || wifi_mode == RTW_MODE_STA_AP) {
+        return RTW_SUCCESS;
+    } else {
+        return RTW_ERROR;
+    }
+
+}
+
 int matter_wifi_get_ap_bssid(unsigned char *bssid)
 {
     return wifi_get_ap_bssid(bssid);

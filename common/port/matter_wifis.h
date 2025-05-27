@@ -178,6 +178,11 @@ int matter_wifi_is_ready_to_transceive(rtw_interface_t interface);
 int matter_wifi_is_up(rtw_interface_t interface);
 
 /**
+ * @brief  Check if the wifi mode is station mode.
+ * @return  RTW_SUCCESS if wifi_mode is station, RTW_ERROR otherwise.
+ */
+int matter_wifi_is_station_mode(void);
+/**
  * @brief  Get the BSSID of the connected access point.
  * @param[out]  bssid: Pointer to store the BSSID.
  * @return  RTW_SUCCESS on success, RTW_ERROR otherwise.

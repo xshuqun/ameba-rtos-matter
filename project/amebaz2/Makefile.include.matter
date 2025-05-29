@@ -2,7 +2,6 @@
 # Directory Definition
 # -------------------------------------------------------------------
 
-SDKROOTDIR         := $(shell pwd)/../../..
 CHIPDIR             = $(SDKROOTDIR)/third_party/connectedhomeip
 MATTER_DIR          = $(SDKROOTDIR)/component/common/application/matter
 MATTER_BUILDDIR     = $(MATTER_DIR)/project/amebaz2

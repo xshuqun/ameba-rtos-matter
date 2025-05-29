@@ -238,6 +238,7 @@ SRC_C += ../../../component/common/application/matter/common/mbedtls/$(MBEDTLS_V
 SRC_C += ../../../component/common/application/matter/common/mbedtls/$(MBEDTLS_VERSION)/library/ssl_tls13_keys.c
 SRC_C += ../../../component/common/application/matter/common/mbedtls/$(MBEDTLS_VERSION)/library/ssl_tls13_server.c
 endif
+
 # Libraries
 # -------------------------------------------------------------------
 

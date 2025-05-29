@@ -1,6 +1,6 @@
 #include <matter_drivers.h>
 #include <matter_interaction.h>
-#include <temp_sensor_driver.h>
+#include <temperature_sensor_driver.h>
 
 #include <app-common/zap-generated/attribute-type.h>
 #include <app-common/zap-generated/attributes/Accessors.h>

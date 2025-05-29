@@ -5,7 +5,6 @@ OS := $(shell uname)
 # Directory
 # -------------------------------------------------------------------
 
-SDKROOTDIR         := $(shell pwd)/../../..
 AMEBAZ2_TOOLDIR     = $(SDKROOTDIR)/component/soc/realtek/8710c/misc/iar_utility
 CHIPDIR             = $(SDKROOTDIR)/third_party/connectedhomeip
 MATTER_DIR          = $(SDKROOTDIR)/component/common/application/matter
@@ -106,7 +105,7 @@ CHIP_CXXFLAGS += $(INCLUDES)
 all: GENERATE_NINJA
 
 GENERATE_NINJA:
-	echo "INSTALL CHIP...CHIP_ENABLE_OTA_REQUESTOR=$(CHIP_ENABLE_OTA_REQUESTOR)" && \
+	echo "INSTALL CHIP..." && \
 	echo $(BASEDIR) && \
 	mkdir -p $(OUTPUT_DIR) && \
 	echo > $(OUTPUT_DIR)/args.gn && \

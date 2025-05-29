@@ -6,7 +6,6 @@ include $(MATTER_INCLUDE)
 INCLUDES += -I../../../component/common/application/matter/common/port
 INCLUDES += -I../../../component/common/application/matter/common/include
 INCLUDES += -I../../../component/common/application/matter/common/mbedtls
-INCLUDES += -I../../../component/common/application/matter/common/mbedtls/$(MBEDTLS_VERSION)
 INCLUDES += -I../../../component/common/application/matter/common/mbedtls/$(MBEDTLS_VERSION)/include
 INCLUDES += -I../../../component/common/application/matter/common/mbedtls/$(MBEDTLS_VERSION)/include/mbedtls
 INCLUDES += -I../../../component/common/application/matter/common/mbedtls/$(MBEDTLS_VERSION)/library
@@ -136,3 +135,4 @@ endif
 #matter - common - mbedtls - library_s
 SRC_C += ../../../component/common/application/matter/common/mbedtls/$(MBEDTLS_VERSION)/library_s/mbedtls_nsc.c
 SRC_C += ../../../component/common/application/matter/common/mbedtls/matter_mbedtls_nsc.c
+

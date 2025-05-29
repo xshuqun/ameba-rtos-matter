@@ -12,7 +12,9 @@
 
 // Ameba Matter Example
 #define CONFIG_EXAMPLE_MATTER                   1
+// Matter CHIP Example
 #define CONFIG_EXAMPLE_MATTER_CHIPTEST          1
+// Matter Porting Layer Example
 #define CONFIG_EXAMPLE_MATTER_AIRCON            0
 #define CONFIG_EXAMPLE_MATTER_BRIDGE            0
 #define CONFIG_EXAMPLE_MATTER_DISHWASHER        0

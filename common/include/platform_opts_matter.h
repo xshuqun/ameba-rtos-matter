@@ -12,8 +12,9 @@
 
 // Ameba Matter Example
 #define CONFIG_EXAMPLE_MATTER                   1
-#define CONFIG_EXAMPLE_MATTER_CHIPTEST          1
+#define CONFIG_EXAMPLE_MATTER_CHIPTEST          0
 #define CONFIG_EXAMPLE_MATTER_AIRCON            0
+#define CONFIG_EXAMPLE_MATTER_AIRQUALITY_SENSOR 1
 #define CONFIG_EXAMPLE_MATTER_BRIDGE            0
 #define CONFIG_EXAMPLE_MATTER_DISHWASHER        0
 #define CONFIG_EXAMPLE_MATTER_FAN               0
@@ -24,6 +25,8 @@
 #define CONFIG_EXAMPLE_MATTER_REFRIGERATOR      0
 #define CONFIG_EXAMPLE_MATTER_TEMP_SENSOR       0
 #define CONFIG_EXAMPLE_MATTER_THERMOSTAT        0
+
+#define AMEBA_MATTER_SERVER_ATCMD               1
 
 /** CONFIG_ENABLE_AMEBA_CRYPTO is declared and enabled in Makefile.include.matter
  */

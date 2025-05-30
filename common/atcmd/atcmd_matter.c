@@ -189,6 +189,22 @@ void fATnetworklog(void *arg)
 }
 #endif /* CONFIG_ENABLE_AMEBA_DLOG_TEST */
 
+#if defined(AMEBA_MATTER_SERVER_ATCMD) && (AMEBA_MATTER_SERVER_ATCMD == 1)
+void fATmattertest(void *arg)
+{
+    (void) arg;
+    printf("\n\r[ATMT]: _AT_MATTER_SERVER_CONSOLE_TEST_\n\r");
+    
+    char *argv[MAX_ARGC] = {0};
+    parse_param((char*)arg, argv);
+
+    matter_console(argv);
+
+exit:
+    return;
+}
+#endif //AMEBA_MATTER_SERVER_ATCMD
+
 #if defined(CONFIG_PLATFORM_8710C)
 
 static u32 fATmatterhelp(void *arg);
@@ -201,6 +217,9 @@ log_item_t at_matter_items[] = {
     {"ATM^", fATchipapp2, {NULL, NULL}},
     {"ATMH", fATmatterhelp, {NULL, NULL}},
     {"ATMS", fATmattershell, {NULL, NULL}},
+#if defined(AMEBA_MATTER_SERVER_ATCMD) && (AMEBA_MATTER_SERVER_ATCMD == 1)
+    {"ATMT", fATmattertest, {NULL, NULL}},
+#endif // AMEBA_MATTER_SERVER_ATCMD
 #if defined(CONFIG_ENABLE_AMEBA_DLOG_TEST) && (CONFIG_ENABLE_AMEBA_DLOG_TEST == 1)
     {"ATMW", fATcrash, {NULL, NULL}},
     {"ATMX", fATcrashbdx, {NULL, NULL}},

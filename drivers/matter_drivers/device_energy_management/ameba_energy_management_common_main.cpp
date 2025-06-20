@@ -152,23 +152,8 @@ CHIP_ERROR ElectricalPowerMeasurementInit(chip::EndpointId endpointId)
     gEPMInstance = std::make_unique<ElectricalPowerMeasurementInstance>(
         EndpointId(endpointId), *gEPMDelegate,
         BitMask<ElectricalPowerMeasurement::Feature, uint32_t>(
-            ElectricalPowerMeasurement::Feature::kDirectCurrent, ElectricalPowerMeasurement::Feature::kAlternatingCurrent,
-            ElectricalPowerMeasurement::Feature::kPolyphasePower, ElectricalPowerMeasurement::Feature::kHarmonics,
-            ElectricalPowerMeasurement::Feature::kPowerQuality),
-        BitMask<ElectricalPowerMeasurement::OptionalAttributes, uint32_t>(
-            ElectricalPowerMeasurement::OptionalAttributes::kOptionalAttributeRanges,
-            ElectricalPowerMeasurement::OptionalAttributes::kOptionalAttributeVoltage,
-            ElectricalPowerMeasurement::OptionalAttributes::kOptionalAttributeActiveCurrent,
-            ElectricalPowerMeasurement::OptionalAttributes::kOptionalAttributeReactiveCurrent,
-            ElectricalPowerMeasurement::OptionalAttributes::kOptionalAttributeApparentCurrent,
-            ElectricalPowerMeasurement::OptionalAttributes::kOptionalAttributeReactivePower,
-            ElectricalPowerMeasurement::OptionalAttributes::kOptionalAttributeApparentPower,
-            ElectricalPowerMeasurement::OptionalAttributes::kOptionalAttributeRMSVoltage,
-            ElectricalPowerMeasurement::OptionalAttributes::kOptionalAttributeRMSCurrent,
-            ElectricalPowerMeasurement::OptionalAttributes::kOptionalAttributeRMSPower,
-            ElectricalPowerMeasurement::OptionalAttributes::kOptionalAttributeFrequency,
-            ElectricalPowerMeasurement::OptionalAttributes::kOptionalAttributePowerFactor,
-            ElectricalPowerMeasurement::OptionalAttributes::kOptionalAttributeNeutralCurrent));
+            ElectricalPowerMeasurement::Feature::kDirectCurrent),
+        BitMask<ElectricalPowerMeasurement::OptionalAttributes, uint32_t>(0));
 
     if (!gEPMInstance)
     {
@@ -231,10 +216,9 @@ CHIP_ERROR DeviceEnergyManagementInit(chip::EndpointId endpointId)
         return CHIP_ERROR_NO_MEMORY;
     }
 
-    chip::BitMask<DeviceEnergyManagement::Feature> featureMap = 0x0;
-
     /* Manufacturer may optionally not support all features, commands & attributes */
-    gDEMInstance = std::make_unique<DeviceEnergyManagementManager>(endpointId, *gDEMDelegate, featureMap);
+    gDEMInstance = std::make_unique<DeviceEnergyManagementManager>(endpointId, *gDEMDelegate, 
+        BitMask<DeviceEnergyManagement::Feature, uint32_t>(DeviceEnergyManagement::Feature::kPowerForecastReporting));
 
     if (!gDEMInstance)
     {
@@ -307,6 +291,7 @@ void emberAfElectricalEnergyMeasurementClusterInitCallback(chip::EndpointId endp
 
     gEEMAttrAccess = std::make_unique<ElectricalEnergyMeasurementAttrAccess>(
         BitMask<ElectricalEnergyMeasurement::Feature, uint32_t>(
+            ElectricalEnergyMeasurement::Feature::kImportedEnergy,
             ElectricalEnergyMeasurement::Feature::kCumulativeEnergy),
         BitMask<ElectricalEnergyMeasurement::OptionalAttributes, uint32_t>(
             ElectricalEnergyMeasurement::OptionalAttributes::kOptionalAttributeCumulativeEnergyReset));
@@ -332,9 +317,7 @@ void emberAfElectricalEnergyMeasurementClusterInitCallback(chip::EndpointId endp
     // but the manufacturer may want to store these in non volatile storage for timestamp (based on epoch_s)
     ElectricalEnergyMeasurement::Structs::CumulativeEnergyResetStruct::Type resetStruct = {
         .importedResetTimestamp = MakeOptional(MakeNullable(static_cast<uint32_t>(0))),
-        .exportedResetTimestamp = MakeOptional(MakeNullable(static_cast<uint32_t>(0))),
         .importedResetSystime   = MakeOptional(MakeNullable(static_cast<uint64_t>(0))),
-        .exportedResetSystime   = MakeOptional(MakeNullable(static_cast<uint64_t>(0))),
     };
 
     if (gEEMAttrAccess)

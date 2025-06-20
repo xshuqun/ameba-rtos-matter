@@ -37,8 +37,7 @@ IFLAGS += -I$(CHIPDIR)/zzz_generated/app-common
 # connectedhomeip - examples
 CSRC += $(CHIPDIR)/examples/platform/ameba/route_hook/ameba_route_hook.c
 CSRC += $(CHIPDIR)/examples/platform/ameba/route_hook/ameba_route_table.c
-
-CPPSRC += $(CHIPDIR)/examples/providers/DeviceInfoProviderImpl.cpp
+#CSRC += $(CHIPDIR)/examples/platform/ameba/test_event_trigger/AmebaTestEventTriggerDelegate.cpp #replaced by matter_test_event_trigger.cpp
 
 # connectedhomeip - src - app
 CPPSRC += $(CHIPDIR)/src/app/SafeAttributePersistenceProvider.cpp
@@ -105,3 +104,4 @@ CPPSRC += $(MATTER_DIR)/api/matter_api.cpp
 
 # matter - core
 CPPSRC += $(MATTER_DIR)/core/matter_device_utils.cpp
+CPPSRC += $(MATTER_DIR)/core/matter_test_event_trigger.cpp

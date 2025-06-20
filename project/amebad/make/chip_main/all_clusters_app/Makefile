@@ -78,7 +78,6 @@ IFLAGS += -I$(BASEDIR)/component/common/application/matter/examples/chiptest
 #                              SOURCE FILE LIST                               #
 #*****************************************************************************#
 # all-clusters-app clusters source files
-CPPSRC += $(SDKROOTDIR)/component/common/application/matter/drivers/matter_consoles/matter_command.cpp
 CPPSRC += $(MATTER_DRIVER)/action/ameba_bridged_actions_stubs.cpp
 CPPSRC += $(MATTER_DRIVER)/air_quality/ameba_air_quality_instance.cpp
 CPPSRC += $(MATTER_DRIVER)/device_energy_management/ameba_concentration_measurement_instances.cpp
@@ -125,7 +124,9 @@ CPPSRC += $(MATTER_DRIVER)/water_heater_management/ameba_water_heater_management
 CPPSRC += $(MATTER_DRIVER)/water_heater_management/ameba_water_heater_management_main.cpp
 CPPSRC += $(MATTER_DRIVER)/water_heater_management/ameba_water_heater_management_manufacturer.cpp
 CPPSRC += $(MATTER_DRIVER)/water_heater_mode/ameba_water_heater_mode.cpp
-CPPSRC += $(BASEDIR)/component/common/application/matter/examples/chiptest/ameba_main_task.cpp
+CPPSRC += $(MATTER_DIR)/drivers/matter_consoles/matter_command.cpp
+CPPSRC += $(MATTER_DIR)/core/ameba_matter_attribute_callbacks.cpp
+CPPSRC += $(MATTER_DIR)/examples/chiptest/ameba_main_task.cpp
 
 CPPSRC += $(CHIPDIR)/examples/all-clusters-app/ameba/main/chipinterface.cpp
 CPPSRC += $(CHIPDIR)/examples/all-clusters-app/ameba/main/BindingHandler.cpp

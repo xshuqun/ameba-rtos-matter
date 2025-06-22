@@ -1,6 +1,8 @@
 /*
+ *    This module is a confidential and proprietary property of RealTek and
+ *    possession or use of this module requires written permission of RealTek.
  *
- *    Copyright (c) 2023 Project CHIP Authors
+ *    Copyright(c) 2025, Realtek Semiconductor Corporation. All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,6 +17,8 @@
  *    limitations under the License.
  */
 
+#pragma once
+
 #include <app-common/zap-generated/ids/Attributes.h>
 #include <app-common/zap-generated/ids/Clusters.h>
 #include <app/clusters/resource-monitoring-server/resource-monitoring-cluster-objects.h>
@@ -25,47 +29,61 @@ namespace app {
 namespace Clusters {
 
 namespace ActivatedCarbonFilterMonitoring {
-/// This is an application level Delegate to handle ActivatedCarbonfilterMonitoringDelegate commands according to the specific
-/// business logic.
-class ActivatedCarbonFilterMonitoringDelegate : public ResourceMonitoring::Delegate
+
+class AmebaActivatedCarbonFilterMonitoringDelegate : public ResourceMonitoring::Delegate
 {
+public:
+    ~AmebaActivatedCarbonFilterMonitoringDelegate() override = default;
+
 private:
     CHIP_ERROR Init() override;
     chip::Protocols::InteractionModel::Status PreResetCondition() override;
     chip::Protocols::InteractionModel::Status PostResetCondition() override;
 
-public:
-    ~ActivatedCarbonFilterMonitoringDelegate() override = default;
 };
 
+ResourceMonitoring::Instance * GetInstance(void);
+void SetInstance(chip::app::Clusters::ResourceMonitoring::Instance * instance);
+AmebaActivatedCarbonFilterMonitoringDelegate * GetDelegate();
+void SetDelegate(AmebaActivatedCarbonFilterMonitoringDelegate * delegate);
+
+void SetCondition(uint8_t value);
+void SetChangeIndication(ResourceMonitoring::ChangeIndicationEnum aNewChangeIndication);
 void Shutdown();
 
 } // namespace ActivatedCarbonFilterMonitoring
 
 namespace HepaFilterMonitoring {
-/// This is an application level Delegate to handle HepaFilterMonitoringDelegate commands according to the specific business logic.
-class HepaFilterMonitoringDelegate : public ResourceMonitoring::Delegate
+
+class AmebaHepaFilterMonitoringDelegate : public ResourceMonitoring::Delegate
 {
+public:
+    ~AmebaHepaFilterMonitoringDelegate() override = default;
+
 private:
     CHIP_ERROR Init() override;
     chip::Protocols::InteractionModel::Status PreResetCondition() override;
     chip::Protocols::InteractionModel::Status PostResetCondition() override;
-
-public:
-    ~HepaFilterMonitoringDelegate() override = default;
 };
 
-class ImmutableReplacementProductListManager : public ResourceMonitoring::ReplacementProductListManager
+ResourceMonitoring::Instance * GetInstance(void);
+void SetInstance(chip::app::Clusters::ResourceMonitoring::Instance * instance);
+AmebaHepaFilterMonitoringDelegate * GetDelegate();
+void SetDelegate(AmebaHepaFilterMonitoringDelegate * delegate);
+
+void SetCondition(uint8_t value);
+void SetChangeIndication(ResourceMonitoring::ChangeIndicationEnum aNewChangeIndication);
+void Shutdown();
+
+class AmebaImmutableReplacementProductListManager : public ResourceMonitoring::ReplacementProductListManager
 {
 public:
-    CHIP_ERROR
-    Next(chip::app::Clusters::ResourceMonitoring::ReplacementProductStruct & item) override;
+    CHIP_ERROR Next(ResourceMonitoring::ReplacementProductStruct & item) override;
 };
-
-void Shutdown();
 
 } // namespace HepaFilterMonitoring
 
 } // namespace Clusters
 } // namespace app
 } // namespace chip
+

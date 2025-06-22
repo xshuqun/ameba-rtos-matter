@@ -77,15 +77,16 @@ SRC_C =
 SRC_CPP =
 
 # all-clusters-app clusters source files
-SRC_CPP += $(MATTER_DRIVER)/action/ameba_bridged_actions_stubs.cpp
-SRC_CPP += $(MATTER_DRIVER)/air_quality/ameba_air_quality_instance.cpp
+SRC_CPP += $(MATTER_DRIVER)/actions/ameba_actions_delegate.cpp
+SRC_CPP += $(MATTER_DRIVER)/air_quality/ameba_air_quality_main.cpp
 SRC_CPP += $(MATTER_DRIVER)/device_energy_management/ameba_concentration_measurement_instances.cpp
 SRC_CPP += $(MATTER_DRIVER)/device_energy_management/ameba_device_energy_management_delegate_impl.cpp
 SRC_CPP += $(MATTER_DRIVER)/device_energy_management/ameba_device_energy_management_manager.cpp
 SRC_CPP += $(MATTER_DRIVER)/device_energy_management/ameba_device_energy_management_mode.cpp
 SRC_CPP += $(MATTER_DRIVER)/device_energy_management/ameba_energy_management_common_main.cpp
 SRC_CPP += $(MATTER_DRIVER)/device_energy_management/ameba_energy_time_utils.cpp
-SRC_CPP += $(MATTER_DRIVER)/dishwasher_alarm/ameba_dishwasher_alarm_stubs.cpp
+SRC_CPP += $(MATTER_DRIVER)/dishwasher_alarm/ameba_dishwasher_alarm_main.cpp
+SRC_CPP += $(MATTER_DRIVER)/dishwasher_alarm/ameba_dishwasher_alarm_delegate.cpp
 SRC_CPP += $(MATTER_DRIVER)/dishwasher_mode/ameba_dishwasher_mode.cpp
 SRC_CPP += $(MATTER_DRIVER)/electrical_power_measurement/ameba_electrical_power_measurement_delegate.cpp
 SRC_CPP += $(MATTER_DRIVER)/energy_evse/ameba_charging_targets_mem_manager.cpp
@@ -123,6 +124,7 @@ SRC_CPP += $(MATTER_DRIVER)/water_heater_management/ameba_water_heater_managemen
 SRC_CPP += $(MATTER_DRIVER)/water_heater_management/ameba_water_heater_management_main.cpp
 SRC_CPP += $(MATTER_DRIVER)/water_heater_management/ameba_water_heater_management_manufacturer.cpp
 SRC_CPP += $(MATTER_DRIVER)/water_heater_mode/ameba_water_heater_mode.cpp
+SRC_CPP += $(MATTER_DRIVER)/ameba_app_cluster_main.cpp
 SRC_CPP += $(MATTER_DIR)/drivers/matter_consoles/matter_command.cpp
 SRC_CPP += $(MATTER_DIR)/core/ameba_matter_attribute_callbacks.cpp
 SRC_CPP += $(MATTER_DIR)/examples/chiptest/ameba_main_task.cpp
@@ -182,7 +184,8 @@ CFLAGS += -DV8M_STKOVF
 include $(MATTER_INCLUDE)
 
 CFLAGS += -DCHIP_PROJECT=1
-CFLAGS += -DCHIP_AMEBA_APP_TASK=1
+CFLAGS += -DCONFIG_ENABLE_AMEBA_APP_TASK=1
+CFLAGS += -DCONFIG_ENABLE_AMEBA_ATTRIBUTE_CALLBACK=1
 
 # Matter Shell Flags
 ifeq ($(CHIP_ENABLE_SHELL), true)

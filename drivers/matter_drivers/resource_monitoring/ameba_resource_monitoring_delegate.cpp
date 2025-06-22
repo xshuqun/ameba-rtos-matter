@@ -1,6 +1,8 @@
 /*
+ *    This module is a confidential and proprietary property of RealTek and
+ *    possession or use of this module requires written permission of RealTek.
  *
- *    Copyright (c) 2023 Project CHIP Authors
+ *    Copyright(c) 2025, Realtek Semiconductor Corporation. All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -29,35 +31,67 @@ using namespace chip::app::Clusters::ActivatedCarbonFilterMonitoring;
 using namespace chip::app::Clusters::HepaFilterMonitoring;
 using chip::Protocols::InteractionModel::Status;
 
-constexpr std::bitset<4> gHepaFilterFeatureMap{ static_cast<uint32_t>(ResourceMonitoring::Feature::kCondition)};
-constexpr std::bitset<4> gActivatedCarbonFeatureMap{ static_cast<uint32_t>(ResourceMonitoring::Feature::kCondition)};
+AmebaActivatedCarbonFilterMonitoringDelegate * gActivatedCarbonFilterDelegate = nullptr;
+ResourceMonitoring::Instance * gActivatedCarbonFilterInstance = nullptr;
+AmebaHepaFilterMonitoringDelegate * gHepaFilterDelegate = nullptr;
+ResourceMonitoring::Instance * gHepaFilterInstance = nullptr;
 
-static ActivatedCarbonFilterMonitoringDelegate * gActivatedCarbonFilterDelegate = nullptr;
-static ResourceMonitoring::Instance * gActivatedCarbonFilterInstance            = nullptr;
-
-static HepaFilterMonitoringDelegate * gHepaFilterDelegate = nullptr;
-static ResourceMonitoring::Instance * gHepaFilterInstance = nullptr;
-
-static ImmutableReplacementProductListManager sReplacementProductListManager;
+static AmebaImmutableReplacementProductListManager sReplacementProductListManager;
 
 //-- Activated Carbon Filter Monitoring delegate methods
-CHIP_ERROR ActivatedCarbonFilterMonitoringDelegate::Init()
+Instance * ActivatedCarbonFilterMonitoring::GetInstance()
 {
-    ChipLogDetail(Zcl, "ActivatedCarbonFilterMonitoringDelegate::Init()");
-    GetInstance()->SetReplacementProductListManagerInstance(&sReplacementProductListManager);
-    return CHIP_NO_ERROR;
+    return gActivatedCarbonFilterInstance;
 }
 
-Status ActivatedCarbonFilterMonitoringDelegate::PreResetCondition()
+void ActivatedCarbonFilterMonitoring::SetInstance(Instance * instance)
 {
-    ChipLogDetail(Zcl, "ActivatedCarbonFilterMonitoringDelegate::PreResetCondition()");
-    return Status::Success;
+    gActivatedCarbonFilterInstance = instance;
 }
 
-Status ActivatedCarbonFilterMonitoringDelegate::PostResetCondition()
+ActivatedCarbonFilterMonitoring::AmebaActivatedCarbonFilterMonitoringDelegate * ActivatedCarbonFilterMonitoring::GetDelegate()
 {
-    ChipLogDetail(Zcl, "ActivatedCarbonFilterMonitoringDelegate::PostResetCondition()");
-    return Status::Success;
+    return gActivatedCarbonFilterDelegate;
+}
+
+void ActivatedCarbonFilterMonitoring::SetDelegate(AmebaActivatedCarbonFilterMonitoringDelegate * delegate)
+{
+    VerifyOrDie(gActivatedCarbonFilterDelegate == nullptr);
+    gActivatedCarbonFilterDelegate = delegate;
+}
+
+void ActivatedCarbonFilterMonitoring::SetCondition(uint8_t value)
+{
+    Status status;
+    if (GetInstance() != nullptr)
+    {
+        status = GetInstance()->UpdateCondition(value);
+        if (status != Status::Success)
+        {
+            ChipLogProgress(DeviceLayer, "Update Condition Failed");
+        }
+        else
+        {
+            ChipLogProgress(DeviceLayer, "Update Condition to %d", value);
+        }
+    }
+}
+
+void ActivatedCarbonFilterMonitoring::SetChangeIndication(ResourceMonitoring::ChangeIndicationEnum aNewChangeIndication)
+{
+    Status status;
+    if (GetInstance() != nullptr)
+    {
+        status = GetInstance()->UpdateChangeIndication(aNewChangeIndication);
+        if (status != Status::Success)
+        {
+            ChipLogProgress(DeviceLayer, "Change Indication Failed");
+        }
+        else
+        {
+            ChipLogProgress(DeviceLayer, "Change Indication to %d", aNewChangeIndication);
+        }
+    }
 }
 
 void ActivatedCarbonFilterMonitoring::Shutdown()
@@ -74,24 +108,76 @@ void ActivatedCarbonFilterMonitoring::Shutdown()
     }
 }
 
-//-- Hepa Filter Monitoring delegate methods
-CHIP_ERROR HepaFilterMonitoringDelegate::Init()
+CHIP_ERROR AmebaActivatedCarbonFilterMonitoringDelegate::Init()
 {
-    ChipLogDetail(Zcl, "HepaFilterMonitoringDelegate::Init()");
     GetInstance()->SetReplacementProductListManagerInstance(&sReplacementProductListManager);
     return CHIP_NO_ERROR;
 }
 
-Status HepaFilterMonitoringDelegate::PreResetCondition()
+Status AmebaActivatedCarbonFilterMonitoringDelegate::PreResetCondition()
 {
-    ChipLogDetail(Zcl, "HepaFilterMonitoringDelegate::PreResetCondition()");
     return Status::Success;
 }
 
-Status HepaFilterMonitoringDelegate::PostResetCondition()
+Status AmebaActivatedCarbonFilterMonitoringDelegate::PostResetCondition()
 {
-    ChipLogDetail(Zcl, "HepaFilterMonitoringDelegate::PostResetCondition()");
     return Status::Success;
+}
+
+// HEPA Filter Monitoring methods
+Instance * HepaFilterMonitoring::GetInstance()
+{
+    return gHepaFilterInstance;
+}
+
+void HepaFilterMonitoring::SetInstance(Instance * instance)
+{
+    gHepaFilterInstance = instance;
+}
+
+HepaFilterMonitoring::AmebaHepaFilterMonitoringDelegate * HepaFilterMonitoring::GetDelegate()
+{
+    return gHepaFilterDelegate;
+}
+
+void HepaFilterMonitoring::SetDelegate(AmebaHepaFilterMonitoringDelegate * delegate)
+{
+    VerifyOrDie(gHepaFilterDelegate == nullptr);
+    gHepaFilterDelegate = delegate;
+}
+
+void HepaFilterMonitoring::SetCondition(uint8_t value)
+{
+    Status status;
+    if (GetInstance() != nullptr)
+    {
+        status = GetInstance()->UpdateCondition(value);
+        if (status != Status::Success)
+        {
+            ChipLogProgress(DeviceLayer, "Update Condition Failed");
+        }
+        else
+        {
+            ChipLogProgress(DeviceLayer, "Update Condition to %d", value);
+        }
+    }
+}
+
+void HepaFilterMonitoring::SetChangeIndication(ResourceMonitoring::ChangeIndicationEnum aNewChangeIndication)
+{
+    Status status;
+    if (GetInstance() != nullptr)
+    {
+        status = GetInstance()->UpdateChangeIndication(aNewChangeIndication);
+        if (status != Status::Success)
+        {
+            ChipLogProgress(DeviceLayer, "Change Indication Failed");
+        }
+        else
+        {
+            ChipLogProgress(DeviceLayer, "Change Indication to %d", aNewChangeIndication);
+        }
+    }
 }
 
 void HepaFilterMonitoring::Shutdown()
@@ -108,28 +194,24 @@ void HepaFilterMonitoring::Shutdown()
     }
 }
 
-void emberAfActivatedCarbonFilterMonitoringClusterInitCallback(chip::EndpointId endpoint)
+CHIP_ERROR AmebaHepaFilterMonitoringDelegate::Init()
 {
-    VerifyOrDie(gActivatedCarbonFilterInstance == nullptr && gActivatedCarbonFilterDelegate == nullptr);
-    gActivatedCarbonFilterDelegate = new ActivatedCarbonFilterMonitoringDelegate;
-    gActivatedCarbonFilterInstance = new ResourceMonitoring::Instance(
-        gActivatedCarbonFilterDelegate, endpoint, ActivatedCarbonFilterMonitoring::Id,
-        static_cast<uint32_t>(gActivatedCarbonFeatureMap.to_ulong()), ResourceMonitoring::DegradationDirectionEnum::kDown, true);
-    gActivatedCarbonFilterInstance->Init();
+    GetInstance()->SetReplacementProductListManagerInstance(&sReplacementProductListManager);
+    return CHIP_NO_ERROR;
 }
 
-void emberAfHepaFilterMonitoringClusterInitCallback(chip::EndpointId endpoint)
+Status AmebaHepaFilterMonitoringDelegate::PreResetCondition()
 {
-    VerifyOrDie(gHepaFilterInstance == nullptr && gHepaFilterDelegate == nullptr);
-
-    gHepaFilterDelegate = new HepaFilterMonitoringDelegate;
-    gHepaFilterInstance = new ResourceMonitoring::Instance(gHepaFilterDelegate, endpoint, HepaFilterMonitoring::Id,
-                                                           static_cast<uint32_t>(gHepaFilterFeatureMap.to_ulong()),
-                                                           ResourceMonitoring::DegradationDirectionEnum::kDown, true);
-    gHepaFilterInstance->Init();
+    return Status::Success;
 }
 
-CHIP_ERROR ImmutableReplacementProductListManager::Next(ReplacementProductStruct & item)
+Status AmebaHepaFilterMonitoringDelegate::PostResetCondition()
+{
+    return Status::Success;
+}
+
+
+CHIP_ERROR AmebaImmutableReplacementProductListManager::Next(ReplacementProductStruct & item)
 {
     if (mIndex >= kReplacementProductListMaxSize)
     {

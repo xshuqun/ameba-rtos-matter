@@ -1,7 +1,8 @@
 /*
+ *    This module is a confidential and proprietary property of RealTek and
+ *    possession or use of this module requires written permission of RealTek.
  *
- *    Copyright (c) 2021 Project CHIP Authors
- *    All rights reserved.
+ *    Copyright(c) 2025, Realtek Semiconductor Corporation. All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,11 +26,8 @@
 namespace chip {
 namespace app {
 namespace Clusters {
+ 
 namespace ModeSelect {
-
-/**
- * This implementation statically defines the options.
- */
 
 class StaticSupportedModesManager : public SupportedModesManager
 {
@@ -58,11 +56,11 @@ public:
                                                             const ModeOptionStructType ** dataPtr) const override;
 
     ~StaticSupportedModesManager(){};
-
     StaticSupportedModesManager() {}
 };
 
 } // namespace ModeSelect
+
 } // namespace Clusters
 } // namespace app
 } // namespace chip

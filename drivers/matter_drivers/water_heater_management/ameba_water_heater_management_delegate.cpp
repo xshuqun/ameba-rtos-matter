@@ -19,7 +19,8 @@
 
 #include <water_heater_management/ameba_water_heater_management_delegate.h>
 #include <water_heater_management/ameba_water_heater_management_manufacturer.h>
-#include <water_heater_mode/ameba_water_heater_mode.h>
+#include <water_heater_mode/ameba_water_heater_mode_delegate.h>
+#include <water_heater_mode/ameba_water_heater_mode_manager.h>
 
 #include <algorithm>
 
@@ -464,9 +465,9 @@ Status WaterHeaterManagementDelegate::DetermineIfChangingHeatingState(HeatingOp 
 
     if (!HasWaterTemperatureReachedTarget())
     {
-        VerifyOrReturnError(WaterHeaterMode::Instance() != nullptr, Status::InvalidInState);
+        VerifyOrReturnError(WaterHeaterMode::GetInstance() != nullptr, Status::InvalidInState);
 
-        uint8_t mode = WaterHeaterMode::Instance()->GetCurrentMode();
+        uint8_t mode = WaterHeaterMode::GetInstance()->GetCurrentMode();
 
         // The water in the tank is not at the target temperature. See if heating is currently off
         if (mHeatDemand.Raw() == 0)
@@ -507,15 +508,15 @@ Status WaterHeaterManagementDelegate::DetermineIfChangingHeatingState(HeatingOp 
 
 Status WaterHeaterManagementDelegate::SetWaterHeaterMode(uint8_t modeValue)
 {
-    VerifyOrReturnError(WaterHeaterMode::Instance() != nullptr, Status::InvalidInState);
+    VerifyOrReturnError(WaterHeaterMode::GetInstance() != nullptr, Status::InvalidInState);
 
-    if (!WaterHeaterMode::Instance()->IsSupportedMode(modeValue))
+    if (!WaterHeaterMode::GetInstance()->IsSupportedMode(modeValue))
     {
         ChipLogError(AppServer, "SetWaterHeaterMode bad mode");
         return Status::ConstraintError;
     }
 
-    Status status = WaterHeaterMode::Instance()->UpdateCurrentMode(modeValue);
+    Status status = WaterHeaterMode::GetInstance()->UpdateCurrentMode(modeValue);
     if (status != Status::Success)
     {
         ChipLogError(AppServer, "SetWaterHeaterMode updateMode failed 0x%02x", to_underlying(status));

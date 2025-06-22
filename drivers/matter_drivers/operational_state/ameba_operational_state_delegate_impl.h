@@ -138,7 +138,9 @@ public:
 };
 
 Instance * GetOperationalStateInstance();
+void SetOperationalStateInstance(Instance * instance);
 OperationalStateDelegate * GetOperationalStateDelegate();
+void SetOperationalStateDelegate(OperationalStateDelegate * delegate);
 
 void Shutdown();
 

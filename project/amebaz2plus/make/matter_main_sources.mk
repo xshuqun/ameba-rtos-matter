@@ -94,6 +94,7 @@ SRC_CPP += $(MATTER_DIR)/core/matter_device_utils.cpp
 #SRC_CPP += $(MATTER_DIR)/core/matter_test_event_trigger.cpp
 
 # matter - drivers
+SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/ameba_app_cluster_main.cpp
 SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_diagnosticlogs_provider_delegate_impl.cpp
 SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_logging_faultlog.cpp
 SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_logging_insert_logs.cpp

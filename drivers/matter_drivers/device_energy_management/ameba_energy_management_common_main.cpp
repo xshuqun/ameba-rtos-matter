@@ -26,7 +26,8 @@
 #include <power_topology/ameba_power_topology_delegate.h>
 #include <water_heater_management/ameba_water_heater_management_main.h>
 #include <water_heater_management/ameba_water_heater_management_manufacturer.h>
-#include <water_heater_mode/ameba_water_heater_mode.h>
+#include <water_heater_mode/ameba_water_heater_mode_delegate.h>
+#include <water_heater_mode/ameba_water_heater_mode_manager.h>
 
 #include <app/clusters/electrical-energy-measurement-server/electrical-energy-measurement-server.h>
 #include <app-common/zap-generated/ids/Attributes.h>
@@ -282,7 +283,7 @@ void emberAfElectricalEnergyMeasurementClusterInitCallback(chip::EndpointId endp
        that include the EEM endpoint (even the one we disable dynamically). So here, we only
        proceed when it's called for the right endpoint determined by GetEnergyDeviceEndpointId().
     */
-    if (endpointId != GetEnergyDeviceEndpointId())
+    if (endpointId != 1)
     {
         return;
     }
@@ -338,7 +339,7 @@ DeviceEnergyManagement::DeviceEnergyManagementDelegate * GetDEMDelegate()
 
 void EvseApplicationInit()
 {
-    auto endpointId = GetEnergyDeviceEndpointId();
+    auto endpointId = 1;
     VerifyOrDie(EnergyManagementCommonClustersInit(endpointId) == CHIP_NO_ERROR);
     VerifyOrDie(EnergyEvseInit(endpointId) == CHIP_NO_ERROR);
     VerifyOrDie(EVSEManufacturerInit(endpointId, *gEPMInstance.get(), *gPTInstance.get(), *gDEMInstance.get(),
@@ -362,7 +363,7 @@ void EvseApplicationShutdown()
 
 void WaterHeaterApplicationInit()
 {
-    auto endpointId = GetEnergyDeviceEndpointId();
+    auto endpointId = 1;
     VerifyOrDie(EnergyManagementCommonClustersInit(endpointId) == CHIP_NO_ERROR);
     VerifyOrDie(WhmApplicationInit(endpointId) == CHIP_NO_ERROR);
 

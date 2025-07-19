@@ -1,7 +1,8 @@
 /*
+ *    This module is a confidential and proprietary property of RealTek and
+ *    possession or use of this module requires written permission of RealTek.
  *
- *    Copyright (c) 2023 Project CHIP Authors
- *    All rights reserved.
+ *    Copyright(c) 2025, Realtek Semiconductor Corporation. All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -30,7 +31,7 @@ namespace Clusters {
 namespace RvcOperationalState {
 
 // This is an application level delegate to handle operational state commands according to the specific business logic.
-class RvcOperationalStateDelegate : public Delegate
+class AmebaRvcOperationalStateDelegate : public Delegate
 {
 private:
     const Clusters::OperationalState::GenericOperationalState rvcOpStateList[11] = {
@@ -52,7 +53,7 @@ private:
     Span<const CharSpan> mOperationalPhaseList;
 
 public:
-    RvcOperationalStateDelegate() {}
+    AmebaRvcOperationalStateDelegate() {}
 
     /**
      * Get the countdown time. This attribute is not used in this application.
@@ -100,11 +101,8 @@ public:
     void HandleGoHomeCommandCallback(OperationalState::GenericOperationalError & err) override;
 };
 
-void Shutdown();
-
-Instance * GetRvcOperationalStateInstance();
-
 } // namespace RvcOperationalState
 } // namespace Clusters
+
 } // namespace app
 } // namespace chip

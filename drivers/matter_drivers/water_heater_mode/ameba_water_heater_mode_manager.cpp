@@ -29,23 +29,23 @@ using chip::Protocols::InteractionModel::Status;
 static AmebaWaterHeaterModeDelegate * gAmebaWaterHeaterModeDelegate = nullptr;
 static ModeBase::Instance * gAmebaWaterHeaterModeInstance     = nullptr;
 
-WaterHeaterMode::AmebaWaterHeaterModeDelegate * WaterHeaterMode::GetDelegate()
+WaterHeaterMode::AmebaWaterHeaterModeDelegate * WaterHeaterMode::GetWaterHeaterModeDelegate(void)
 {
     return gAmebaWaterHeaterModeDelegate;
 }
 
-void WaterHeaterMode::SetDelegate(AmebaWaterHeaterModeDelegate * delegate)
+void WaterHeaterMode::SetWaterHeaterModeDelegate(AmebaWaterHeaterModeDelegate * delegate)
 {
     VerifyOrDie(gAmebaWaterHeaterModeDelegate == nullptr);
     gAmebaWaterHeaterModeDelegate = delegate;
 }
 
-ModeBase::Instance * WaterHeaterMode::GetInstance(void)
+ModeBase::Instance * WaterHeaterMode::GetWaterHeaterModeInstance(void)
 {
     return gAmebaWaterHeaterModeInstance;
 }
 
-void WaterHeaterMode::SetInstance(ModeBase::Instance * instance)
+void WaterHeaterMode::SetWaterHeaterModeInstance(ModeBase::Instance * instance)
 {
     gAmebaWaterHeaterModeInstance = instance;
 }

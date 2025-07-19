@@ -28,12 +28,14 @@ namespace Clusters {
 
 namespace DishwasherMode {
 
-AmebaDishwasherModeDelegate * GetDelegate();
-void SetDelegate(AmebaDishwasherModeDelegate * delegate);
-ModeBase::Instance * GetInstance();
-void SetInstance(ModeBase::Instance * instance);
+class AmebaDishwasherModeDelegate;
 
-void Shutdown();
+AmebaDishwasherModeDelegate * GetDishwasherModeDelegate(void);
+void SetDishwasherModeDelegate(AmebaDishwasherModeDelegate * delegate);
+ModeBase::Instance * GetDishwasherModeInstance(void);
+void SetDishwasherModeInstance(ModeBase::Instance * instance);
+
+void Shutdown(void);
 
 } // namespace DishwasherMode
 

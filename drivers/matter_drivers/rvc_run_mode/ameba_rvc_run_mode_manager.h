@@ -28,12 +28,14 @@ namespace Clusters {
 
 namespace RvcRunMode {
 
-AmebaRvcRunModeDelegate * GetDelegate();
-void SetDelegate(AmebaRvcRunModeDelegate * delegate);
-ModeBase::Instance * GetInstance();
-void SetInstance(ModeBase::Instance * instance);
+class AmebaRvcRunModeDelegate;
 
-void Shutdown();
+AmebaRvcRunModeDelegate * GetRvcRunModeDelegate(void);
+void SetRvcRunModeDelegate(AmebaRvcRunModeDelegate * delegate);
+ModeBase::Instance * GetRvcRunModeInstance(void);
+void SetRvcRunModeInstance(ModeBase::Instance * instance);
+
+void Shutdown(void);
 
 } // namespace RvcRunMode
 

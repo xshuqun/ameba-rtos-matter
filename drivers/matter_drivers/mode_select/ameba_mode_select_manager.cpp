@@ -17,7 +17,7 @@
  *    limitations under the License.
  */
 
-#include <mode_select/ameba_modes_manager.h>
+#include <mode_select/ameba_mode_select_manager.h>
 
 using namespace chip;
 using namespace chip::app::Clusters;
@@ -47,17 +47,17 @@ constexpr SemanticTag semanticTagsCappucino[] = { { .value = 0 } };
 constexpr SemanticTag semanticTagsEspresso[]  = { { .value = 0 } };
 
 // TODO: Configure your options for each endpoint
-storage_value_type StaticSupportedModesManager::coffeeOptions[] = {
+storage_value_type AmebaSupportedModesManager::coffeeOptions[] = {
     buildModeOptionStruct("Black", 0, List<const SemanticTag>(semanticTagsBlack)),
     buildModeOptionStruct("Cappuccino", 4, List<const SemanticTag>(semanticTagsCappucino)),
     buildModeOptionStruct("Espresso", 7, List<const SemanticTag>(semanticTagsEspresso))
 };
-const StaticSupportedModesManager::EndpointSpanPair
-    StaticSupportedModesManager::supportedOptionsByEndpoints[MATTER_DM_MODE_SELECT_CLUSTER_SERVER_ENDPOINT_COUNT] = {
-        EndpointSpanPair(1, Span<storage_value_type>(StaticSupportedModesManager::coffeeOptions)) // Options for Endpoint 1
+const AmebaSupportedModesManager::EndpointSpanPair
+    AmebaSupportedModesManager::supportedOptionsByEndpoints[MATTER_DM_MODE_SELECT_CLUSTER_SERVER_ENDPOINT_COUNT] = {
+        EndpointSpanPair(1, Span<storage_value_type>(AmebaSupportedModesManager::coffeeOptions)) // Options for Endpoint 1
     };
 
-SupportedModesManager::ModeOptionsProvider StaticSupportedModesManager::getModeOptionsProvider(EndpointId endpointId) const
+SupportedModesManager::ModeOptionsProvider AmebaSupportedModesManager::getModeOptionsProvider(EndpointId endpointId) const
 {
     for (auto & endpointSpanPair : supportedOptionsByEndpoints)
     {
@@ -69,7 +69,7 @@ SupportedModesManager::ModeOptionsProvider StaticSupportedModesManager::getModeO
     return ModeOptionsProvider(nullptr, nullptr);
 }
 
-Status StaticSupportedModesManager::getModeOptionByMode(unsigned short endpointId, unsigned char mode,
+Status AmebaSupportedModesManager::getModeOptionByMode(unsigned short endpointId, unsigned char mode,
                                                         const ModeOptionStructType ** dataPtr) const
 {
     auto modeOptionsProvider = this->getModeOptionsProvider(endpointId);

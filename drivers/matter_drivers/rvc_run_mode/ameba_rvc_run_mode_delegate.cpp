@@ -18,7 +18,8 @@
  */
 
 #include <rvc_run_mode/ameba_rvc_run_mode_delegate.h>
-#include <rvc_operational_state/ameba_rvc_operational_state_delegate_impl.h>
+#include <rvc_operational_state/ameba_rvc_operational_state_delegate.h>
+#include <rvc_operational_state/ameba_rvc_operational_state_manager.h>
 
 using namespace chip;
 using namespace chip::app;

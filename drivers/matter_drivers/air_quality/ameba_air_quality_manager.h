@@ -28,10 +28,10 @@ namespace Clusters {
 namespace AirQuality {
 
 // Returns a pointer to the current AirQuality cluster instance
-Instance * GetInstance();
+Instance * GetAirQualityInstance(void);
 
 // Sets the AirQuality cluster instance to the provided pointer
-void SetInstance(Instance * instance);
+void SetAirQualityInstance(Instance * instance);
 
 // Updates the current air quality state to the new value specified by aNewAirQuality
 void SetAirQuality(AirQualityEnum aNewAirQuality);
@@ -40,7 +40,7 @@ void SetAirQuality(AirQualityEnum aNewAirQuality);
 AirQualityEnum CurrentAirQuality(void);
 
 // Performs shutdown or cleanup operations related to the AirQuality cluster
-void Shutdown();
+void Shutdown(void);
 
 } // namespace AirQuality
 } // namespace Clusters

@@ -19,23 +19,27 @@
 
 #pragma once
 
-#include <rvc_clean_mode/ameba_rvc_clean_mode_delegate.h>
-#include <app/clusters/mode-base-server/mode-base-server.h>
+#include <app-common/zap-generated/cluster-objects.h>
+#include <app/clusters/operational-state-server/operational-state-server.h>
+#include <rvc_operational_state/ameba_rvc_operational_state_delegate.h>
+#include <protocols/interaction_model/StatusCode.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
 
-namespace RvcCleanMode {
+namespace RvcOperationalState {
 
-AmebaRvcCleanModeDelegate * GetRvcCleanModeDelegate(void);
-void SetRvcCleanModeDelegate(AmebaRvcCleanModeDelegate * delegate);
-ModeBase::Instance * GetRvcCleanModeInstance(void);
-void SetRvcCleanModeInstance(ModeBase::Instance * instance);
+class AmebaRvcOperationalStateDelegate;
+
+AmebaRvcOperationalStateDelegate * GetRvcOperationalStateDelegate(void);
+void SetRvcOperationalStateDelegate(AmebaRvcOperationalStateDelegate * delegate);
+Instance * GetRvcOperationalStateInstance(void);
+void SetRvcOperationalStateInstance(Instance * instance);
 
 void Shutdown(void);
 
-} // namespace RvcCleanMode
+} // namespace RvcOperationalState
 
 } // namespace Clusters
 } // namespace app

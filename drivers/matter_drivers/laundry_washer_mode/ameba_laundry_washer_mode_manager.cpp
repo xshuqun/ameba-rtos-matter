@@ -27,23 +27,23 @@ using chip::Protocols::InteractionModel::Status;
 static AmebaLaundryWasherModeDelegate * gAmebaLaundryWasherModeDelegate = nullptr;
 static ModeBase::Instance * gAmebaLaundryWasherModeInstance     = nullptr;
 
-LaundryWasherMode::AmebaLaundryWasherModeDelegate * LaundryWasherMode::GetDelegate()
+LaundryWasherMode::AmebaLaundryWasherModeDelegate * LaundryWasherMode::GetLaundryWasherModeDelegate(void)
 {
     return gAmebaLaundryWasherModeDelegate;
 }
 
-void LaundryWasherMode::SetDelegate(AmebaLaundryWasherModeDelegate * delegate)
+void LaundryWasherMode::SetLaundryWasherModeDelegate(AmebaLaundryWasherModeDelegate * delegate)
 {
     VerifyOrDie(gAmebaLaundryWasherModeDelegate == nullptr);
     gAmebaLaundryWasherModeDelegate = delegate;
 }
 
-ModeBase::Instance * LaundryWasherMode::GetInstance(void)
+ModeBase::Instance * LaundryWasherMode::GetLaundryWasherModeInstance(void)
 {
     return gAmebaLaundryWasherModeInstance;
 }
 
-void LaundryWasherMode::SetInstance(ModeBase::Instance * instance)
+void LaundryWasherMode::SetLaundryWasherModeInstance(ModeBase::Instance * instance)
 {
     gAmebaLaundryWasherModeInstance = instance;
 }

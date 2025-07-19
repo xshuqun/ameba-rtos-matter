@@ -21,7 +21,7 @@
 #include <device_energy_management/ameba_energy_management_common_main.h>
 #include <valve_control/ameba_valve_control_delegate.h>
 #include <water_heater_management/ameba_water_heater_management_main.h>
-#include <mode_select/ameba_modes_manager.h>
+#include <mode_select/ameba_mode_select_manager.h>
 #include <temperature_levels/ameba_temperature_levels.h>
 #if CONFIG_ENABLE_AMEBA_TEST_EVENT_TRIGGER
 #include <app/clusters/smoke-co-alarm-server/SmokeCOTestEventTriggerHandler.h>
@@ -41,7 +41,7 @@ using namespace chip::app::Clusters::WaterHeaterManagement;
 
 namespace {
 app::Clusters::TemperatureControl::AppSupportedTemperatureLevelsDelegate sAppSupportedTemperatureLevelsDelegate;
-app::Clusters::ModeSelect::StaticSupportedModesManager sStaticSupportedModesManager;
+app::Clusters::ModeSelect::AmebaSupportedModesManager sAmebaSupportedModesManager;
 app::Clusters::ValveConfigurationAndControl::ValveControlDelegate sValveDelegate;
 } // namespace
 
@@ -58,7 +58,7 @@ void AppTaskInit(void)
 #endif
 
     app::Clusters::TemperatureControl::SetInstance(&sAppSupportedTemperatureLevelsDelegate);
-    app::Clusters::ModeSelect::setSupportedModesManager(&sStaticSupportedModesManager);
+    app::Clusters::ModeSelect::setSupportedModesManager(&sAmebaSupportedModesManager);
     app::Clusters::ValveConfigurationAndControl::SetDefaultDelegate(chip::EndpointId(1), &sValveDelegate);
 
     WaterHeaterApplicationInit();

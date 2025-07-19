@@ -28,10 +28,9 @@ namespace chip {
 namespace app {
 namespace Clusters {
 
-namespace OvenCavityOperationalState {
+namespace OperationalState {
 
-// This is an application level delegate to handle operational state commands according to the specific business logic.
-class AmebaOvenCavityOperationalStateDelegate : public OperationalState::Delegate
+class AmebaOperationalStateDelegate : public OperationalState::Delegate
 {
 private:
     inline static const Clusters::OperationalState::GenericOperationalState opStateList[] = {
@@ -50,7 +49,7 @@ public:
      * Get the countdown time. This attribute is not supported in our example app.
      * @return Null.
      */
-    DataModel::Nullable<uint32_t> GetCountdownTime() override { return DataModel::NullNullable; };
+    DataModel::Nullable<uint32_t> GetCountdownTime(void) override;
 
     /**
      * Fills in the provided GenericOperationalState with the state at index `index` if there is one,
@@ -97,10 +96,13 @@ public:
      * @param[out] get operational error after callback.
      */
     void HandleStopStateCallback(Clusters::OperationalState::GenericOperationalError & err) override;
+
+    uint32_t mRunningTime = 0;
+    uint32_t mPausedTime  = 0;
+    app::DataModel::Nullable<uint32_t> mCountDownTime;
 };
 
-} // namespace OvenCavityOperationalState
-
+} // namespace OperationalState
 } // namespace Clusters
 } // namespace app
 } // namespace chip

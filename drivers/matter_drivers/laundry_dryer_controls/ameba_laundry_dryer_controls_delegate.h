@@ -37,10 +37,6 @@ private:
     static const DrynessLevelEnum supportedDrynessLevelOptions[];
 };
 
-AmebaLaundryDryerControlsDelegate * GetDelegate(void);
-void SetDelegate(AmebaLaundryDryerControlsDelegate * delegate);
-void Shutdown();
-
 } // namespace LaundryDryerControls
 
 } // namespace Clusters

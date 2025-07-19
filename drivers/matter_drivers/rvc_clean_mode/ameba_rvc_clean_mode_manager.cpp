@@ -29,23 +29,23 @@ using chip::Protocols::InteractionModel::Status;
 static AmebaRvcCleanModeDelegate * gAmebaRvcCleanModeDelegate = nullptr;
 static ModeBase::Instance * gAmebaRvcCleanModeInstance     = nullptr;
 
-RvcCleanMode::AmebaRvcCleanModeDelegate * RvcCleanMode::GetDelegate()
+RvcCleanMode::AmebaRvcCleanModeDelegate * RvcCleanMode::GetRvcCleanModeDelegate(void)
 {
     return gAmebaRvcCleanModeDelegate;
 }
 
-void RvcCleanMode::SetDelegate(AmebaRvcCleanModeDelegate * delegate)
+void RvcCleanMode::SetRvcCleanModeDelegate(AmebaRvcCleanModeDelegate * delegate)
 {
     VerifyOrDie(gAmebaRvcCleanModeDelegate == nullptr);
     gAmebaRvcCleanModeDelegate = delegate;
 }
 
-ModeBase::Instance * RvcCleanMode::GetInstance(void)
+ModeBase::Instance * RvcCleanMode::GetRvcCleanModeInstance(void)
 {
     return gAmebaRvcCleanModeInstance;
 }
 
-void RvcCleanMode::SetInstance(ModeBase::Instance * instance)
+void RvcCleanMode::SetRvcCleanModeInstance(ModeBase::Instance * instance)
 {
     gAmebaRvcCleanModeInstance = instance;
 }

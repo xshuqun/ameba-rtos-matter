@@ -31,7 +31,7 @@ const uint8_t ModeNormal      = 0;
 const uint8_t ModeRapidCool   = 1;
 const uint8_t ModeRapidFreeze = 2;
 
-class AmebaTccModeDelegate : public ModeBase::Delegate
+class AmebaRefrigeratorModeDelegate : public ModeBase::Delegate
 {
 private:
     using ModeTagStructType                     = detail::Structs::ModeTagStruct::Type;
@@ -59,7 +59,7 @@ private:
     CHIP_ERROR GetModeTagsByIndex(uint8_t modeIndex, DataModel::List<ModeTagStructType> & tags) override;
 
 public:
-    ~AmebaTccModeDelegate() override = default;
+    ~AmebaRefrigeratorModeDelegate() override = default;
 };
 
 } // namespace RefrigeratorAndTemperatureControlledCabinetMode

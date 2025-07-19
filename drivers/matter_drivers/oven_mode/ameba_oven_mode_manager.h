@@ -28,12 +28,14 @@ namespace Clusters {
 
 namespace OvenMode {
 
-AmebaOvenModeDelegate * GetDelegate();
-void SetDelegate(AmebaOvenModeDelegate * delegate);
-ModeBase::Instance * GetInstance();
-void SetInstance(ModeBase::Instance * instance);
+class AmebaOvenModeDelegate;
 
-void Shutdown();
+AmebaOvenModeDelegate * GetOvenModeDelegate(void);
+void SetOvenModeDelegate(AmebaOvenModeDelegate * delegate);
+ModeBase::Instance * GetOvenModeInstance(void);
+void SetOvenModeInstance(ModeBase::Instance * instance);
+
+void Shutdown(void);
 
 } // namespace OvenMode
 

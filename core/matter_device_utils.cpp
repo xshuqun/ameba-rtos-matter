@@ -59,24 +59,19 @@ static void matter_op_hours_task(void *pvParameters)
     uint8_t ret = 0;
     char key[] = "temp_hour";
 
-    // 1. Check if "temp_hour" exist in NVS
-    if (checkExist(key, key) != DCT_SUCCESS)
+    if (checkExist(key, key) != true)
     {
-        // 2. If "temp_hour" exist, get "temp_hour" and set as "total_hour" into NVS
         if (getPref_u32_new(key, key, &prev_hour) == DCT_SUCCESS)
         {
             ret = matter_set_total_operational_hour(prev_hour);
             if (ret != 0)
             {
-                printf("matter_store_total_operational_hour failed, ret=%d\n", ret);
                 goto loop;
             }
-            // 3. Delete "temp_hour" from NVS
             deleteKey(key, key);
         }
         else
         {
-            printf("getPref_u32_new: %s not found\n", key);
             goto loop;
         }
     }

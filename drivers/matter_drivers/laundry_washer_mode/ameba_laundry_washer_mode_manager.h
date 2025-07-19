@@ -28,12 +28,14 @@ namespace Clusters {
 
 namespace LaundryWasherMode {
 
-AmebaLaundryWasherModeDelegate * GetDelegate();
-void SetDelegate(AmebaLaundryWasherModeDelegate * delegate);
-ModeBase::Instance * GetInstance();
-void SetInstance(ModeBase::Instance * instance);
+class AmebaLaundryWasherModeDelegate;
 
-void Shutdown();
+AmebaLaundryWasherModeDelegate * GetLaundryWasherModeDelegate(void);
+void SetLaundryWasherModeDelegate(AmebaLaundryWasherModeDelegate * delegate);
+ModeBase::Instance * GetLaundryWasherModeInstance();
+void SetLaundryWasherModeInstance(ModeBase::Instance * instance);
+
+void Shutdown(void);
 
 } // namespace LaundryWasherMode
 

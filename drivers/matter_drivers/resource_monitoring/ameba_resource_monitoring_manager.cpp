@@ -38,22 +38,22 @@ AmebaHepaFilterMonitoringDelegate * gHepaFilterDelegate = nullptr;
 ResourceMonitoring::Instance * gHepaFilterInstance = nullptr;
 
 //-- Activated Carbon Filter Monitoring delegate methods
-Instance * ActivatedCarbonFilterMonitoring::GetInstance()
+Instance * ActivatedCarbonFilterMonitoring::GetActivatedCarbonInstance(void)
 {
     return gActivatedCarbonFilterInstance;
 }
 
-void ActivatedCarbonFilterMonitoring::SetInstance(Instance * instance)
+void ActivatedCarbonFilterMonitoring::SetActivatedCarbonInstance(Instance * instance)
 {
     gActivatedCarbonFilterInstance = instance;
 }
 
-ActivatedCarbonFilterMonitoring::AmebaActivatedCarbonFilterMonitoringDelegate * ActivatedCarbonFilterMonitoring::GetDelegate()
+ActivatedCarbonFilterMonitoring::AmebaActivatedCarbonFilterMonitoringDelegate *ActivatedCarbonFilterMonitoring::GetActivatedCarbonDelegate(void)
 {
     return gActivatedCarbonFilterDelegate;
 }
 
-void ActivatedCarbonFilterMonitoring::SetDelegate(AmebaActivatedCarbonFilterMonitoringDelegate * delegate)
+void ActivatedCarbonFilterMonitoring::SetActivatedCarbonDelegate(AmebaActivatedCarbonFilterMonitoringDelegate * delegate)
 {
     VerifyOrDie(gActivatedCarbonFilterDelegate == nullptr);
     gActivatedCarbonFilterDelegate = delegate;
@@ -62,9 +62,9 @@ void ActivatedCarbonFilterMonitoring::SetDelegate(AmebaActivatedCarbonFilterMoni
 void ActivatedCarbonFilterMonitoring::SetCondition(uint8_t value)
 {
     Status status;
-    if (GetInstance() != nullptr)
+    if (GetActivatedCarbonInstance() != nullptr)
     {
-        status = GetInstance()->UpdateCondition(value);
+        status = GetActivatedCarbonInstance()->UpdateCondition(value);
         if (status != Status::Success)
         {
             ChipLogProgress(DeviceLayer, "Update Condition Failed");
@@ -79,9 +79,9 @@ void ActivatedCarbonFilterMonitoring::SetCondition(uint8_t value)
 void ActivatedCarbonFilterMonitoring::SetChangeIndication(ResourceMonitoring::ChangeIndicationEnum aNewChangeIndication)
 {
     Status status;
-    if (GetInstance() != nullptr)
+    if (GetActivatedCarbonInstance() != nullptr)
     {
-        status = GetInstance()->UpdateChangeIndication(aNewChangeIndication);
+        status = GetActivatedCarbonInstance()->UpdateChangeIndication(aNewChangeIndication);
         if (status != Status::Success)
         {
             ChipLogProgress(DeviceLayer, "Change Indication Failed");
@@ -93,7 +93,7 @@ void ActivatedCarbonFilterMonitoring::SetChangeIndication(ResourceMonitoring::Ch
     }
 }
 
-void ActivatedCarbonFilterMonitoring::Shutdown()
+void ActivatedCarbonFilterMonitoring::Shutdown(void)
 {
     if (gActivatedCarbonFilterInstance != nullptr)
     {
@@ -108,22 +108,22 @@ void ActivatedCarbonFilterMonitoring::Shutdown()
 }
 
 // HEPA Filter Monitoring methods
-Instance * HepaFilterMonitoring::GetInstance()
+Instance * HepaFilterMonitoring::GetHepaInstance(void)
 {
     return gHepaFilterInstance;
 }
 
-void HepaFilterMonitoring::SetInstance(Instance * instance)
+void HepaFilterMonitoring::SetHepaInstance(Instance * instance)
 {
     gHepaFilterInstance = instance;
 }
 
-HepaFilterMonitoring::AmebaHepaFilterMonitoringDelegate * HepaFilterMonitoring::GetDelegate()
+HepaFilterMonitoring::AmebaHepaFilterMonitoringDelegate * HepaFilterMonitoring::GetHepaDelegate(void)
 {
     return gHepaFilterDelegate;
 }
 
-void HepaFilterMonitoring::SetDelegate(AmebaHepaFilterMonitoringDelegate * delegate)
+void HepaFilterMonitoring::SetHepaDelegate(AmebaHepaFilterMonitoringDelegate * delegate)
 {
     VerifyOrDie(gHepaFilterDelegate == nullptr);
     gHepaFilterDelegate = delegate;
@@ -132,9 +132,9 @@ void HepaFilterMonitoring::SetDelegate(AmebaHepaFilterMonitoringDelegate * deleg
 void HepaFilterMonitoring::SetCondition(uint8_t value)
 {
     Status status;
-    if (GetInstance() != nullptr)
+    if (GetHepaInstance() != nullptr)
     {
-        status = GetInstance()->UpdateCondition(value);
+        status = GetHepaInstance()->UpdateCondition(value);
         if (status != Status::Success)
         {
             ChipLogProgress(DeviceLayer, "Update Condition Failed");
@@ -149,9 +149,9 @@ void HepaFilterMonitoring::SetCondition(uint8_t value)
 void HepaFilterMonitoring::SetChangeIndication(ResourceMonitoring::ChangeIndicationEnum aNewChangeIndication)
 {
     Status status;
-    if (GetInstance() != nullptr)
+    if (GetHepaInstance() != nullptr)
     {
-        status = GetInstance()->UpdateChangeIndication(aNewChangeIndication);
+        status = GetHepaInstance()->UpdateChangeIndication(aNewChangeIndication);
         if (status != Status::Success)
         {
             ChipLogProgress(DeviceLayer, "Change Indication Failed");
@@ -163,7 +163,7 @@ void HepaFilterMonitoring::SetChangeIndication(ResourceMonitoring::ChangeIndicat
     }
 }
 
-void HepaFilterMonitoring::Shutdown()
+void HepaFilterMonitoring::Shutdown(void)
 {
     if (gHepaFilterInstance != nullptr)
     {

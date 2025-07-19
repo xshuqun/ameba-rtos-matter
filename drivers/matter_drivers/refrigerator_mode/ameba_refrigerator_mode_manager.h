@@ -19,23 +19,25 @@
 
 #pragma once
 
-#include <rvc_clean_mode/ameba_rvc_clean_mode_delegate.h>
+#include <refrigerator_mode/ameba_refrigerator_mode_delegate.h>
 #include <app/clusters/mode-base-server/mode-base-server.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
 
-namespace RvcCleanMode {
+namespace RefrigeratorAndTemperatureControlledCabinetMode {
 
-AmebaRvcCleanModeDelegate * GetRvcCleanModeDelegate(void);
-void SetRvcCleanModeDelegate(AmebaRvcCleanModeDelegate * delegate);
-ModeBase::Instance * GetRvcCleanModeInstance(void);
-void SetRvcCleanModeInstance(ModeBase::Instance * instance);
+class AmebaRefrigeratorModeDelegate;
+
+AmebaRefrigeratorModeDelegate * GetRefrigeratorModeDelegate(void);
+void SetRefrigeratorModeDelegate(AmebaRefrigeratorModeDelegate * delegate);
+ModeBase::Instance * GetRefrigeratorModeInstance(void);
+void SetRefrigeratorModeInstance(ModeBase::Instance * instance);
 
 void Shutdown(void);
 
-} // namespace RvcCleanMode
+} // namespace RefrigeratorAndTemperatureControlledCabinetMode
 
 } // namespace Clusters
 } // namespace app

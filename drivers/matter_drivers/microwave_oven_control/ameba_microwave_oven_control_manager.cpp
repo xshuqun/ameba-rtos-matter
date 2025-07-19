@@ -29,22 +29,22 @@ static MicrowaveOvenControl::AmebaMicrowaveOvenControlDelegate * gAmebaMicrowave
 static MicrowaveOvenControl::Instance * gAmebaMicrowaveOvenControlInstance;
 } // namespace
 
-MicrowaveOvenControl::AmebaMicrowaveOvenControlDelegate * MicrowaveOvenControl::GetDelegate(void)
+MicrowaveOvenControl::AmebaMicrowaveOvenControlDelegate * MicrowaveOvenControl::GetMicrowaveOvenControlDelegate(void)
 {
     return gAmebaMicrowaveOvenControlDelegate;
 }
 
-void MicrowaveOvenControl::SetDelegate(AmebaMicrowaveOvenControlDelegate * delegate)
+void MicrowaveOvenControl::SetMicrowaveOvenControlDelegate(AmebaMicrowaveOvenControlDelegate * delegate)
 {
     gAmebaMicrowaveOvenControlDelegate = delegate;
 }
 
-MicrowaveOvenControl::Instance * MicrowaveOvenControl::GetInstance(void)
+MicrowaveOvenControl::Instance * MicrowaveOvenControl::GetMicrowaveOvenControlInstance(void)
 {
     return gAmebaMicrowaveOvenControlInstance;
 }
 
-void MicrowaveOvenControl::SetInstance(Instance * instance)
+void MicrowaveOvenControl::SetMicrowaveOvenControlInstance(Instance * instance)
 {
     gAmebaMicrowaveOvenControlInstance = instance;
 }

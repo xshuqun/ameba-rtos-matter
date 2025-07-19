@@ -20,7 +20,8 @@
 #include <rvc_clean_mode/ameba_rvc_clean_mode_delegate.h>
 #include <rvc_run_mode/ameba_rvc_run_mode_delegate.h>
 #include <rvc_run_mode/ameba_rvc_run_mode_manager.h>
-#include <rvc_operational_state/ameba_rvc_operational_state_delegate_impl.h>
+#include <rvc_operational_state/ameba_rvc_operational_state_delegate.h>
+#include <rvc_operational_state/ameba_rvc_operational_state_manager.h>
 
 using namespace chip;
 using namespace chip::app;
@@ -45,7 +46,7 @@ void AmebaRvcCleanModeDelegate::HandleChangeToMode(uint8_t NewMode, ModeBase::Co
 {
     if (!gAmebaRvcCleanModeInstance->HasFeature(static_cast<ModeBase::Feature>(RvcCleanMode::Feature::kDirectModeChange)))
     {
-        uint8_t rvcRunCurrentMode = RvcRunMode::GetInstance()->GetCurrentMode();
+        uint8_t rvcRunCurrentMode = RvcRunMode::GetRvcRunModeInstance()->GetCurrentMode();
 
         if (rvcRunCurrentMode != RvcRunMode::ModeIdle)
         {

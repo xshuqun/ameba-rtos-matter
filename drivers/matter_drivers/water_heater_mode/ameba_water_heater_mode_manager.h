@@ -28,12 +28,14 @@ namespace Clusters {
 
 namespace WaterHeaterMode {
 
-AmebaWaterHeaterModeDelegate * GetDelegate();
-void SetDelegate(AmebaWaterHeaterModeDelegate * delegate);
-ModeBase::Instance * GetInstance();
-void SetInstance(ModeBase::Instance * instance);
+class AmebaWaterHeaterModeDelegate;
 
-void Shutdown();
+AmebaWaterHeaterModeDelegate * GetWaterHeaterModeDelegate(void);
+void SetWaterHeaterModeDelegate(AmebaWaterHeaterModeDelegate * delegate);
+ModeBase::Instance * GetWaterHeaterModeInstance(void);
+void SetWaterHeaterModeInstance(ModeBase::Instance * instance);
+
+void Shutdown(void);
 
 } // namespace WaterHeaterMode
 

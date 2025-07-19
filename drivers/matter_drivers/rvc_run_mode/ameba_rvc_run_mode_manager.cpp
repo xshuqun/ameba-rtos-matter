@@ -29,23 +29,23 @@ using chip::Protocols::InteractionModel::Status;
 static AmebaRvcRunModeDelegate * gAmebaRvcRunModeDelegate = nullptr;
 static ModeBase::Instance * gAmebaRvcRunModeInstance     = nullptr;
 
-RvcRunMode::AmebaRvcRunModeDelegate * RvcRunMode::GetDelegate()
+RvcRunMode::AmebaRvcRunModeDelegate * RvcRunMode::GetRvcRunModeDelegate(void)
 {
     return gAmebaRvcRunModeDelegate;
 }
 
-void RvcRunMode::SetDelegate(AmebaRvcRunModeDelegate * delegate)
+void RvcRunMode::SetRvcRunModeDelegate(AmebaRvcRunModeDelegate * delegate)
 {
     VerifyOrDie(gAmebaRvcRunModeDelegate == nullptr);
     gAmebaRvcRunModeDelegate = delegate;
 }
 
-ModeBase::Instance * RvcRunMode::GetInstance(void)
+ModeBase::Instance * RvcRunMode::GetRvcRunModeInstance(void)
 {
     return gAmebaRvcRunModeInstance;
 }
 
-void RvcRunMode::SetInstance(ModeBase::Instance * instance)
+void RvcRunMode::SetRvcRunModeInstance(ModeBase::Instance * instance)
 {
     gAmebaRvcRunModeInstance = instance;
 }

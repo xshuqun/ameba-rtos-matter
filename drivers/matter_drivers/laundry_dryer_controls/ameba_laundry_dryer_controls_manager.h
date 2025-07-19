@@ -30,9 +30,9 @@ namespace LaundryDryerControls {
 
 class AmebaLaundryDryerControlsDelegate;
 
-AmebaLaundryDryerControlsDelegate * GetDelegate(void);
-void SetDelegate(AmebaLaundryDryerControlsDelegate * delegate);
-void Shutdown();
+AmebaLaundryDryerControlsDelegate * GetLaundryDryerControlsDelegate(void);
+void SetLaundryDryerControlsDelegate(AmebaLaundryDryerControlsDelegate * delegate);
+void Shutdown(void);
 
 } // namespace LaundryDryerControls
 

@@ -465,9 +465,9 @@ Status WaterHeaterManagementDelegate::DetermineIfChangingHeatingState(HeatingOp 
 
     if (!HasWaterTemperatureReachedTarget())
     {
-        VerifyOrReturnError(WaterHeaterMode::GetInstance() != nullptr, Status::InvalidInState);
+        VerifyOrReturnError(WaterHeaterMode::GetWaterHeaterModeInstance() != nullptr, Status::InvalidInState);
 
-        uint8_t mode = WaterHeaterMode::GetInstance()->GetCurrentMode();
+        uint8_t mode = WaterHeaterMode::GetWaterHeaterModeInstance()->GetCurrentMode();
 
         // The water in the tank is not at the target temperature. See if heating is currently off
         if (mHeatDemand.Raw() == 0)
@@ -508,15 +508,15 @@ Status WaterHeaterManagementDelegate::DetermineIfChangingHeatingState(HeatingOp 
 
 Status WaterHeaterManagementDelegate::SetWaterHeaterMode(uint8_t modeValue)
 {
-    VerifyOrReturnError(WaterHeaterMode::GetInstance() != nullptr, Status::InvalidInState);
+    VerifyOrReturnError(WaterHeaterMode::GetWaterHeaterModeInstance() != nullptr, Status::InvalidInState);
 
-    if (!WaterHeaterMode::GetInstance()->IsSupportedMode(modeValue))
+    if (!WaterHeaterMode::GetWaterHeaterModeInstance()->IsSupportedMode(modeValue))
     {
         ChipLogError(AppServer, "SetWaterHeaterMode bad mode");
         return Status::ConstraintError;
     }
 
-    Status status = WaterHeaterMode::GetInstance()->UpdateCurrentMode(modeValue);
+    Status status = WaterHeaterMode::GetWaterHeaterModeInstance()->UpdateCurrentMode(modeValue);
     if (status != Status::Success)
     {
         ChipLogError(AppServer, "SetWaterHeaterMode updateMode failed 0x%02x", to_underlying(status));

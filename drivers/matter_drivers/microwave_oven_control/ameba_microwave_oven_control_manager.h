@@ -35,11 +35,11 @@ namespace MicrowaveOvenControl {
 
 class AmebaMicrowaveOvenControlDelegate;
 
-AmebaMicrowaveOvenControlDelegate * GetDelegate(void);
-void SetDelegate(AmebaMicrowaveOvenControlDelegate * delegate);
-Instance * GetInstance();
-void SetInstance(Instance * instance);
-void Shutdown();
+AmebaMicrowaveOvenControlDelegate * GetMicrowaveOvenControlDelegate(void);
+void SetMicrowaveOvenControlDelegate(AmebaMicrowaveOvenControlDelegate * delegate);
+Instance * GetMicrowaveOvenControlInstance();
+void SetMicrowaveOvenControlInstance(Instance * instance);
+void Shutdown(void);
 
 } // namespace MicrowaveOvenControl
 

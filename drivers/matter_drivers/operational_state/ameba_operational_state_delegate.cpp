@@ -1,7 +1,8 @@
 /*
+ *    This module is a confidential and proprietary property of RealTek and
+ *    possession or use of this module requires written permission of RealTek.
  *
- *    Copyright (c) 2023 Project CHIP Authors
- *    All rights reserved.
+ *    Copyright(c) 2025, Realtek Semiconductor Corporation. All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,18 +16,19 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-#include <operational_state/ameba_operational_state_delegate_impl.h>
+
+#include <operational_state/ameba_operational_state_delegate.h>
+#include <operational_state/ameba_operational_state_manager.h>
 #include <platform/CHIPDeviceLayer.h>
 
 using namespace chip;
 using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::OperationalState;
-using namespace chip::app::Clusters::RvcOperationalState;
 
 static void onOperationalStateTimerTick(System::Layer * systemLayer, void * data);
 
-DataModel::Nullable<uint32_t> GenericOperationalStateDelegateImpl::GetCountdownTime()
+DataModel::Nullable<uint32_t> AmebaOperationalStateDelegate::GetCountdownTime(void)
 {
     if (mCountDownTime.IsNull())
         return DataModel::NullNullable;
@@ -34,7 +36,7 @@ DataModel::Nullable<uint32_t> GenericOperationalStateDelegateImpl::GetCountdownT
     return DataModel::MakeNullable((uint32_t) (mCountDownTime.Value() - mRunningTime));
 }
 
-CHIP_ERROR GenericOperationalStateDelegateImpl::GetOperationalStateAtIndex(size_t index, GenericOperationalState & operationalState)
+CHIP_ERROR AmebaOperationalStateDelegate::GetOperationalStateAtIndex(size_t index, GenericOperationalState & operationalState)
 {
     if (index >= mOperationalStateList.size())
     {
@@ -44,7 +46,7 @@ CHIP_ERROR GenericOperationalStateDelegateImpl::GetOperationalStateAtIndex(size_
     return CHIP_NO_ERROR;
 }
 
-CHIP_ERROR GenericOperationalStateDelegateImpl::GetOperationalPhaseAtIndex(size_t index, MutableCharSpan & operationalPhase)
+CHIP_ERROR AmebaOperationalStateDelegate::GetOperationalPhaseAtIndex(size_t index, MutableCharSpan & operationalPhase)
 {
     if (index >= mOperationalPhaseList.size())
     {
@@ -53,7 +55,7 @@ CHIP_ERROR GenericOperationalStateDelegateImpl::GetOperationalPhaseAtIndex(size_
     return CopyCharSpanToMutableCharSpan(mOperationalPhaseList[index], operationalPhase);
 }
 
-void GenericOperationalStateDelegateImpl::HandlePauseStateCallback(GenericOperationalError & err)
+void AmebaOperationalStateDelegate::HandlePauseStateCallback(GenericOperationalError & err)
 {
     // placeholder implementation
     auto error = GetInstance()->SetOperationalState(to_underlying(OperationalState::OperationalStateEnum::kPaused));
@@ -68,7 +70,7 @@ void GenericOperationalStateDelegateImpl::HandlePauseStateCallback(GenericOperat
     }
 }
 
-void GenericOperationalStateDelegateImpl::HandleResumeStateCallback(GenericOperationalError & err)
+void AmebaOperationalStateDelegate::HandleResumeStateCallback(GenericOperationalError & err)
 {
     // placeholder implementation
     auto error = GetInstance()->SetOperationalState(to_underlying(OperationalStateEnum::kRunning));
@@ -83,7 +85,7 @@ void GenericOperationalStateDelegateImpl::HandleResumeStateCallback(GenericOpera
     }
 }
 
-void GenericOperationalStateDelegateImpl::HandleStartStateCallback(GenericOperationalError & err)
+void AmebaOperationalStateDelegate::HandleStartStateCallback(GenericOperationalError & err)
 {
     OperationalState::GenericOperationalError current_err(to_underlying(OperationalState::ErrorStateEnum::kNoError));
     GetInstance()->GetCurrentOperationalError(current_err);
@@ -108,7 +110,7 @@ void GenericOperationalStateDelegateImpl::HandleStartStateCallback(GenericOperat
     }
 }
 
-void GenericOperationalStateDelegateImpl::HandleStopStateCallback(GenericOperationalError & err)
+void AmebaOperationalStateDelegate::HandleStopStateCallback(GenericOperationalError & err)
 {
     // placeholder implementation
     auto error = GetInstance()->SetOperationalState(to_underlying(OperationalStateEnum::kStopped));
@@ -138,7 +140,7 @@ void GenericOperationalStateDelegateImpl::HandleStopStateCallback(GenericOperati
 
 static void onOperationalStateTimerTick(System::Layer * systemLayer, void * data)
 {
-    GenericOperationalStateDelegateImpl * delegate = reinterpret_cast<GenericOperationalStateDelegateImpl *>(data);
+    AmebaOperationalStateDelegate * delegate = OperationalState::GetOperationalStateDelegate();
 
     OperationalState::Instance * instance = OperationalState::GetOperationalStateInstance();
     OperationalState::OperationalStateEnum state =
@@ -170,44 +172,5 @@ static void onOperationalStateTimerTick(System::Layer * systemLayer, void * data
     else
     {
         (void) DeviceLayer::SystemLayer().CancelTimer(onOperationalStateTimerTick, delegate);
-    }
-}
-
-// Init Operational State cluster
-
-static OperationalState::Instance * gOperationalStateInstance = nullptr;
-static OperationalStateDelegate * gOperationalStateDelegate   = nullptr;
-
-OperationalState::Instance * OperationalState::GetOperationalStateInstance()
-{
-    return gOperationalStateInstance;
-}
-
-void OperationalState::SetOperationalStateInstance(Instance * instance)
-{
-    gOperationalStateInstance = instance;
-}
-
-OperationalStateDelegate * OperationalState::GetOperationalStateDelegate()
-{
-    return gOperationalStateDelegate;
-}
-
-void OperationalState::SetOperationalStateDelegate(OperationalStateDelegate * delegate)
-{
-    gOperationalStateDelegate = delegate;
-}
-
-void OperationalState::Shutdown()
-{
-    if (gOperationalStateInstance != nullptr)
-    {
-        delete gOperationalStateInstance;
-        gOperationalStateInstance = nullptr;
-    }
-    if (gOperationalStateDelegate != nullptr)
-    {
-        delete gOperationalStateDelegate;
-        gOperationalStateDelegate = nullptr;
     }
 }

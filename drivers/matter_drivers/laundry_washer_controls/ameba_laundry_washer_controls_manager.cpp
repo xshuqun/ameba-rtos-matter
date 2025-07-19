@@ -27,12 +27,12 @@ using namespace chip::app::Clusters::LaundryWasherControls;
 
 static AmebaLaundryWasherControlsDelegate * gAmebaLaundryWasherControlsDelegate = nullptr;
 
-LaundryWasherControls::AmebaLaundryWasherControlsDelegate * LaundryWasherControls::GetDelegate(void)
+LaundryWasherControls::AmebaLaundryWasherControlsDelegate * LaundryWasherControls::GetLaundryWasherControlsDelegate(void)
 {
     return gAmebaLaundryWasherControlsDelegate;
 }
 
-void LaundryWasherControls::SetDelegate(AmebaLaundryWasherControlsDelegate * delegate)
+void LaundryWasherControls::SetLaundryWasherControlsDelegate(AmebaLaundryWasherControlsDelegate * delegate)
 {
     gAmebaLaundryWasherControlsDelegate = delegate;
 }

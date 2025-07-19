@@ -30,9 +30,9 @@ namespace LaundryWasherControls {
 
 class AmebaLaundryWasherControlsDelegate;
 
-AmebaLaundryWasherControlsDelegate * GetDelegate(void);
-void SetDelegate(AmebaLaundryWasherControlsDelegate * delegate);
-void Shutdown();
+AmebaLaundryWasherControlsDelegate * GetLaundryWasherControlsDelegate(void);
+void SetLaundryWasherControlsDelegate(AmebaLaundryWasherControlsDelegate * delegate);
+void Shutdown(void);
 
 } // namespace LaundryWasherControls
 

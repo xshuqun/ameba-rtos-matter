@@ -28,12 +28,12 @@ namespace {
 static Instance * gAmebaAirQualityInstance = nullptr;
 } // namespace
 
-Instance * AirQuality::GetInstance()
+Instance * AirQuality::GetAirQualityInstance(void)
 {
     return gAmebaAirQualityInstance;
 }
 
-void AirQuality::SetInstance(Instance * instance)
+void AirQuality::SetAirQualityInstance(Instance * instance)
 {
     gAmebaAirQualityInstance = instance;
 }

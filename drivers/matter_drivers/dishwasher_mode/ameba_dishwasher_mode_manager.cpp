@@ -27,23 +27,23 @@ using chip::Protocols::InteractionModel::Status;
 static AmebaDishwasherModeDelegate * gAmebaDishwasherModeDelegate = nullptr;
 static ModeBase::Instance * gAmebaDishwasherModeInstance     = nullptr;
 
-DishwasherMode::AmebaDishwasherModeDelegate * DishwasherMode::GetDelegate()
+DishwasherMode::AmebaDishwasherModeDelegate * DishwasherMode::GetDishwasherModeDelegate()
 {
     return gAmebaDishwasherModeDelegate;
 }
 
-void DishwasherMode::SetDelegate(AmebaDishwasherModeDelegate * delegate)
+void DishwasherMode::SetDishwasherModeDelegate(AmebaDishwasherModeDelegate * delegate)
 {
     VerifyOrDie(gAmebaDishwasherModeDelegate == nullptr);
     gAmebaDishwasherModeDelegate = delegate;
 }
 
-ModeBase::Instance * DishwasherMode::GetInstance(void)
+ModeBase::Instance * DishwasherMode::GetDishwasherModeInstance(void)
 {
     return gAmebaDishwasherModeInstance;
 }
 
-void DishwasherMode::SetInstance(ModeBase::Instance * instance)
+void DishwasherMode::SetDishwasherModeInstance(ModeBase::Instance * instance)
 {
     gAmebaDishwasherModeInstance = instance;
 }

@@ -90,7 +90,7 @@ CHIP_ERROR ManualRVCRunModeSetModeCommandHandler(int argc, char ** argv)
         return ManualRVCRunModeCommandHelpHandler(argc, argv);
     }
     Protocols::InteractionModel::Status status;
-    status = RvcRunMode::GetInstance()->UpdateCurrentMode((uint8_t) atoi(argv[0]));
+    status = RvcRunMode::GetRvcRunModeInstance()->UpdateCurrentMode((uint8_t) atoi(argv[0]));
     if (status != Protocols::InteractionModel::Status::Success)
     {
         ChipLogError(DeviceLayer, "ManualRVCRunModeSetModeCommandHandler Error!");
@@ -126,7 +126,7 @@ CHIP_ERROR ManualRVCCleanModeSetModeCommandHandler(int argc, char ** argv)
         return ManualRVCCleanModeCommandHelpHandler(argc, argv);
     }
     Protocols::InteractionModel::Status status;
-    status = RvcCleanMode::GetInstance()->UpdateCurrentMode((uint8_t) atoi(argv[0]));
+    status = RvcCleanMode::GetRvcCleanModeInstance()->UpdateCurrentMode((uint8_t) atoi(argv[0]));
     if (status != Protocols::InteractionModel::Status::Success)
     {
         ChipLogError(DeviceLayer, "ManualRVCCleanModeSetModeCommandHandler Error!");

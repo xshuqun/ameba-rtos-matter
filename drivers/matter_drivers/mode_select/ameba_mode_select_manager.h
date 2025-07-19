@@ -29,7 +29,7 @@ namespace Clusters {
  
 namespace ModeSelect {
 
-class StaticSupportedModesManager : public SupportedModesManager
+class AmebaSupportedModesManager : public SupportedModesManager
 {
     using ModeOptionStructType = Structs::ModeOptionStruct::Type;
     using storage_value_type   = const ModeOptionStructType;
@@ -55,8 +55,8 @@ public:
     Protocols::InteractionModel::Status getModeOptionByMode(EndpointId endpointId, uint8_t mode,
                                                             const ModeOptionStructType ** dataPtr) const override;
 
-    ~StaticSupportedModesManager(){};
-    StaticSupportedModesManager() {}
+    ~AmebaSupportedModesManager(){};
+    AmebaSupportedModesManager() {}
 };
 
 } // namespace ModeSelect

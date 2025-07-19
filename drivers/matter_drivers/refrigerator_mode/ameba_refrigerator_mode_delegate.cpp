@@ -18,7 +18,7 @@
  */
 
 #include <app-common/zap-generated/attributes/Accessors.h>
-#include <refrigerator_mode/ameba_tcc_mode_delegate.h>
+#include <refrigerator_mode/ameba_refrigerator_mode_delegate.h>
 
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::RefrigeratorAndTemperatureControlledCabinetMode;
@@ -28,17 +28,17 @@ template <typename T>
 using List              = chip::app::DataModel::List<T>;
 using ModeTagStructType = chip::app::Clusters::detail::Structs::ModeTagStruct::Type;
 
-CHIP_ERROR AmebaTccModeDelegate::Init()
+CHIP_ERROR AmebaRefrigeratorModeDelegate::Init()
 {
     return CHIP_NO_ERROR;
 }
 
-void AmebaTccModeDelegate::HandleChangeToMode(uint8_t NewMode, ModeBase::Commands::ChangeToModeResponse::Type & response)
+void AmebaRefrigeratorModeDelegate::HandleChangeToMode(uint8_t NewMode, ModeBase::Commands::ChangeToModeResponse::Type & response)
 {
     response.status = to_underlying(ModeBase::StatusCode::kSuccess);
 }
 
-CHIP_ERROR AmebaTccModeDelegate::GetModeLabelByIndex(uint8_t modeIndex, chip::MutableCharSpan & label)
+CHIP_ERROR AmebaRefrigeratorModeDelegate::GetModeLabelByIndex(uint8_t modeIndex, chip::MutableCharSpan & label)
 {
     if (modeIndex >= MATTER_ARRAY_SIZE(kModeOptions))
     {
@@ -47,7 +47,7 @@ CHIP_ERROR AmebaTccModeDelegate::GetModeLabelByIndex(uint8_t modeIndex, chip::Mu
     return chip::CopyCharSpanToMutableCharSpan(kModeOptions[modeIndex].label, label);
 }
 
-CHIP_ERROR AmebaTccModeDelegate::GetModeValueByIndex(uint8_t modeIndex, uint8_t & value)
+CHIP_ERROR AmebaRefrigeratorModeDelegate::GetModeValueByIndex(uint8_t modeIndex, uint8_t & value)
 {
     if (modeIndex >= MATTER_ARRAY_SIZE(kModeOptions))
     {
@@ -57,7 +57,7 @@ CHIP_ERROR AmebaTccModeDelegate::GetModeValueByIndex(uint8_t modeIndex, uint8_t 
     return CHIP_NO_ERROR;
 }
 
-CHIP_ERROR AmebaTccModeDelegate::GetModeTagsByIndex(uint8_t modeIndex, List<ModeTagStructType> & tags)
+CHIP_ERROR AmebaRefrigeratorModeDelegate::GetModeTagsByIndex(uint8_t modeIndex, List<ModeTagStructType> & tags)
 {
     if (modeIndex >= MATTER_ARRAY_SIZE(kModeOptions))
     {

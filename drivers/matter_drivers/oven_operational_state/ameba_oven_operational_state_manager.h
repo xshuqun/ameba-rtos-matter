@@ -19,23 +19,27 @@
 
 #pragma once
 
-#include <refrigerator_mode/ameba_tcc_mode_delegate.h>
-#include <app/clusters/mode-base-server/mode-base-server.h>
+#include <app-common/zap-generated/cluster-objects.h>
+#include <app/clusters/operational-state-server/operational-state-server.h>
+#include <oven_operational_state/ameba_oven_operational_state_delegate.h>
+#include <protocols/interaction_model/StatusCode.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
 
-namespace RefrigeratorAndTemperatureControlledCabinetMode {
+namespace OvenCavityOperationalState {
 
-AmebaTccModeDelegate * GetDelegate();
-void SetDelegate(AmebaTccModeDelegate * delegate);
-ModeBase::Instance * GetInstance();
-void SetInstance(ModeBase::Instance * instance);
+class AmebaOvenCavityOperationalStateDelegate;
 
-void Shutdown();
+AmebaOvenCavityOperationalStateDelegate * GetOvenCavityOperationalStateDelegate(void);
+void SetOvenCavityOperationalStateDelegate(AmebaOvenCavityOperationalStateDelegate * delegate);
+Instance * GetOvenCavityOperationalStateInstance(void);
+void SetOvenCavityOperationalStateInstance(Instance * instance);
 
-} // namespace RefrigeratorAndTemperatureControlledCabinetMode
+void Shutdown(void);
+
+} // namespace OvenCavityOperationalState
 
 } // namespace Clusters
 } // namespace app

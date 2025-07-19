@@ -28,12 +28,14 @@ namespace Clusters {
 
 namespace MicrowaveOvenMode {
 
-AmebaMicrowaveOvenModeDelegate * GetDelegate();
-void SetDelegate(AmebaMicrowaveOvenModeDelegate * delegate);
-ModeBase::Instance * GetInstance();
-void SetInstance(ModeBase::Instance * instance);
+class AmebaMicrowaveOvenModeDelegate;
 
-void Shutdown();
+AmebaMicrowaveOvenModeDelegate * GetMicrowaveOvenModeDelegate(void);
+void SetMicrowaveOvenModeDelegate(AmebaMicrowaveOvenModeDelegate * delegate);
+ModeBase::Instance * GetMicrowaveOvenModeInstance(void);
+void SetMicrowaveOvenModeInstance(ModeBase::Instance * instance);
+
+void Shutdown(void);
 
 } // namespace MicrowaveOvenMode
 

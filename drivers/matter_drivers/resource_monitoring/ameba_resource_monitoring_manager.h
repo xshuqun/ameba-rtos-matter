@@ -32,14 +32,14 @@ namespace ActivatedCarbonFilterMonitoring {
 
 class AmebaActivatedCarbonFilterMonitoringDelegate;
 
-ResourceMonitoring::Instance * GetInstance(void);
-void SetInstance(chip::app::Clusters::ResourceMonitoring::Instance * instance);
-AmebaActivatedCarbonFilterMonitoringDelegate * GetDelegate();
-void SetDelegate(AmebaActivatedCarbonFilterMonitoringDelegate * delegate);
+AmebaActivatedCarbonFilterMonitoringDelegate * GetActivatedCarbonDelegate(void);
+void SetActivatedCarbonDelegate(AmebaActivatedCarbonFilterMonitoringDelegate * delegate);
+ResourceMonitoring::Instance * GetActivatedCarbonInstance(void);
+void SetActivatedCarbonInstance(chip::app::Clusters::ResourceMonitoring::Instance * instance);
 
 void SetCondition(uint8_t value);
 void SetChangeIndication(ResourceMonitoring::ChangeIndicationEnum aNewChangeIndication);
-void Shutdown();
+void Shutdown(void);
 
 } // namespace ActivatedCarbonFilterMonitoring
 
@@ -47,14 +47,14 @@ namespace HepaFilterMonitoring {
 
 class AmebaHepaFilterMonitoringDelegate;
 
-ResourceMonitoring::Instance * GetInstance(void);
-void SetInstance(chip::app::Clusters::ResourceMonitoring::Instance * instance);
-AmebaHepaFilterMonitoringDelegate * GetDelegate();
-void SetDelegate(AmebaHepaFilterMonitoringDelegate * delegate);
+AmebaHepaFilterMonitoringDelegate * GetHepaDelegate(void);
+void SetHepaDelegate(AmebaHepaFilterMonitoringDelegate * delegate);
+ResourceMonitoring::Instance * GetHepaInstance(void);
+void SetHepaInstance(chip::app::Clusters::ResourceMonitoring::Instance * instance);
 
 void SetCondition(uint8_t value);
 void SetChangeIndication(ResourceMonitoring::ChangeIndicationEnum aNewChangeIndication);
-void Shutdown();
+void Shutdown(void);
 
 } // namespace HepaFilterMonitoring
 

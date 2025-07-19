@@ -29,23 +29,23 @@ using chip::Protocols::InteractionModel::Status;
 static AmebaMicrowaveOvenModeDelegate * gAmebaMicrowaveOvenModeDelegate = nullptr;
 static ModeBase::Instance * gAmebaMicrowaveOvenModeInstance     = nullptr;
 
-MicrowaveOvenMode::AmebaMicrowaveOvenModeDelegate * MicrowaveOvenMode::GetDelegate()
+MicrowaveOvenMode::AmebaMicrowaveOvenModeDelegate * MicrowaveOvenMode::GetMicrowaveOvenModeDelegate(void)
 {
     return gAmebaMicrowaveOvenModeDelegate;
 }
 
-void MicrowaveOvenMode::SetDelegate(AmebaMicrowaveOvenModeDelegate * delegate)
+void MicrowaveOvenMode::SetMicrowaveOvenModeDelegate(AmebaMicrowaveOvenModeDelegate * delegate)
 {
     VerifyOrDie(gAmebaMicrowaveOvenModeDelegate == nullptr);
     gAmebaMicrowaveOvenModeDelegate = delegate;
 }
 
-ModeBase::Instance * MicrowaveOvenMode::GetInstance(void)
+ModeBase::Instance * MicrowaveOvenMode::GetMicrowaveOvenModeInstance(void)
 {
     return gAmebaMicrowaveOvenModeInstance;
 }
 
-void MicrowaveOvenMode::SetInstance(ModeBase::Instance * instance)
+void MicrowaveOvenMode::SetMicrowaveOvenModeInstance(ModeBase::Instance * instance)
 {
     gAmebaMicrowaveOvenModeInstance = instance;
 }

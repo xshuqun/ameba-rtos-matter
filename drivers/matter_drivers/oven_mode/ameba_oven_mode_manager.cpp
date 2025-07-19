@@ -27,23 +27,23 @@ using chip::Protocols::InteractionModel::Status;
 static AmebaOvenModeDelegate * gAmebaOvenModeDelegate = nullptr;
 static ModeBase::Instance * gAmebaOvenModeInstance     = nullptr;
 
-OvenMode::AmebaOvenModeDelegate * OvenMode::GetDelegate()
+OvenMode::AmebaOvenModeDelegate * OvenMode::GetOvenModeDelegate(void)
 {
     return gAmebaOvenModeDelegate;
 }
 
-void OvenMode::SetDelegate(AmebaOvenModeDelegate * delegate)
+void OvenMode::SetOvenModeDelegate(AmebaOvenModeDelegate * delegate)
 {
     VerifyOrDie(gAmebaOvenModeDelegate == nullptr);
     gAmebaOvenModeDelegate = delegate;
 }
 
-ModeBase::Instance * OvenMode::GetInstance(void)
+ModeBase::Instance * OvenMode::GetOvenModeInstance(void)
 {
     return gAmebaOvenModeInstance;
 }
 
-void OvenMode::SetInstance(ModeBase::Instance * instance)
+void OvenMode::SetOvenModeInstance(ModeBase::Instance * instance)
 {
     gAmebaOvenModeInstance = instance;
 }

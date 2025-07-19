@@ -65,21 +65,34 @@
 #include <microwave_oven_mode/ameba_microwave_oven_mode_delegate.h>
 #include <microwave_oven_mode/ameba_microwave_oven_mode_manager.h>
 
-/* Operational State */
+/* Occupancy Sensing Cluster */
+#include <app/clusters/occupancy-sensor-server/occupancy-sensor-server.h>
+#include <occupancy_sensing/ameba_occupancy_sensing_manager.h>
+
+/* Operational State Cluster */
 #include <app/clusters/operational-state-server/operational-state-server.h>
-#include <operational_state/ameba_operational_state_delegate_impl.h>
+#include <operational_state/ameba_operational_state_delegate.h>
+#include <operational_state/ameba_operational_state_manager.h>
+
+/* Oven Cavity Operaional State Cluster */
+#include <oven_operational_state/ameba_oven_operational_state_delegate.h>
+#include <oven_operational_state/ameba_oven_operational_state_manager.h>
 
 /* Oven Mode Cluster */
 #include <oven_mode/ameba_oven_mode_delegate.h>
 #include <oven_mode/ameba_oven_mode_manager.h>
 
 /* Refrigerator and Temperature Controlled Cabinet Mode Cluster */
-#include <refrigerator_mode/ameba_tcc_mode_delegate.h>
-#include <refrigerator_mode/ameba_tcc_mode_manager.h>
+#include <refrigerator_mode/ameba_refrigerator_mode_delegate.h>
+#include <refrigerator_mode/ameba_refrigerator_mode_manager.h>
 
 /* RVC Clean Mode Cluster */
 #include <rvc_clean_mode/ameba_rvc_clean_mode_delegate.h>
 #include <rvc_clean_mode/ameba_rvc_clean_mode_manager.h>
+
+/* RVC Operaional State Cluster */
+#include <rvc_operational_state/ameba_rvc_operational_state_delegate.h>
+#include <rvc_operational_state/ameba_rvc_operational_state_manager.h>
 
 /* RVC Run Mode Cluster */
 #include <rvc_run_mode/ameba_rvc_run_mode_delegate.h>

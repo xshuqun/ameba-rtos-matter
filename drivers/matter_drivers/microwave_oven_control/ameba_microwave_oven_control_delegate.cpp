@@ -20,7 +20,8 @@
 #include <microwave_oven_control/ameba_microwave_oven_control_delegate.h>
 #include <microwave_oven_control/ameba_microwave_oven_control_manager.h>
 #include <microwave_oven_mode/ameba_microwave_oven_mode_manager.h>
-#include <operational_state/ameba_operational_state_delegate_impl.h>
+#include <operational_state/ameba_operational_state_delegate.h>
+#include <operational_state/ameba_operational_state_manager.h>
 
 using namespace chip;
 using namespace chip::app;
@@ -40,12 +41,12 @@ AmebaMicrowaveOvenControlDelegate::HandleSetCookingParametersCallback(uint8_t co
 {
     Status status;
     // Update cook mode.
-    if ((status = MicrowaveOvenMode::GetInstance()->UpdateCurrentMode(cookMode)) != Status::Success)
+    if ((status = MicrowaveOvenMode::GetMicrowaveOvenModeInstance()->UpdateCurrentMode(cookMode)) != Status::Success)
     {
         return status;
     }
 
-    MicrowaveOvenControl::GetInstance()->SetCookTimeSec(cookTimeSec);
+    MicrowaveOvenControl::GetMicrowaveOvenControlInstance()->SetCookTimeSec(cookTimeSec);
 
     // If using power as number, check if powerSettingNum has value before setting the power number.
     // If powerSetting field is missing in the command, the powerSettingNum passed here is handled to the max value
@@ -73,7 +74,7 @@ AmebaMicrowaveOvenControlDelegate::HandleSetCookingParametersCallback(uint8_t co
 
 Protocols::InteractionModel::Status AmebaMicrowaveOvenControlDelegate::HandleModifyCookTimeSecondsCallback(uint32_t finalCookTimeSec)
 {
-    MicrowaveOvenControl::GetInstance()->SetCookTimeSec(finalCookTimeSec);
+    MicrowaveOvenControl::GetMicrowaveOvenControlInstance()->SetCookTimeSec(finalCookTimeSec);
     return Status::Success;
 }
 

@@ -19,23 +19,21 @@
 
 #pragma once
 
-#include <rvc_clean_mode/ameba_rvc_clean_mode_delegate.h>
 #include <app/clusters/mode-base-server/mode-base-server.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
 
-namespace RvcCleanMode {
+namespace OccupancySensing {
 
-AmebaRvcCleanModeDelegate * GetRvcCleanModeDelegate(void);
-void SetRvcCleanModeDelegate(AmebaRvcCleanModeDelegate * delegate);
-ModeBase::Instance * GetRvcCleanModeInstance(void);
-void SetRvcCleanModeInstance(ModeBase::Instance * instance);
+Instance * GetOccupancySensingInstance(void);
+void SetOccupancySensingInstance(Instance * instance);
 
 void Shutdown(void);
+CHIP_ERROR AmebaOccupancySensingInit(EndpointId endpointId);
 
-} // namespace RvcCleanMode
+} // namespace LaundryWasherMode
 
 } // namespace Clusters
 } // namespace app

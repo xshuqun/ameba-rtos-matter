@@ -15,6 +15,8 @@
 extern void matter_op_hours_wrapper(void);
 #endif
 
+extern void matter_ameba_device_provider_init(void);
+
 #if defined(CONFIG_EXAMPLE_MATTER_CHIPTEST) && CONFIG_EXAMPLE_MATTER_CHIPTEST
 extern void ChipTest(void);
 extern void AppTaskInit(void);
@@ -46,6 +48,8 @@ static void example_matter_task_thread(void *pvParameters)
 #if defined(CONFIG_ENABLE_AMEBA_OPHOURS) && (CONFIG_ENABLE_AMEBA_OPHOURS == 1)
     matter_op_hours_wrapper();
 #endif
+    vTaskDelay(50);
+    matter_ameba_device_provider_init();
 
     vTaskDelete(NULL);
     return;

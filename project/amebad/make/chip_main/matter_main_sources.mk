@@ -38,8 +38,6 @@ IFLAGS += -I$(CHIPDIR)/zzz_generated/app-common
 CSRC += $(CHIPDIR)/examples/platform/ameba/route_hook/ameba_route_hook.c
 CSRC += $(CHIPDIR)/examples/platform/ameba/route_hook/ameba_route_table.c
 
-CPPSRC += $(CHIPDIR)/examples/providers/DeviceInfoProviderImpl.cpp
-
 # connectedhomeip - src - app
 CPPSRC += $(CHIPDIR)/src/app/SafeAttributePersistenceProvider.cpp
 CPPSRC += $(CHIPDIR)/src/app/StorageDelegateWrapper.cpp
@@ -104,3 +102,4 @@ CPPSRC += $(MATTER_DIR)/api/matter_api.cpp
 
 # matter - core
 CPPSRC += $(MATTER_DIR)/core/matter_device_utils.cpp
+CPPSRC += $(MATTER_DIR)/core/matter_test_event_trigger.cpp # Not using AmebaTestEventTriggerDelegate.cpp

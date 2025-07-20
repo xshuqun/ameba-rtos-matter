@@ -23,8 +23,6 @@ INCLUDES += -I$(CHIPDIR)/zzz_generated/app-common
 SRC_C += $(CHIPDIR)/examples/platform/ameba/route_hook/ameba_route_hook.c
 SRC_C += $(CHIPDIR)/examples/platform/ameba/route_hook/ameba_route_table.c
 
-SRC_CPP += $(CHIPDIR)/examples/providers/DeviceInfoProviderImpl.cpp
-
 # connectedhomeip - src - app
 SRC_CPP += $(CHIPDIR)/src/app/SafeAttributePersistenceProvider.cpp
 SRC_CPP += $(CHIPDIR)/src/app/StorageDelegateWrapper.cpp
@@ -90,6 +88,7 @@ SRC_CPP += $(MATTER_DIR)/api/matter_log_api.cpp
 
 # matter - core
 SRC_CPP += $(MATTER_DIR)/core/matter_device_utils.cpp
+SRC_CPP += $(MATTER_DIR)/core/matter_test_event_trigger.cpp # Not using AmebaTestEventTriggerDelegate.cpp
 
 # matter - drivers
 SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_diagnosticlogs_provider_delegate_impl.cpp

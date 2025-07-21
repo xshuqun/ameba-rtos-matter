@@ -1,7 +1,8 @@
 /*
+ *    This module is a confidential and proprietary property of RealTek and
+ *    possession or use of this module requires written permission of RealTek.
  *
- *    Copyright (c) 2023 Project CHIP Authors
- *    All rights reserved.
+ *    Copyright(c) 2025, Realtek Semiconductor Corporation. All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -30,7 +31,7 @@ namespace Clusters {
 namespace OvenCavityOperationalState {
 
 // This is an application level delegate to handle operational state commands according to the specific business logic.
-class OvenCavityOperationalStateDelegate : public OperationalState::Delegate
+class AmebaOvenCavityOperationalStateDelegate : public OperationalState::Delegate
 {
 private:
     inline static const Clusters::OperationalState::GenericOperationalState opStateList[] = {
@@ -98,11 +99,8 @@ public:
     void HandleStopStateCallback(Clusters::OperationalState::GenericOperationalError & err) override;
 };
 
-Instance * GetOperationalStateInstance();
-
-void Shutdown();
-
 } // namespace OvenCavityOperationalState
+
 } // namespace Clusters
 } // namespace app
 } // namespace chip

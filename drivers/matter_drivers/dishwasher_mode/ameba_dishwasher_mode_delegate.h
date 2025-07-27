@@ -65,6 +65,10 @@ public:
     ~AmebaDishwasherModeDelegate() override = default;
 };
 
+AmebaDishwasherModeDelegate * GetAmebaDishwasherModeDelegate(void);
+CHIP_ERROR AmebaDishwasherModeDelegateInit(EndpointId endpoint);
+void AmebaDishwasherModeDelegateShutdown(void);
+
 } // namespace DishwasherMode
 
 } // namespace Clusters

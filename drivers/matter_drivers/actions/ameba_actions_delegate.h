@@ -79,6 +79,10 @@ private:
                                                                         Optional<uint32_t> invokeId) override;
 };
 
+AmebaActionsDelegateImpl * GetAmebaActionsDelegate(void);
+CHIP_ERROR AmebaActionsDelegateInit(EndpointId endpoint);
+void AmebaActionsDelegateShutdown(void);
+
 } // namespace Actions
 } // namespace Clusters
 } // namespace app

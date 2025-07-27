@@ -20,6 +20,8 @@
 #include <app-common/zap-generated/attributes/Accessors.h>
 #include <dishwasher_mode/ameba_dishwasher_mode_delegate.h>
 
+using namespace chip;
+using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::DishwasherMode;
 using chip::Protocols::InteractionModel::Status;
@@ -28,7 +30,9 @@ template <typename T>
 using List              = chip::app::DataModel::List<T>;
 using ModeTagStructType = chip::app::Clusters::detail::Structs::ModeTagStruct::Type;
 
-CHIP_ERROR AmebaDishwasherModeDelegate::Init()
+static AmebaDishwasherModeDelegate * gAmebaDishwasherModeDelegate = nullptr;
+
+CHIP_ERROR AmebaDishwasherModeDelegate::Init(void)
 {
     return CHIP_NO_ERROR;
 }
@@ -73,4 +77,29 @@ CHIP_ERROR AmebaDishwasherModeDelegate::GetModeTagsByIndex(uint8_t modeIndex, Li
     tags.reduce_size(kModeOptions[modeIndex].modeTags.size());
 
     return CHIP_NO_ERROR;
+}
+
+AmebaDishwasherModeDelegate * GetAmebaDishwasherModeDelegate(void)
+{
+    return gAmebaDishwasherModeDelegate;
+}
+
+CHIP_ERROR AmebaDishwasherModeDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaDishwasherModeDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaDishwasherModeDelegate = new DishwasherMode::AmebaDishwasherModeDelegate;
+
+    VerifyOrReturnError(gAmebaDishwasherModeDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    return CHIP_NO_ERROR;
+}
+
+void AmebaDishwasherModeDelegateShutdown(void)
+{
+    if (gAmebaDishwasherModeDelegate != nullptr)
+    {
+        delete gAmebaDishwasherModeDelegate;
+        gAmebaDishwasherModeDelegate = nullptr;
+    }
 }

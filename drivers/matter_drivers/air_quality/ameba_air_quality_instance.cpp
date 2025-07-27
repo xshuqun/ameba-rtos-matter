@@ -17,7 +17,7 @@
  *    limitations under the License.
  */
 
-#include <air_quality/ameba_air_quality_manager.h>
+#include <air_quality/ameba_air_quality_instance.h>
 
 using namespace chip;
 using namespace chip::app;
@@ -27,16 +27,6 @@ using namespace chip::app::Clusters::AirQuality;
 namespace {
 static Instance * gAmebaAirQualityInstance = nullptr;
 } // namespace
-
-Instance * AirQuality::GetAirQualityInstance(void)
-{
-    return gAmebaAirQualityInstance;
-}
-
-void AirQuality::SetAirQualityInstance(Instance * instance)
-{
-    gAmebaAirQualityInstance = instance;
-}
 
 void AirQuality::SetAirQuality(AirQualityEnum aNewAirQuality)
 {
@@ -54,7 +44,30 @@ AirQualityEnum AirQuality::CurrentAirQuality(void)
     return AirQualityEnum::kUnknown;
 }
 
-void AirQuality::Shutdown(void)
+Instance * AirQuality::GetAmebaAirQualityInstance(void)
+{
+    return gAmebaAirQualityInstance;
+}
+
+CHIP_ERROR AmebaAirQualityInstanceInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaAirQualityInstance == nullptr, CHIP_ERROR_INTERNAL);
+
+    chip::BitMask<AirQuality::Feature, uint32_t> Features(
+        AirQuality::Feature::kModerate,
+        AirQuality::Feature::kFair,
+        AirQuality::Feature::kVeryPoor,
+        AirQuality::Feature::kExtremelyPoor);
+
+    gAmebaAirQualityInstance = new AirQuality::Instance(endpoint, Features);
+    VerifyOrReturnError(gAmebaAirQualityInstance != nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaAirQualityInstance->Init();
+
+    return CHIP_NO_ERROR;
+}
+
+void AmebaAirQualityInstanceShutdown(void)
 {
     if (gAmebaAirQualityInstance != nullptr) {
         delete gAmebaAirQualityInstance;

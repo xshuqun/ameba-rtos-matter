@@ -33,3 +33,11 @@ bool AmebaDishwasherAlarmDelegate::ResetAlarmsCallback(const BitMask<AlarmMap> a
 {
     return true;
 }
+
+CHIP_ERROR AmebaDishWasherAlarmDelegateInit(EndpointId endpoint)
+{
+    static DishwasherAlarm::AmebaDishwasherAlarmDelegate delegate;
+    DishwasherAlarm::SetDefaultDelegate(endpoint, &delegate);
+
+    return CHIP_NO_ERROR;
+}

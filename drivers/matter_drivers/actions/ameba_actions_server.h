@@ -26,12 +26,9 @@ namespace app {
 namespace Clusters {
 namespace Actions {
 
-class AmebaActionsDelegateImpl;
-
-AmebaActionsDelegateImpl * GetActionsDelegate(void);
-ActionsServer * GetActionsServer(void);
-void SetActionsDelegate(AmebaActionsDelegateImpl * delegate);
-void SetActionsServer(ActionsServer * server);
+AmebaActionsDelegateImpl * GetAmebaActionsServer(void);
+CHIP_ERROR AmebaActionsServerInit(EndpointId endpoint);
+void AmebaActionsServerShutdown(void);
 
 } // namespace Actions
 } // namespace Clusters

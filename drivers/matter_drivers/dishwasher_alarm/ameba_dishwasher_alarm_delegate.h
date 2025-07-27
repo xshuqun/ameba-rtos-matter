@@ -52,6 +52,8 @@ public:
     ~AmebaDishwasherAlarmDelegate() = default;
 };
 
+CHIP_ERROR AmebaDishWasherAlarmDelegateInit(EndpointId endpoint);
+
 } // namespace DishwasherAlarm
 } // namespace Clusters
 } // namespace app

@@ -17,28 +17,41 @@
  *    limitations under the License.
  */
 
-#include <laundry_washer_controls/ameba_laundry_washer_controls_delegate.h>
-#include <laundry_washer_controls/ameba_laundry_washer_controls_manager.h>
+#include <actions/ameba_actions_delegate.h>
+#include <actions/ameba_actions_server.h>
 
 using namespace chip;
 using namespace chip::app;
 using namespace chip::app::Clusters;
-using namespace chip::app::Clusters::LaundryWasherControls;
+using namespace chip::app::Clusters::Actions;
 
-static AmebaLaundryWasherControlsDelegate * gAmebaLaundryWasherControlsDelegate = nullptr;
+namespace {
+std::unique_ptr<ActionsServer> sAmebaActionsServer = nullptr;
+} // namespace
 
-LaundryWasherControls::AmebaLaundryWasherControlsDelegate * LaundryWasherControls::GetLaundryWasherControlsDelegate(void)
+ActionsServer * GetAmebaActionsServer(void)
 {
-    return gAmebaLaundryWasherControlsDelegate;
+    return sAmebaActionsServer.get();
 }
 
-void LaundryWasherControls::SetLaundryWasherControlsDelegate(AmebaLaundryWasherControlsDelegate * delegate)
+CHIP_ERROR AmebaActionsServerInit(EndpointId endpoint)
 {
-    gAmebaLaundryWasherControlsDelegate = delegate;
+    VerifyOrReturnError(sAmebaActionsServer == nullptr, CHIP_ERROR_INTERNAL);
+
+    auto * delegate = GetAmebaActionsDelegate();
+    VerifyOrReturnError(delegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    sAmebaActionsServer = std::make_unique<Actions::ActionsServer>(endpoint, *delegate);
+    VerifyOrReturnError(sAmebaActionsServer != nullptr, CHIP_ERROR_INTERNAL);
+
+    return CHIP_NO_ERROR;
 }
 
-void LaundryWasherControls::Shutdown(void)
+void AmebaActionsServerShutdown(void)
 {
-    delete gAmebaLaundryWasherControlsDelegate;
-    gAmebaLaundryWasherControlsDelegate = nullptr;
+    if (sAmebaActionsServer != nullptr)
+    {
+        sAmebaActionsServer->Shutdown();
+        sAmebaActionsServer.reset();
+    }
 }

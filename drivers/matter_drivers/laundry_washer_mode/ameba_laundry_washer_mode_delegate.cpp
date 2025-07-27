@@ -20,6 +20,8 @@
 #include <app-common/zap-generated/attributes/Accessors.h>
 #include <laundry_washer_mode/ameba_laundry_washer_mode_delegate.h>
 
+using namespace chip;
+using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::LaundryWasherMode;
 using chip::Protocols::InteractionModel::Status;
@@ -28,7 +30,9 @@ template <typename T>
 using List              = chip::app::DataModel::List<T>;
 using ModeTagStructType = chip::app::Clusters::detail::Structs::ModeTagStruct::Type;
 
-CHIP_ERROR AmebaLaundryWasherModeDelegate::Init()
+static AmebaLaundryWasherModeDelegate * gAmebaLaundryWasherModeDelegate = nullptr;
+
+CHIP_ERROR AmebaLaundryWasherModeDelegate::Init(void)
 {
     return CHIP_NO_ERROR;
 }
@@ -73,4 +77,29 @@ CHIP_ERROR AmebaLaundryWasherModeDelegate::GetModeTagsByIndex(uint8_t modeIndex,
     tags.reduce_size(kModeOptions[modeIndex].modeTags.size());
 
     return CHIP_NO_ERROR;
+}
+
+AmebaLaundryWasherModeDelegate * GetAmebaLaundryWasherModeDelegate(void)
+{
+    return gAmebaLaundryWasherModeDelegate;
+}
+
+CHIP_ERROR AmebaLaundryWasherModeDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaLaundryWasherModeDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaLaundryWasherModeDelegate = new LaundryWasherMode::AmebaLaundryWasherModeDelegate;
+
+    VerifyOrReturnError(gAmebaLaundryWasherModeDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    return CHIP_NO_ERROR;
+}
+
+void AmebaLaundryWasherModeDelegateShutdown(void)
+{
+    if (gAmebaLaundryWasherModeDelegate != nullptr)
+    {
+        delete gAmebaLaundryWasherModeDelegate;
+        gAmebaLaundryWasherModeDelegate = nullptr;
+    }
 }

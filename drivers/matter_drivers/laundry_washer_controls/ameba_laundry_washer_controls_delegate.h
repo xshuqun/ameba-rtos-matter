@@ -25,7 +25,6 @@
 namespace chip {
 namespace app {
 namespace Clusters {
-
 namespace LaundryWasherControls {
 
 class AmebaLaundryWasherControlsDelegate : public Delegate
@@ -38,9 +37,11 @@ private:
     static const CharSpan spinSpeedsNameOptions[];
     static const NumberOfRinsesEnum supportRinsesOptions[];
 };
+AmebaLaundryWasherControlsDelegate * GetAmebaLaundryWasherControlsDelegate(void);
+CHIP_ERROR AmebaLaundryWasherControlsDelegateInit(EndpointId endpoint);
+void AmebaLaundryWasherControlsDelegateShutdown(void);
 
 } // namespace LaundryWasherControls
-
 } // namespace Clusters
 } // namespace app
 } // namespace chip

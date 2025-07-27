@@ -18,12 +18,13 @@
  */
 
 #include <laundry_dryer_controls/ameba_laundry_dryer_controls_delegate.h>
-#include <laundry_dryer_controls/ameba_laundry_dryer_controls_manager.h>
 
 using namespace chip;
 using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::LaundryDryerControls;
+
+static AmebaLaundryDryerControlsDelegate * gAmebaLaundryDryerControlsDelegate = nullptr;
 
 const DrynessLevelEnum AmebaLaundryDryerControlsDelegate::supportedDrynessLevelOptions[] = {
     DrynessLevelEnum::kLow,
@@ -39,4 +40,25 @@ CHIP_ERROR AmebaLaundryDryerControlsDelegate::GetSupportedDrynessLevelAtIndex(si
     }
     supportedDrynessLevel = supportedDrynessLevelOptions[index];
     return CHIP_NO_ERROR;
+}
+
+AmebaLaundryDryerControlsDelegate * GetAmebaLaundryDryerControlsDelegate(void)
+{
+    return gAmebaLaundryDryerControlsDelegate;
+}
+
+CHIP_ERROR AmebaLaundryDryerControlsDelegateInit(EndpointId endpoint)
+{
+    auto * delegate = new AmebaLaundryDryerControlsDelegate();
+    LaundryDryerControlsServer::SetDefaultDelegate(endpoint, delegate);
+
+    return CHIP_NO_ERROR;
+}
+
+void AmebaLaundryDryerControlsDelegateShutdown(void)
+{
+    if (gAmebaLaundryDryerControlsDelegate) {
+        delete gAmebaLaundryDryerControlsDelegate;
+        gAmebaLaundryDryerControlsDelegate = nullptr;
+    }
 }

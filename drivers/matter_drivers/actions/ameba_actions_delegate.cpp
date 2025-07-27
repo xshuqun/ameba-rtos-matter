@@ -18,7 +18,6 @@
  */
 
 #include <actions/ameba_actions_delegate.h>
-#include <actions/ameba_actions_manager.h>
 
 using namespace chip;
 using namespace chip::app;
@@ -26,6 +25,10 @@ using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::Actions;
 using namespace chip::app::Clusters::Actions::Attributes;
 using namespace chip::Protocols::InteractionModel;
+
+namespace {
+std::unique_ptr<AmebaActionsDelegateImpl> sAmebaActionsDelegateImpl = nullptr;
+}
 
 CHIP_ERROR AmebaActionsDelegateImpl::ReadActionAtIndex(uint16_t index, ActionStructStorage & action)
 {
@@ -62,73 +65,82 @@ bool AmebaActionsDelegateImpl::HaveActionWithId(uint16_t actionId, uint16_t & ac
 
 Status AmebaActionsDelegateImpl::HandleInstantAction(uint16_t actionId, Optional<uint32_t> invokeId)
 {
-    // Not implemented
     return Status::NotFound;
 }
 
 Status AmebaActionsDelegateImpl::HandleInstantActionWithTransition(uint16_t actionId, uint16_t transitionTime,
                                                               Optional<uint32_t> invokeId)
 {
-    // Not implemented
     return Status::NotFound;
 }
 
 Status AmebaActionsDelegateImpl::HandleStartAction(uint16_t actionId, Optional<uint32_t> invokeId)
 {
-    // Not implemented
     return Status::NotFound;
 }
 
 Status AmebaActionsDelegateImpl::HandleStartActionWithDuration(uint16_t actionId, uint32_t duration, Optional<uint32_t> invokeId)
 {
-    // Not implemented
     return Status::NotFound;
 }
 
 Status AmebaActionsDelegateImpl::HandleStopAction(uint16_t actionId, Optional<uint32_t> invokeId)
 {
-    // Not implemented
     return Status::NotFound;
 }
 
 Status AmebaActionsDelegateImpl::HandlePauseAction(uint16_t actionId, Optional<uint32_t> invokeId)
 {
-    // Not implemented
     return Status::NotFound;
 }
 
 Status AmebaActionsDelegateImpl::HandlePauseActionWithDuration(uint16_t actionId, uint32_t duration, Optional<uint32_t> invokeId)
 {
-    // Not implemented
     return Status::NotFound;
 }
 
 Status AmebaActionsDelegateImpl::HandleResumeAction(uint16_t actionId, Optional<uint32_t> invokeId)
 {
-    // Not implemented
     return Status::NotFound;
 }
 
 Status AmebaActionsDelegateImpl::HandleEnableAction(uint16_t actionId, Optional<uint32_t> invokeId)
 {
-    // Not implemented
     return Status::NotFound;
 }
 
 Status AmebaActionsDelegateImpl::HandleEnableActionWithDuration(uint16_t actionId, uint32_t duration, Optional<uint32_t> invokeId)
 {
-    // Not implemented
     return Status::NotFound;
 }
 
 Status AmebaActionsDelegateImpl::HandleDisableAction(uint16_t actionId, Optional<uint32_t> invokeId)
 {
-    // Not implemented
     return Status::NotFound;
 }
 
 Status AmebaActionsDelegateImpl::HandleDisableActionWithDuration(uint16_t actionId, uint32_t duration, Optional<uint32_t> invokeId)
 {
-    // Not implemented
     return Status::NotFound;
+}
+
+AmebaActionsDelegateImpl * GetAmebaActionsDelegate(void)
+{
+    return sAmebaActionsDelegateImpl.get();
+}
+
+CHIP_ERROR AmebaActionsDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(sAmebaActionsDelegateImpl == nullptr, CHIP_ERROR_INTERNAL);
+
+    sAmebaActionsDelegateImpl = std::make_unique<Actions::AmebaActionsDelegateImpl>();
+
+    VerifyOrReturnError(sAmebaActionsDelegateImpl != nullptr, CHIP_ERROR_INTERNAL);
+
+    return CHIP_NO_ERROR;
+}
+
+void AmebaActionsDelegateShutdown(void)
+{
+    sAmebaActionsDelegateImpl.reset();
 }

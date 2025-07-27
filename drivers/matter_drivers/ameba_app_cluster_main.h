@@ -23,38 +23,32 @@
 
 /* Actions Cluster */
 #include <actions/ameba_actions_delegate.h>
-#include <actions/ameba_actions_manager.h>
+#include <actions/ameba_actions_server.h>
 
 /* Air Quality Cluster */
 #include <app/clusters/air-quality-server/air-quality-server.h>
-#include <air_quality/ameba_air_quality_manager.h>
+#include <air_quality/ameba_air_quality_instance.h>
 
 /* Dishwasher Alarm Cluster */
 #include <dishwasher_alarm/ameba_dishwasher_alarm_delegate.h>
-#include <dishwasher_alarm/ameba_dishwasher_alarm_manager.h>
+#include <dishwasher_alarm/ameba_dishwasher_alarm_instance.h>
 
 /* Dishwasher Mode Cluster */
 #include <dishwasher_mode/ameba_dishwasher_mode_delegate.h>
-#include <dishwasher_mode/ameba_dishwasher_mode_manager.h>
+#include <dishwasher_mode/ameba_dishwasher_mode_instance.h>
 
 /* Fan Control Cluster */
 #include <fan_control/ameba_fan_control_delegate.h>
 
 /* Laundry Dryer Controls Cluster */
-#include <app/clusters/laundry-dryer-controls-server/laundry-dryer-controls-delegate.h>
-#include <app/clusters/laundry-dryer-controls-server/laundry-dryer-controls-server.h>
 #include <laundry_dryer_controls/ameba_laundry_dryer_controls_delegate.h>
-#include <laundry_dryer_controls/ameba_laundry_dryer_controls_manager.h>
 
 /* Laundry Washer Controls Cluster */
-#include <app/clusters/laundry-washer-controls-server/laundry-washer-controls-delegate.h>
-#include <app/clusters/laundry-washer-controls-server/laundry-washer-controls-server.h>
 #include <laundry_washer_controls/ameba_laundry_washer_controls_delegate.h>
-#include <laundry_washer_controls/ameba_laundry_washer_controls_manager.h>
 
 /* Laundry Washer Mode Cluster */
 #include <laundry_washer_mode/ameba_laundry_washer_mode_delegate.h>
-#include <laundry_washer_mode/ameba_laundry_washer_mode_manager.h>
+#include <laundry_washer_mode/ameba_laundry_washer_mode_instance.h>
 
 /* Microwave Oven Control Cluster */
 #include <app/clusters/microwave-oven-control-server/microwave-oven-control-server.h>

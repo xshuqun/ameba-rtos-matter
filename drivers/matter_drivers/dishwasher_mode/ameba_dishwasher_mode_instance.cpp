@@ -17,47 +17,43 @@
  *    limitations under the License.
  */
 
-#include <app-common/zap-generated/attributes/Accessors.h>
-#include <dishwasher_mode/ameba_dishwasher_mode_manager.h>
+#include <dishwasher_mode/ameba_dishwasher_mode_delegate.h>
+#include <dishwasher_mode/ameba_dishwasher_mode_instance.h>
 
+using namespace chip;
+using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::DishwasherMode;
 using chip::Protocols::InteractionModel::Status;
 
-static AmebaDishwasherModeDelegate * gAmebaDishwasherModeDelegate = nullptr;
 static ModeBase::Instance * gAmebaDishwasherModeInstance     = nullptr;
 
-DishwasherMode::AmebaDishwasherModeDelegate * DishwasherMode::GetDishwasherModeDelegate()
-{
-    return gAmebaDishwasherModeDelegate;
-}
-
-void DishwasherMode::SetDishwasherModeDelegate(AmebaDishwasherModeDelegate * delegate)
-{
-    VerifyOrDie(gAmebaDishwasherModeDelegate == nullptr);
-    gAmebaDishwasherModeDelegate = delegate;
-}
-
-ModeBase::Instance * DishwasherMode::GetDishwasherModeInstance(void)
+ModeBase::Instance * GetAmebaDishwasherModeInstance(void)
 {
     return gAmebaDishwasherModeInstance;
 }
 
-void DishwasherMode::SetDishwasherModeInstance(ModeBase::Instance * instance)
+CHIP_ERROR AmebaDishwasherModeInstanceInit(EndpointId endpoint)
 {
-    gAmebaDishwasherModeInstance = instance;
+    VerifyOrReturnError(gAmebaDishwasherModeInstance == nullptr, CHIP_ERROR_INTERNAL);
+
+    auto * delegate = GetAmebaDishwasherModeDelegate();
+    VerifyOrReturnError(delegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaDishwasherModeInstance = new ModeBase::Instance(delegate, endpoint, DishwasherMode::Id, 0x0);
+    VerifyOrReturnError(gAmebaDishwasherModeInstance != nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaDishwasherModeInstance->Init();
+
+    return CHIP_NO_ERROR;
 }
 
-void DishwasherMode::Shutdown(void)
+void AmebaDishwasherModeInstanceShutdown(void)
 {
     if (gAmebaDishwasherModeInstance != nullptr)
     {
+        gAmebaDishwasherModeInstance->Shutdown();
         delete gAmebaDishwasherModeInstance;
         gAmebaDishwasherModeInstance = nullptr;
-    }
-    if (gAmebaDishwasherModeDelegate != nullptr)
-    {
-        delete gAmebaDishwasherModeDelegate;
-        gAmebaDishwasherModeDelegate = nullptr;
     }
 }

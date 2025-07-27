@@ -16,34 +16,24 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 #pragma once
 
-#include <app-common/zap-generated/ids/Attributes.h>
-#include <app-common/zap-generated/ids/Clusters.h>
-#include <app/clusters/air-quality-server/air-quality-server.h>
+#include <app-common/zap-generated/attributes/Accessors.h>
+#include <app/clusters/mode-base-server/mode-base-server.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
-namespace AirQuality {
 
-// Returns a pointer to the current AirQuality cluster instance
-Instance * GetAirQualityInstance(void);
+namespace DishwasherMode {
 
-// Sets the AirQuality cluster instance to the provided pointer
-void SetAirQualityInstance(Instance * instance);
+ModeBase::Instance * GetAmebaDishwasherModeInstance(void);
+CHIP_ERROR AmebaDishwasherModeInstanceInit(EndpointId endpoint);
+void AmebaDishwasherModeInstanceShutdown(void);
 
-// Updates the current air quality state to the new value specified by aNewAirQuality
-void SetAirQuality(AirQualityEnum aNewAirQuality);
+} // namespace DishwasherMode
 
-// Retrieves the current air quality state as an enum value
-AirQualityEnum CurrentAirQuality(void);
-
-// Performs shutdown or cleanup operations related to the AirQuality cluster
-void Shutdown(void);
-
-} // namespace AirQuality
 } // namespace Clusters
 } // namespace app
 } // namespace chip
-

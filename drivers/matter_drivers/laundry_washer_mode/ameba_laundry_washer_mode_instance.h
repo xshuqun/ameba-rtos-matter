@@ -19,17 +19,19 @@
 
 #pragma once
 
-#include <app-common/zap-generated/cluster-objects.h>
-#include <app/clusters/dishwasher-alarm-server/dishwasher-alarm-server.h>
+#include <app-common/zap-generated/attributes/Accessors.h>
+#include <app/clusters/mode-base-server/mode-base-server.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
-namespace DishwasherAlarm {
+namespace LaundryWasherMode {
 
-CHIP_ERROR AmebaDishWasherInit(chip::EndpointId endpoint);
+ModeBase::Instance * GetAmebaLaundryWasherModeInstance(void);
+CHIP_ERROR AmebaLaundryWasherModeInstanceInit(EndpointId endpoint);
+void AmebaLaundryWasherModeInstanceShutdown(void);
 
-} // namespace DishwasherAlarm
+} // namespace LaundryWasherMode
 } // namespace Clusters
 } // namespace app
 } // namespace chip

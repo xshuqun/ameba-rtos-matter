@@ -17,7 +17,7 @@
  *    limitations under the License.
  */
 
-#include <dishwasher_alarm/ameba_dishwasher_alarm_manager.h>
+#include <dishwasher_alarm/ameba_dishwasher_alarm_instance.h>
 #include <protocols/interaction_model/StatusCode.h>
 
 using namespace chip;
@@ -26,7 +26,7 @@ using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::DishwasherAlarm;
 using Protocols::InteractionModel::Status;
 
-CHIP_ERROR DishwasherAlarm::AmebaDishWasherInit(chip::EndpointId endpoint)
+CHIP_ERROR AmebaDishWasherAlarmInstanceInit(chip::EndpointId endpoint)
 {
     Status status = Status::Success;
 

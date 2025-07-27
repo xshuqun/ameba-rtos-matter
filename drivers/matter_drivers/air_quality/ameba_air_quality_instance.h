@@ -16,29 +16,26 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
 #pragma once
 
-#include <dishwasher_mode/ameba_dishwasher_mode_delegate.h>
-#include <app/clusters/mode-base-server/mode-base-server.h>
+#include <app-common/zap-generated/ids/Attributes.h>
+#include <app-common/zap-generated/ids/Clusters.h>
+#include <app/clusters/air-quality-server/air-quality-server.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
+namespace AirQuality {
 
-namespace DishwasherMode {
+void SetAirQuality(AirQualityEnum aNewAirQuality);
+AirQualityEnum CurrentAirQuality(void);
 
-class AmebaDishwasherModeDelegate;
+Instance * GetAmebaAirQualityInstance(void);
+CHIP_ERROR AmebaAirQualityInstanceInit(EndpointId endpoint);
+void AmebaAirQualityInstanceShutdown(void);
 
-AmebaDishwasherModeDelegate * GetDishwasherModeDelegate(void);
-void SetDishwasherModeDelegate(AmebaDishwasherModeDelegate * delegate);
-ModeBase::Instance * GetDishwasherModeInstance(void);
-void SetDishwasherModeInstance(ModeBase::Instance * instance);
-
-void Shutdown(void);
-
-} // namespace DishwasherMode
-
+} // namespace AirQuality
 } // namespace Clusters
 } // namespace app
 } // namespace chip
+

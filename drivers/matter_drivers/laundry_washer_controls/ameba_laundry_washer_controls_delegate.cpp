@@ -18,12 +18,13 @@
  */
 
 #include <laundry_washer_controls/ameba_laundry_washer_controls_delegate.h>
-#include <laundry_washer_controls/ameba_laundry_washer_controls_manager.h>
 
 using namespace chip;
 using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::LaundryWasherControls;
+
+static AmebaLaundryWasherControlsDelegate * gAmebaLaundryWasherControlsDelegate = nullptr;
 
 const CharSpan AmebaLaundryWasherControlsDelegate::spinSpeedsNameOptions[] = {
     CharSpan::fromCharString("Off"),
@@ -54,4 +55,26 @@ CHIP_ERROR AmebaLaundryWasherControlsDelegate::GetSupportedRinseAtIndex(size_t i
     }
     supportedRinse = AmebaLaundryWasherControlsDelegate::supportRinsesOptions[index];
     return CHIP_NO_ERROR;
+}
+
+AmebaLaundryWasherControlsDelegate * GetAmebaLaundryWasherControlsDelegate(void)
+{
+    return gAmebaLaundryWasherControlsDelegate;
+}
+
+CHIP_ERROR AmebaLaundryWasherControlsDelegateInit(EndpointId endpoint)
+{
+    auto * delegate = new AmebaLaundryWasherControlsDelegate();
+    LaundryWasherControlsServer::SetDefaultDelegate(endpoint, delegate);
+
+    return CHIP_NO_ERROR;
+}
+
+void AmebaLaundryWasherControlsDelegateShutdown(void)
+{
+    if (gAmebaLaundryWasherControlsDelegate)
+    {
+        delete gAmebaLaundryWasherControlsDelegate;
+        gAmebaLaundryWasherControlsDelegate = nullptr;
+    }
 }

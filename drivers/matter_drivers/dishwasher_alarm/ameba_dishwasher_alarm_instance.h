@@ -19,26 +19,17 @@
 
 #pragma once
 
-#include <laundry_washer_mode/ameba_laundry_washer_mode_delegate.h>
-#include <app/clusters/mode-base-server/mode-base-server.h>
+#include <app-common/zap-generated/cluster-objects.h>
+#include <app/clusters/dishwasher-alarm-server/dishwasher-alarm-server.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
+namespace DishwasherAlarm {
 
-namespace LaundryWasherMode {
+CHIP_ERROR AmebaDishWasherAlarmInstanceInit(chip::EndpointId endpoint);
 
-class AmebaLaundryWasherModeDelegate;
-
-AmebaLaundryWasherModeDelegate * GetLaundryWasherModeDelegate(void);
-void SetLaundryWasherModeDelegate(AmebaLaundryWasherModeDelegate * delegate);
-ModeBase::Instance * GetLaundryWasherModeInstance();
-void SetLaundryWasherModeInstance(ModeBase::Instance * instance);
-
-void Shutdown(void);
-
-} // namespace LaundryWasherMode
-
+} // namespace DishwasherAlarm
 } // namespace Clusters
 } // namespace app
 } // namespace chip

@@ -18,7 +18,6 @@
  */
 
 #include <fan_control/ameba_fan_control_delegate.h>
-#include <app-common/zap-generated/attributes/Accessors.h>
 
 using namespace chip;
 using namespace chip::app;
@@ -29,10 +28,38 @@ using Protocols::InteractionModel::Status;
 
 CHIP_ERROR AmebaFanControlDelegate::ReadPercentCurrent(AttributeValueEncoder & aEncoder)
 {
-    // Return PercentSetting attribute value for now
-    DataModel::Nullable<Percent> percentSetting;
-    PercentSetting::Get(mEndpoint, percentSetting);
     Percent ret = 0;
+    uint8_t percentCurrent;
+
+    Status status = PercentCurrent::Get(mEndpoint, &percentCurrent);
+    if (status == Status::Success)
+    {
+        ret = percentCurrent;
+    }
+
+    return aEncoder.Encode(ret);
+}
+
+CHIP_ERROR AmebaFanControlDelegate::ReadSpeedCurrent(AttributeValueEncoder & aEncoder)
+{
+    Percent ret = 0;
+    uint8_t speedCurrent;
+
+    Status status = SpeedCurrent::Get(mEndpoint, &speedCurrent);
+    if (status == Status::Success)
+    {
+        ret = speedCurrent;
+    }
+
+    return aEncoder.Encode(ret);
+}
+
+CHIP_ERROR AmebaFanControlDelegate::ReadPercentSetting(AttributeValueEncoder & aEncoder)
+{
+    Percent ret = 0;
+    DataModel::Nullable<Percent> percentSetting;
+
+    PercentSetting::Get(mEndpoint, percentSetting);
     if (!percentSetting.IsNull())
     {
         ret = percentSetting.Value();
@@ -41,12 +68,12 @@ CHIP_ERROR AmebaFanControlDelegate::ReadPercentCurrent(AttributeValueEncoder & a
     return aEncoder.Encode(ret);
 }
 
-CHIP_ERROR AmebaFanControlDelegate::ReadSpeedCurrent(AttributeValueEncoder & aEncoder)
+CHIP_ERROR AmebaFanControlDelegate::ReadSpeedSetting(AttributeValueEncoder & aEncoder)
 {
-    // Return SpeedCurrent attribute value for now
+    Percent ret = 0;
     DataModel::Nullable<uint8_t> speedSetting;
+
     SpeedSetting::Get(mEndpoint, speedSetting);
-    uint8_t ret = 0;
     if (!speedSetting.IsNull())
     {
         ret = speedSetting.Value();
@@ -139,5 +166,14 @@ CHIP_ERROR AmebaFanControlDelegate::Read(const ConcreteReadAttributePath & aPath
     default:
         break;
     }
+    return CHIP_NO_ERROR;
+}
+
+CHIP_ERROR AmebaFanControlDelegateInit(EndpointId endpoint)
+{
+    auto * delegate = new FanControl::AmebaFanControlDelegate(endpoint);
+    AttributeAccessInterfaceRegistry::Instance().Register(delegate);
+    FanControl::SetDefaultDelegate(endpoint, delegate);
+
     return CHIP_NO_ERROR;
 }

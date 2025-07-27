@@ -79,9 +79,9 @@ SRC_CPP =
 # all-clusters-app clusters source files
 # actions cluster
 SRC_CPP += $(MATTER_DRIVER)/actions/ameba_actions_delegate.cpp
-SRC_CPP += $(MATTER_DRIVER)/actions/ameba_actions_manager.cpp
+SRC_CPP += $(MATTER_DRIVER)/actions/ameba_actions_server.cpp
 # air quality cluster
-SRC_CPP += $(MATTER_DRIVER)/air_quality/ameba_air_quality_manager.cpp
+SRC_CPP += $(MATTER_DRIVER)/air_quality/ameba_air_quality_instance.cpp
 # device energy management cluster - Not yet
 SRC_CPP += $(MATTER_DRIVER)/device_energy_management/ameba_concentration_measurement_instances.cpp
 SRC_CPP += $(MATTER_DRIVER)/device_energy_management/ameba_device_energy_management_delegate_impl.cpp
@@ -91,10 +91,10 @@ SRC_CPP += $(MATTER_DRIVER)/device_energy_management/ameba_energy_management_com
 SRC_CPP += $(MATTER_DRIVER)/device_energy_management/ameba_energy_time_utils.cpp
 # dishwasher alarm cluster
 SRC_CPP += $(MATTER_DRIVER)/dishwasher_alarm/ameba_dishwasher_alarm_delegate.cpp
-SRC_CPP += $(MATTER_DRIVER)/dishwasher_alarm/ameba_dishwasher_alarm_manager.cpp
+SRC_CPP += $(MATTER_DRIVER)/dishwasher_alarm/ameba_dishwasher_alarm_instance.cpp
 # dishwasher mode cluster
 SRC_CPP += $(MATTER_DRIVER)/dishwasher_mode/ameba_dishwasher_mode_delegate.cpp
-SRC_CPP += $(MATTER_DRIVER)/dishwasher_mode/ameba_dishwasher_mode_manager.cpp
+SRC_CPP += $(MATTER_DRIVER)/dishwasher_mode/ameba_dishwasher_mode_instance.cpp
 # eletrical power measurement cluster - Not Yet
 SRC_CPP += $(MATTER_DRIVER)/electrical_power_measurement/ameba_electrical_power_measurement_delegate.cpp
 # energy evse cluster - Not Yet
@@ -112,13 +112,11 @@ SRC_CPP += $(MATTER_DRIVER)/energy_evse/ameba_energy_preference_delegate.cpp
 SRC_CPP += $(MATTER_DRIVER)/fan_control/ameba_fan_control_delegate.cpp
 # laundry dryer control cluster
 SRC_CPP += $(MATTER_DRIVER)/laundry_dryer_controls/ameba_laundry_dryer_controls_delegate.cpp
-SRC_CPP += $(MATTER_DRIVER)/laundry_dryer_controls/ameba_laundry_dryer_controls_manager.cpp
 # laundry washer control cluster
 SRC_CPP += $(MATTER_DRIVER)/laundry_washer_controls/ameba_laundry_washer_controls_delegate.cpp
-SRC_CPP += $(MATTER_DRIVER)/laundry_washer_controls/ameba_laundry_washer_controls_manager.cpp
 # laundry washer mode cluster
 SRC_CPP += $(MATTER_DRIVER)/laundry_washer_mode/ameba_laundry_washer_mode_delegate.cpp
-SRC_CPP += $(MATTER_DRIVER)/laundry_washer_mode/ameba_laundry_washer_mode_manager.cpp
+SRC_CPP += $(MATTER_DRIVER)/laundry_washer_mode/ameba_laundry_washer_mode_instance.cpp
 # microwave oven controls cluster
 SRC_CPP += $(MATTER_DRIVER)/microwave_oven_control/ameba_microwave_oven_control_delegate.cpp
 SRC_CPP += $(MATTER_DRIVER)/microwave_oven_control/ameba_microwave_oven_control_manager.cpp

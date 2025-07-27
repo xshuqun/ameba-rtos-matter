@@ -70,6 +70,10 @@ public:
     ~AmebaLaundryWasherModeDelegate() override = default;
 };
 
+AmebaLaundryWasherModeDelegate * GetAmebaLaundryWasherModeDelegate(void);
+CHIP_ERROR AmebaLaundryWasherModeDelegateInit(EndpointId endpoint);
+void AmebaLaundryWasherModeDelegateShutdown(void);
+
 } // namespace LaundryWasherMode
 
 } // namespace Clusters

@@ -17,47 +17,43 @@
  *    limitations under the License.
  */
 
-#include <app-common/zap-generated/attributes/Accessors.h>
-#include <laundry_washer_mode/ameba_laundry_washer_mode_manager.h>
+#include <laundry_washer_mode/ameba_laundry_washer_mode_delegate.h>
+#include <laundry_washer_mode/ameba_laundry_washer_mode_instance.h>
 
+using namespace chip;
+using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::LaundryWasherMode;
 using chip::Protocols::InteractionModel::Status;
 
-static AmebaLaundryWasherModeDelegate * gAmebaLaundryWasherModeDelegate = nullptr;
 static ModeBase::Instance * gAmebaLaundryWasherModeInstance     = nullptr;
 
-LaundryWasherMode::AmebaLaundryWasherModeDelegate * LaundryWasherMode::GetLaundryWasherModeDelegate(void)
-{
-    return gAmebaLaundryWasherModeDelegate;
-}
-
-void LaundryWasherMode::SetLaundryWasherModeDelegate(AmebaLaundryWasherModeDelegate * delegate)
-{
-    VerifyOrDie(gAmebaLaundryWasherModeDelegate == nullptr);
-    gAmebaLaundryWasherModeDelegate = delegate;
-}
-
-ModeBase::Instance * LaundryWasherMode::GetLaundryWasherModeInstance(void)
+ModeBase::Instance * GetAmebaLaundryWasherModeInstance(void)
 {
     return gAmebaLaundryWasherModeInstance;
 }
 
-void LaundryWasherMode::SetLaundryWasherModeInstance(ModeBase::Instance * instance)
+CHIP_ERROR AmebaLaundryWasherModeInstanceInit(EndpointId endpoint)
 {
-    gAmebaLaundryWasherModeInstance = instance;
+    VerifyOrReturnError(gAmebaLaundryWasherModeInstance == nullptr, CHIP_ERROR_INTERNAL);
+
+    auto * delegate = GetAmebaLaundryWasherModeDelegate();
+    VerifyOrReturnError(delegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaLaundryWasherModeInstance = new ModeBase::Instance(delegate, endpoint, LaundryWasherMode::Id, 0x0);
+    VerifyOrReturnError(gAmebaLaundryWasherModeInstance != nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaLaundryWasherModeInstance->Init();
+
+    return CHIP_NO_ERROR;
 }
 
-void LaundryWasherMode::Shutdown(void)
+void AmebaLaundryWasherModeInstanceShutdown(void)
 {
     if (gAmebaLaundryWasherModeInstance != nullptr)
     {
+        gAmebaLaundryWasherModeInstance->Shutdown();
         delete gAmebaLaundryWasherModeInstance;
         gAmebaLaundryWasherModeInstance = nullptr;
-    }
-    if (gAmebaLaundryWasherModeDelegate != nullptr)
-    {
-        delete gAmebaLaundryWasherModeDelegate;
-        gAmebaLaundryWasherModeDelegate = nullptr;
     }
 }

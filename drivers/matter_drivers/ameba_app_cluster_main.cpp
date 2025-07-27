@@ -26,155 +26,167 @@ using namespace chip::app::Clusters;
 // Action Cluster
 void emberAfActionsClusterInitCallback(EndpointId endpoint)
 {
-    VerifyOrReturn(Actions::GetActionsServer() == nullptr && Actions::GetActionsDelegate() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpoint);
+    ret = Actions::AmebaActionsDelegateInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaActionsDelegateInit Failed");
+        return;
+    }
 
-    auto delegate = std::make_unique<Actions::AmebaActionsDelegateImpl>();
-    auto * server   = new Actions::ActionsServer(endpoint, *delegate.get());
-
-    server->Init();
-
-    // Set global instances
-    Actions::SetActionsDelegate(delegate.get());
-    Actions::SetActionsServer(server);
+    ret = Actions::AmebaActionsServerInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaActionsServerInit Failed");
+        return;
+    }
 }
 
 void emberAfActionsClusterShutdownCallback(EndpointId endpoint)
 {
-    auto * server = Actions::GetActionsServer();
-    if (server != nullptr)
-    {
-        server->Shutdown();
-    }
-
-    Actions::SetActionsServer(nullptr);
-    Actions::SetActionsDelegate(nullptr);
+    Actions::AmebaActionsServerShutdown();
+    Actions::AmebaActionsDelegateShutdown();
 }
 
 // Air Quality Cluster
 void emberAfAirQualityClusterInitCallback(chip::EndpointId endpointId)
 {
-    VerifyOrDie(AirQuality::GetAirQualityInstance() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
+    ret = AirQuality::AmebaAirQualityInstanceInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaAirQualityInstanceInit Failed");
+        return;
+    }
+}
 
-    chip::BitMask<AirQuality::Feature, uint32_t> Features(
-        AirQuality::Feature::kModerate,
-        AirQuality::Feature::kFair,
-        AirQuality::Feature::kVeryPoor,
-        AirQuality::Feature::kExtremelyPoor);
-
-    auto * instance = new AirQuality::Instance(endpointId, Features);
-
-    AirQuality::SetAirQualityInstance(instance);
-
-    instance->Init();
+void emberAfAirQualityClusterShutdownCallback(EndpointId endpoint)
+{
+    AirQuality::AmebaAirQualityInstanceShutdown();
 }
 
 // Dishwasher Alarm Cluster
 void emberAfDishwasherAlarmClusterInitCallback(chip::EndpointId endpoint)
 {
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpoint);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    static DishwasherAlarm::AmebaDishwasherAlarmDelegate delegate;
-    DishwasherAlarm::SetDefaultDelegate(endpoint, &delegate);
-
-    CHIP_ERROR ret;
-    ret = DishwasherAlarm::AmebaDishWasherInit(endpoint);
+    ret = DishwasherAlarm::AmebaDishWasherAlarmDelegateInit(endpoint);
     if (ret != CHIP_NO_ERROR)
     {
-        ChipLogProgress(Zcl, "AmebaDishWasherInit Failed");
-        VerifyOrDie(ret == CHIP_NO_ERROR);
+        ChipLogProgress(Zcl, "AmebaDishWasherAlarmDelegateInit Failed");
+        return;
+    }
+
+    ret = DishwasherAlarm::AmebaDishWasherAlarmInstanceInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaDishWasherAlarmInstanceInit Failed");
+        return;
     }
 }
 
 // Dishwasher Mode Cluster
 void emberAfDishwasherModeClusterInitCallback(chip::EndpointId endpointId)
 {
-    VerifyOrDie(DishwasherMode::GetDishwasherModeInstance() == nullptr &&
-                DishwasherMode::GetDishwasherModeDelegate() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
+    ret = DishwasherMode::AmebaDishwasherModeDelegateInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaDishwasherModeDelegateInit Failed");
+        return;
+    }
 
-    auto * delegate = new DishwasherMode::AmebaDishwasherModeDelegate;
-    DishwasherMode::SetDishwasherModeDelegate(delegate);
-    auto * instance = new ModeBase::Instance(delegate, endpointId, DishwasherMode::Id, 0x0);
-    DishwasherMode::SetDishwasherModeInstance(instance);
-    instance->Init();
+    ret = DishwasherMode::AmebaDishwasherModeInstanceInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaDishwasherModeInstanceInit Failed");
+        return;
+    }
 }
 
 void emberAfDishwasherModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
-    if (DishwasherMode::GetDishwasherModeInstance())
-    {
-        DishwasherMode::GetDishwasherModeInstance()->Shutdown();
-    }
-    DishwasherMode::Shutdown();
+    DishwasherMode::AmebaDishwasherModeInstanceShutdown();
+    DishwasherMode::AmebaDishwasherModeDelegateShutdown();
 }
 
 // Fan Control Cluster
 void emberAfFanControlClusterInitCallback(EndpointId endpoint)
 {
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpoint);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    auto * delegate = new FanControl::AmebaFanControlDelegate(endpoint);
-    AttributeAccessInterfaceRegistry::Instance().Register(delegate);
-    FanControl::SetDefaultDelegate(endpoint, delegate);
+    ret = FanControl::AmebaFanControlDelegateInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaFanControlDelegateInit Failed");
+        return;
+    }
 }
 
 // Laundry Dryer Controls Cluster
 void emberAfLaundryDryerControlsClusterInitCallback(EndpointId endpoint)
 {
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpoint);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    auto * delegate = new LaundryDryerControls::AmebaLaundryDryerControlsDelegate();
-    LaundryDryerControls::SetLaundryDryerControlsDelegate(delegate);
-    LaundryDryerControls::LaundryDryerControlsServer::SetDefaultDelegate(endpoint, delegate);
+    ret = LaundryDryerControls::AmebaLaundryDryerControlsDelegateInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaLaundryDryerControlsDelegateInit Failed");
+        return;
+    }
 }
 
 void emberAfLaundryDryerControlsClusterShutdownCallback(EndpointId endpoint)
 {
-    LaundryDryerControls::Shutdown();
+    LaundryDryerControls::AmebaLaundryDryerControlsDelegateShutdown();
 }
 
 // Laundry Washer Controls Cluster
 void emberAfLaundryWasherControlsClusterInitCallback(EndpointId endpoint)
 {
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpoint);
+CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    auto * delegate = new LaundryWasherControls::AmebaLaundryWasherControlsDelegate();
-    LaundryWasherControls::SetLaundryWasherControlsDelegate(delegate);
-    LaundryWasherControls::LaundryWasherControlsServer::SetDefaultDelegate(endpoint, delegate);
+    ret = LaundryWasherControls::AmebaLaundryWasherControlsDelegateInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaLaundryWasherControlsDelegateInit Failed");
+        return;
+    }
 }
 
 void emberAfLaundryWasherControlsClusterShutdownCallback(EndpointId endpoint)
 {
-    LaundryWasherControls::Shutdown();
+    LaundryWasherControls::AmebaLaundryWasherControlsDelegateShutdown();
 }
 
 // Laundry Washer Mode Cluster
 void emberAfLaundryWasherModeClusterInitCallback(chip::EndpointId endpointId)
 {
-    VerifyOrDie(LaundryWasherMode::GetLaundryWasherModeInstance() == nullptr &&
-                LaundryWasherMode::GetLaundryWasherModeDelegate() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
+    ret = LaundryWasherMode::AmebaLaundryWasherModeDelegateInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaLaundryWasherModeDelegateInit Failed");
+        return;
+    }
 
-    auto * delegate = new LaundryWasherMode::AmebaLaundryWasherModeDelegate;
-    LaundryWasherMode::SetLaundryWasherModeDelegate(delegate);
-    auto * instance = new ModeBase::Instance(delegate, endpointId, LaundryWasherMode::Id, 0x0);
-    LaundryWasherMode::SetLaundryWasherModeInstance(instance);
-    instance->Init();
+    ret = LaundryWasherMode::AmebaLaundryWasherModeInstanceInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaLaundryWasherModeInstanceInit Failed");
+        return;
+    }
+
 }
 
 void emberAfLaundryWasherModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
-    if (LaundryWasherMode::GetLaundryWasherModeInstance())
-    {
-        LaundryWasherMode::GetLaundryWasherModeInstance()->Shutdown();
-    }
-    LaundryWasherMode::Shutdown();
+    LaundryWasherMode::AmebaLaundryWasherModeInstanceShutdown();
+    LaundryWasherMode::AmebaLaundryWasherModeDelegateShutdown();
 }
 
 // Microwave Oven Control Cluster

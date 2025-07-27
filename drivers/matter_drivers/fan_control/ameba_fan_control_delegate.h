@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <app-common/zap-generated/attributes/Accessors.h>
 #include <app/AttributeAccessInterfaceRegistry.h>
 #include <app/clusters/fan-control-server/fan-control-server.h>
 
@@ -42,10 +43,13 @@ public:
 private:
     CHIP_ERROR ReadPercentCurrent(AttributeValueEncoder & aEncoder);
     CHIP_ERROR ReadSpeedCurrent(AttributeValueEncoder & aEncoder);
+    CHIP_ERROR ReadPercentSetting(AttributeValueEncoder & aEncoder);
+    CHIP_ERROR ReadSpeedSetting(AttributeValueEncoder & aEncoder);
 };
 
-} // namespace FanControl
+CHIP_ERROR AmebaFanControlDelegateInit(EndpointId endpoint);
 
+} // namespace FanControl
 } // namespace Clusters
 } // namespace app
 } // namespace chip

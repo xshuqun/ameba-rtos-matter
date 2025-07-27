@@ -28,12 +28,12 @@ using chip::Protocols::InteractionModel::Status;
 
 static ModeBase::Instance * gAmebaDishwasherModeInstance     = nullptr;
 
-ModeBase::Instance * GetAmebaDishwasherModeInstance(void)
+ModeBase::Instance * DishwasherMode::GetAmebaDishwasherModeInstance(void)
 {
     return gAmebaDishwasherModeInstance;
 }
 
-CHIP_ERROR AmebaDishwasherModeInstanceInit(EndpointId endpoint)
+CHIP_ERROR DishwasherMode::AmebaDishwasherModeInstanceInit(EndpointId endpoint)
 {
     VerifyOrReturnError(gAmebaDishwasherModeInstance == nullptr, CHIP_ERROR_INTERNAL);
 
@@ -48,7 +48,7 @@ CHIP_ERROR AmebaDishwasherModeInstanceInit(EndpointId endpoint)
     return CHIP_NO_ERROR;
 }
 
-void AmebaDishwasherModeInstanceShutdown(void)
+void DishwasherMode::AmebaDishwasherModeInstanceShutdown(void)
 {
     if (gAmebaDishwasherModeInstance != nullptr)
     {

@@ -57,20 +57,25 @@ CHIP_ERROR AmebaLaundryWasherControlsDelegate::GetSupportedRinseAtIndex(size_t i
     return CHIP_NO_ERROR;
 }
 
-AmebaLaundryWasherControlsDelegate * GetAmebaLaundryWasherControlsDelegate(void)
+AmebaLaundryWasherControlsDelegate * LaundryWasherControls::GetAmebaLaundryWasherControlsDelegate(void)
 {
     return gAmebaLaundryWasherControlsDelegate;
 }
 
-CHIP_ERROR AmebaLaundryWasherControlsDelegateInit(EndpointId endpoint)
+CHIP_ERROR LaundryWasherControls::AmebaLaundryWasherControlsDelegateInit(EndpointId endpoint)
 {
-    auto * delegate = new AmebaLaundryWasherControlsDelegate();
-    LaundryWasherControlsServer::SetDefaultDelegate(endpoint, delegate);
+    VerifyOrReturnError(gAmebaLaundryWasherControlsDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaLaundryWasherControlsDelegate = new AmebaLaundryWasherControlsDelegate();
+
+    VerifyOrReturnError(gAmebaLaundryWasherControlsDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    LaundryWasherControlsServer::SetDefaultDelegate(endpoint, gAmebaLaundryWasherControlsDelegate);
 
     return CHIP_NO_ERROR;
 }
 
-void AmebaLaundryWasherControlsDelegateShutdown(void)
+void LaundryWasherControls::AmebaLaundryWasherControlsDelegateShutdown(void)
 {
     if (gAmebaLaundryWasherControlsDelegate)
     {

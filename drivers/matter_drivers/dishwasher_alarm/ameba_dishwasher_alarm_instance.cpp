@@ -26,7 +26,7 @@ using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::DishwasherAlarm;
 using Protocols::InteractionModel::Status;
 
-CHIP_ERROR AmebaDishWasherAlarmInstanceInit(chip::EndpointId endpoint)
+CHIP_ERROR DishwasherAlarm::AmebaDishWasherAlarmInstanceInit(chip::EndpointId endpoint)
 {
     Status status = Status::Success;
 

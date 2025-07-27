@@ -19,12 +19,14 @@
 
 #pragma once
 
+#include <app-common/zap-generated/cluster-objects.h>
+#include <app-common/zap-generated/ids/Attributes.h>
+#include <app-common/zap-generated/ids/Clusters.h>
 #include <app/clusters/mode-base-server/mode-base-server.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
-
 namespace RefrigeratorAndTemperatureControlledCabinetMode {
 
 const uint8_t ModeNormal      = 0;
@@ -62,8 +64,11 @@ public:
     ~AmebaRefrigeratorModeDelegate() override = default;
 };
 
-} // namespace RefrigeratorAndTemperatureControlledCabinetMode
+AmebaRefrigeratorModeDelegate * GetAmebaRefrigeratorModeDelegate(void);
+CHIP_ERROR AmebaRefrigeratorModeDelegateInit(EndpointId endpoint);
+void AmebaRefrigeratorModeDelegateShutdown(void);
 
+} // namespace RefrigeratorAndTemperatureControlledCabinetMode
 } // namespace Clusters
 } // namespace app
 } // namespace chip

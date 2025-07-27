@@ -19,7 +19,10 @@
 
 #pragma once
 
+#include <app-common/zap-generated/cluster-objects.h>
 #include <app-common/zap-generated/attributes/Accessors.h>
+#include <app-common/zap-generated/ids/Attributes.h>
+#include <app-common/zap-generated/ids/Clusters.h>
 #include <app/AttributeAccessInterfaceRegistry.h>
 #include <app/clusters/fan-control-server/fan-control-server.h>
 
@@ -47,7 +50,9 @@ private:
     CHIP_ERROR ReadSpeedSetting(AttributeValueEncoder & aEncoder);
 };
 
+AmebaFanControlDelegate * GetAmebaFanControlDelegate(void);
 CHIP_ERROR AmebaFanControlDelegateInit(EndpointId endpoint);
+void AmebaFanControlDelegateShutdown(void);
 
 } // namespace FanControl
 } // namespace Clusters

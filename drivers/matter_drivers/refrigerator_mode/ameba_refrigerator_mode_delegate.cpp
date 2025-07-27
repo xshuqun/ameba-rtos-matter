@@ -17,12 +17,15 @@
  *    limitations under the License.
  */
 
-#include <app-common/zap-generated/attributes/Accessors.h>
 #include <refrigerator_mode/ameba_refrigerator_mode_delegate.h>
 
+using namespace chip;
+using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::RefrigeratorAndTemperatureControlledCabinetMode;
 using chip::Protocols::InteractionModel::Status;
+
+static AmebaRefrigeratorModeDelegate * gAmebaRefrigeratorModeDelegate = nullptr;
 
 template <typename T>
 using List              = chip::app::DataModel::List<T>;
@@ -73,4 +76,32 @@ CHIP_ERROR AmebaRefrigeratorModeDelegate::GetModeTagsByIndex(uint8_t modeIndex, 
     tags.reduce_size(kModeOptions[modeIndex].modeTags.size());
 
     return CHIP_NO_ERROR;
+}
+
+AmebaRefrigeratorModeDelegate *
+RefrigeratorAndTemperatureControlledCabinetMode::GetAmebaRefrigeratorModeDelegate(void)
+{
+    return gAmebaRefrigeratorModeDelegate;
+}
+
+CHIP_ERROR
+RefrigeratorAndTemperatureControlledCabinetMode::AmebaRefrigeratorModeDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaRefrigeratorModeDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaRefrigeratorModeDelegate =
+                new RefrigeratorAndTemperatureControlledCabinetMode::AmebaRefrigeratorModeDelegate;
+
+    VerifyOrReturnError(gAmebaRefrigeratorModeDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    return CHIP_NO_ERROR;
+}
+
+void RefrigeratorAndTemperatureControlledCabinetMode::AmebaRefrigeratorModeDelegateShutdown(void)
+{
+    if (gAmebaRefrigeratorModeDelegate != nullptr)
+    {
+        delete gAmebaRefrigeratorModeDelegate;
+        gAmebaRefrigeratorModeDelegate = nullptr;
+    }
 }

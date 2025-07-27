@@ -17,12 +17,15 @@
  *    limitations under the License.
  */
 
-#include <app-common/zap-generated/attributes/Accessors.h>
 #include <oven_mode/ameba_oven_mode_delegate.h>
 
+using namespace chip;
+using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::OvenMode;
 using chip::Protocols::InteractionModel::Status;
+
+static AmebaOvenModeDelegate * gAmebaOvenModeDelegate = nullptr;
 
 template <typename T>
 using List              = chip::app::DataModel::List<T>;
@@ -74,3 +77,29 @@ CHIP_ERROR AmebaOvenModeDelegate::GetModeTagsByIndex(uint8_t modeIndex, List<Mod
 
     return CHIP_NO_ERROR;
 }
+
+AmebaOvenModeDelegate * OvenMode::GetAmebaOvenModeDelegate(void)
+{
+    return gAmebaOvenModeDelegate;
+}
+
+CHIP_ERROR OvenMode::AmebaOvenModeDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaOvenModeDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaOvenModeDelegate = new OvenMode::AmebaOvenModeDelegate;
+
+    VerifyOrReturnError(gAmebaOvenModeDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    return CHIP_NO_ERROR;
+}
+
+void OvenMode::AmebaOvenModeDelegateShutdown(void)
+{
+    if (gAmebaOvenModeDelegate != nullptr)
+    {
+        delete gAmebaOvenModeDelegate;
+        gAmebaOvenModeDelegate = nullptr;
+    }
+}
+

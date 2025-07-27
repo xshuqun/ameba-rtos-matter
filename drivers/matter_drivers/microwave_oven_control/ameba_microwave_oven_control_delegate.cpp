@@ -18,16 +18,19 @@
  */
 
 #include <microwave_oven_control/ameba_microwave_oven_control_delegate.h>
-#include <microwave_oven_control/ameba_microwave_oven_control_manager.h>
-#include <microwave_oven_mode/ameba_microwave_oven_mode_manager.h>
-#include <operational_state/ameba_operational_state_delegate.h>
-#include <operational_state/ameba_operational_state_manager.h>
+#include <microwave_oven_control/ameba_microwave_oven_control_instance.h>
+#include <operational_state/ameba_operational_state_instance.h>
+#include <microwave_oven_mode/ameba_microwave_oven_mode_instance.h>
+
 
 using namespace chip;
 using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::MicrowaveOvenControl;
+using namespace chip::app::Clusters::MicrowaveOvenMode;
 using namespace chip::app::Clusters::OperationalState;
+
+static MicrowaveOvenControl::AmebaMicrowaveOvenControlDelegate * gAmebaMicrowaveOvenControlDelegate = nullptr;
 
 template <typename T>
 using List              = chip::app::DataModel::List<T>;
@@ -41,12 +44,12 @@ AmebaMicrowaveOvenControlDelegate::HandleSetCookingParametersCallback(uint8_t co
 {
     Status status;
     // Update cook mode.
-    if ((status = MicrowaveOvenMode::GetMicrowaveOvenModeInstance()->UpdateCurrentMode(cookMode)) != Status::Success)
+    if ((status = GetAmebaMicrowaveOvenModeInstance()->UpdateCurrentMode(cookMode)) != Status::Success)
     {
         return status;
     }
 
-    MicrowaveOvenControl::GetMicrowaveOvenControlInstance()->SetCookTimeSec(cookTimeSec);
+    MicrowaveOvenControl::GetAmebaMicrowaveOvenControlInstance()->SetCookTimeSec(cookTimeSec);
 
     // If using power as number, check if powerSettingNum has value before setting the power number.
     // If powerSetting field is missing in the command, the powerSettingNum passed here is handled to the max value
@@ -67,14 +70,14 @@ AmebaMicrowaveOvenControlDelegate::HandleSetCookingParametersCallback(uint8_t co
 
     if (startAfterSetting)
     {
-        OperationalState::GetOperationalStateInstance()->SetOperationalState(to_underlying(OperationalStateEnum::kRunning));
+        GetAmebaOperationalStateInstance()->SetOperationalState(to_underlying(OperationalStateEnum::kRunning));
     }
     return Status::Success;
 }
 
 Protocols::InteractionModel::Status AmebaMicrowaveOvenControlDelegate::HandleModifyCookTimeSecondsCallback(uint32_t finalCookTimeSec)
 {
-    MicrowaveOvenControl::GetMicrowaveOvenControlInstance()->SetCookTimeSec(finalCookTimeSec);
+    MicrowaveOvenControl::GetAmebaMicrowaveOvenControlInstance()->SetCookTimeSec(finalCookTimeSec);
     return Status::Success;
 }
 
@@ -84,4 +87,29 @@ CHIP_ERROR AmebaMicrowaveOvenControlDelegate::GetWattSettingByIndex(uint8_t inde
 
     wattSetting = mWattSettingList[index];
     return CHIP_NO_ERROR;
+}
+
+AmebaMicrowaveOvenControlDelegate * MicrowaveOvenControl::GetAmebaMicrowaveOvenControlDelegate(void)
+{
+    return gAmebaMicrowaveOvenControlDelegate;
+}
+
+CHIP_ERROR MicrowaveOvenControl::AmebaMicrowaveOvenControlDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaMicrowaveOvenControlDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaMicrowaveOvenControlDelegate = new MicrowaveOvenControl::AmebaMicrowaveOvenControlDelegate;
+
+    VerifyOrReturnError(gAmebaMicrowaveOvenControlDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    return CHIP_NO_ERROR;
+}
+
+void MicrowaveOvenControl::AmebaMicrowaveOvenControlDelegateShutdown(void)
+{
+    if (gAmebaMicrowaveOvenControlDelegate != nullptr)
+    {
+        delete gAmebaMicrowaveOvenControlDelegate;
+        gAmebaMicrowaveOvenControlDelegate = nullptr;
+    }
 }

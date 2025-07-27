@@ -17,7 +17,6 @@
  *    limitations under the License.
  */
 
-#include <app-common/zap-generated/attributes/Accessors.h>
 #include <water_heater_mode/ameba_water_heater_mode_delegate.h>
 
 using namespace chip;
@@ -29,9 +28,8 @@ using chip::Protocols::InteractionModel::Status;
 template <typename T>
 using List              = chip::app::DataModel::List<T>;
 using ModeTagStructType = chip::app::Clusters::detail::Structs::ModeTagStruct::Type;
-namespace {
 
-} // namespace
+static AmebaWaterHeaterModeDelegate * gAmebaWaterHeaterModeDelegate = nullptr;
 
 CHIP_ERROR AmebaWaterHeaterModeDelegate::Init()
 {
@@ -79,4 +77,29 @@ CHIP_ERROR AmebaWaterHeaterModeDelegate::GetModeTagsByIndex(uint8_t modeIndex, L
     tags.reduce_size(kModeOptions[modeIndex].modeTags.size());
 
     return CHIP_NO_ERROR;
+}
+
+AmebaWaterHeaterModeDelegate * WaterHeaterMode::GetAmebaWaterHeaterModeDelegate(void)
+{
+    return gAmebaWaterHeaterModeDelegate;
+}
+
+CHIP_ERROR WaterHeaterMode::AmebaWaterHeaterModeDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaWaterHeaterModeDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaWaterHeaterModeDelegate = new WaterHeaterMode::AmebaWaterHeaterModeDelegate;
+
+    VerifyOrReturnError(gAmebaWaterHeaterModeDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    return CHIP_NO_ERROR;
+}
+
+void WaterHeaterMode::AmebaWaterHeaterModeDelegateShutdown(void)
+{
+    if (gAmebaWaterHeaterModeDelegate != nullptr)
+    {
+        delete gAmebaWaterHeaterModeDelegate;
+        gAmebaWaterHeaterModeDelegate = nullptr;
+    }
 }

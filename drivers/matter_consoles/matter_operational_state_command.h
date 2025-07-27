@@ -19,11 +19,11 @@
 #include <controller/InvokeInteraction.h>
 #include <controller/ReadInteraction.h>
 #include <operational_state/ameba_operational_state_delegate.h>
-#include <operational_state/ameba_operational_state_manager.h>
-#include <oven_operational_state/ameba_oven_operational_state_delegate.h>
-#include <oven_operational_state/ameba_oven_operational_state_manager.h>
+#include <operational_state/ameba_operational_state_instance.h>
+#include <oven_cavity_operational_state/ameba_oven_cavity_operational_state_delegate.h>
+#include <oven_cavity_operational_state/ameba_oven_cavity_operational_state_instance.h>
 #include <rvc_operational_state/ameba_rvc_operational_state_delegate.h>
-#include <rvc_operational_state/ameba_rvc_operational_state_manager.h>
+#include <rvc_operational_state/ameba_rvc_operational_state_instance.h>
 
 #if CONFIG_ENABLE_CHIP_SHELL
 #include <lib/shell/Engine.h>
@@ -89,7 +89,7 @@ CHIP_ERROR ManualOperationalStateSetStateCommandHandler(int argc, char ** argv)
     uint32_t state = atoi(argv[0]);
 
     CHIP_ERROR err;
-    err = OperationalState::GetOperationalStateInstance()->SetOperationalState(state);
+    err = OperationalState::GetAmebaOperationalStateInstance()->SetOperationalState(state);
 
     if (err != CHIP_NO_ERROR)
     {
@@ -122,7 +122,7 @@ CHIP_ERROR ManualOperationalStateSetErrorCommandHandler(int argc, char ** argv)
         break;
     }
 
-    OperationalState::GetOperationalStateInstance()->OnOperationalErrorDetected(err);
+    OperationalState::GetAmebaOperationalStateInstance()->OnOperationalErrorDetected(err);
 
     return CHIP_NO_ERROR;
 }
@@ -191,7 +191,7 @@ CHIP_ERROR ManualRVCOperationalStateSetStateCommandHandler(int argc, char ** arg
     uint32_t state = atoi(argv[0]);
 
     CHIP_ERROR err;
-    err = RvcOperationalState::GetRvcOperationalStateInstance()->SetOperationalState(state);
+    err = RvcOperationalState::GetAmebaRvcOperationalStateInstance()->SetOperationalState(state);
     if (err != CHIP_NO_ERROR)
     {
         ChipLogError(DeviceLayer, "ManualRVCOperationalStateSetStateCommandHandler Failed!\r\n");
@@ -238,7 +238,7 @@ CHIP_ERROR ManualRVCOperationalStateSetErrorCommandHandler(int argc, char ** arg
         break;
     }
 
-    RvcOperationalState::GetRvcOperationalStateInstance()->OnOperationalErrorDetected(err);
+    RvcOperationalState::GetAmebaRvcOperationalStateInstance()->OnOperationalErrorDetected(err);
 
     return CHIP_NO_ERROR;
 }
@@ -285,7 +285,7 @@ CHIP_ERROR ManualOvenCavityOperationalStateSetStateCommandHandler(int argc, char
     uint32_t state = atoi(argv[0]);
 
     CHIP_ERROR err;
-    err = OvenCavityOperationalState::GetOvenCavityOperationalStateInstance()->SetOperationalState(state);
+    err = OvenCavityOperationalState::GetAmebaOvenCavityOperationalStateInstance()->SetOperationalState(state);
 
     if (err != CHIP_NO_ERROR)
     {
@@ -318,7 +318,7 @@ CHIP_ERROR ManualOvenCavityOperationalStateSetErrorCommandHandler(int argc, char
         break;
     }
 
-    OvenCavityOperationalState::GetOvenCavityOperationalStateInstance()->OnOperationalErrorDetected(err);
+    OvenCavityOperationalState::GetAmebaOvenCavityOperationalStateInstance()->OnOperationalErrorDetected(err);
 
     return CHIP_NO_ERROR;
 }

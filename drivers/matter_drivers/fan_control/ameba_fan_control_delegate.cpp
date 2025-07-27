@@ -18,6 +18,7 @@
  */
 
 #include <fan_control/ameba_fan_control_delegate.h>
+#include <protocols/interaction_model/StatusCode.h>
 
 using namespace chip;
 using namespace chip::app;
@@ -25,6 +26,8 @@ using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::FanControl;
 using namespace chip::app::Clusters::FanControl::Attributes;
 using Protocols::InteractionModel::Status;
+
+static AmebaFanControlDelegate * gAmebaFanControlDelegate = nullptr;
 
 CHIP_ERROR AmebaFanControlDelegate::ReadPercentCurrent(AttributeValueEncoder & aEncoder)
 {
@@ -169,11 +172,29 @@ CHIP_ERROR AmebaFanControlDelegate::Read(const ConcreteReadAttributePath & aPath
     return CHIP_NO_ERROR;
 }
 
-CHIP_ERROR AmebaFanControlDelegateInit(EndpointId endpoint)
+AmebaFanControlDelegate * FanControl::GetAmebaFanControlDelegate(void)
 {
-    auto * delegate = new FanControl::AmebaFanControlDelegate(endpoint);
-    AttributeAccessInterfaceRegistry::Instance().Register(delegate);
-    FanControl::SetDefaultDelegate(endpoint, delegate);
+    return gAmebaFanControlDelegate;
+}
+
+CHIP_ERROR FanControl::AmebaFanControlDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaFanControlDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaFanControlDelegate = new FanControl::AmebaFanControlDelegate(endpoint);
+
+    VerifyOrReturnError(gAmebaFanControlDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    AttributeAccessInterfaceRegistry::Instance().Register(gAmebaFanControlDelegate);
+    FanControl::SetDefaultDelegate(endpoint, gAmebaFanControlDelegate);
 
     return CHIP_NO_ERROR;
+}
+
+void FanControl::AmebaFanControlDelegateShutdown(void)
+{
+    if (gAmebaFanControlDelegate) {
+        delete gAmebaFanControlDelegate;
+        gAmebaFanControlDelegate = nullptr;
+    }
 }

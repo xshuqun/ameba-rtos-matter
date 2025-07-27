@@ -22,14 +22,11 @@
 #include <valve_control/ameba_valve_control_delegate.h>
 #include <water_heater_management/ameba_water_heater_management_main.h>
 #include <mode_select/ameba_mode_select_manager.h>
-#include <temperature_levels/ameba_temperature_levels.h>
 #if CONFIG_ENABLE_AMEBA_TEST_EVENT_TRIGGER
-#include <app/clusters/smoke-co-alarm-server/SmokeCOTestEventTriggerHandler.h>
 #include <app/clusters/water-heater-management-server/WaterHeaterManagementTestEventTriggerHandler.h>
 #include <test_event_trigger/AmebaTestEventTriggerDelegate.h>
 #include <app/server/Server.h>
 #endif
-#include <app/clusters/valve-configuration-and-control-server/valve-configuration-and-control-server.h>
 
 using namespace chip;
 using namespace chip::app;
@@ -39,9 +36,7 @@ using namespace chip::app::Clusters::DeviceEnergyManagement::Attributes;
 using namespace chip::app::Clusters::WaterHeaterManagement;
 
 namespace {
-app::Clusters::TemperatureControl::AppSupportedTemperatureLevelsDelegate sAppSupportedTemperatureLevelsDelegate;
 app::Clusters::ModeSelect::AmebaSupportedModesManager sAmebaSupportedModesManager;
-app::Clusters::ValveConfigurationAndControl::ValveControlDelegate sValveDelegate;
 } // namespace
 
 void AppTaskInit(void)
@@ -50,15 +45,10 @@ void AppTaskInit(void)
     InitManualOperation();
 #endif
 
-    app::Clusters::TemperatureControl::SetInstance(&sAppSupportedTemperatureLevelsDelegate);
     app::Clusters::ModeSelect::setSupportedModesManager(&sAmebaSupportedModesManager);
-    app::Clusters::ValveConfigurationAndControl::SetDefaultDelegate(chip::EndpointId(1), &sValveDelegate);
-
     WaterHeaterApplicationInit();
 
 #if CONFIG_ENABLE_AMEBA_TEST_EVENT_TRIGGER
-    static SmokeCOTestEventTriggerHandler sSmokeCOTestEventTriggerHandler;
-    Server::GetInstance().GetTestEventTriggerDelegate()->AddHandler(&sSmokeCOTestEventTriggerHandler);
 
     static WaterHeaterManagementTestEventTriggerHandler sWaterHeaterManagementTestEventTriggerHandler;
     Server::GetInstance().GetTestEventTriggerDelegate()->AddHandler(&sWaterHeaterManagementTestEventTriggerHandler);

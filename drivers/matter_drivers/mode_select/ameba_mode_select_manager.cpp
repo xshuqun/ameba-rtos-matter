@@ -20,6 +20,7 @@
 #include <mode_select/ameba_mode_select_manager.h>
 
 using namespace chip;
+using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::ModeSelect;
 using chip::Protocols::InteractionModel::Status;

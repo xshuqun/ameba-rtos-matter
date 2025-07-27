@@ -17,7 +17,6 @@
  *    limitations under the License.
  */
 
-#include <app-common/zap-generated/attributes/Accessors.h>
 #include <microwave_oven_mode/ameba_microwave_oven_mode_delegate.h>
 
 using namespace chip;
@@ -25,6 +24,8 @@ using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::MicrowaveOvenMode;
 using chip::Protocols::InteractionModel::Status;
+
+static AmebaMicrowaveOvenModeDelegate * gAmebaMicrowaveOvenModeDelegate = nullptr;
 
 template <typename T>
 using List              = chip::app::DataModel::List<T>;
@@ -77,4 +78,31 @@ CHIP_ERROR AmebaMicrowaveOvenModeDelegate::GetModeTagsByIndex(uint8_t modeIndex,
     tags.reduce_size(kModeOptions[modeIndex].modeTags.size());
 
     return CHIP_NO_ERROR;
+}
+
+AmebaMicrowaveOvenModeDelegate * MicrowaveOvenMode::GetAmebaMicrowaveOvenModeDelegate(void)
+{
+    return gAmebaMicrowaveOvenModeDelegate;
+}
+
+CHIP_ERROR MicrowaveOvenMode::AmebaMicrowaveOvenModeDelegateInit(EndpointId endpoint)
+{
+    // Shall check if delegate has been initialized before.
+    // As MicrowaveOvenControl is dependent on this cluster, it could have been initialized.
+    if (gAmebaMicrowaveOvenModeDelegate == nullptr)
+    {
+        gAmebaMicrowaveOvenModeDelegate = new MicrowaveOvenMode::AmebaMicrowaveOvenModeDelegate;
+        VerifyOrReturnError(gAmebaMicrowaveOvenModeDelegate != nullptr, CHIP_ERROR_INTERNAL);
+    }
+
+    return CHIP_NO_ERROR;
+}
+
+void MicrowaveOvenMode::AmebaMicrowaveOvenModeDelegateShutdown(void)
+{
+    if (gAmebaMicrowaveOvenModeDelegate != nullptr)
+    {
+        delete gAmebaMicrowaveOvenModeDelegate;
+        gAmebaMicrowaveOvenModeDelegate = nullptr;
+    }
 }

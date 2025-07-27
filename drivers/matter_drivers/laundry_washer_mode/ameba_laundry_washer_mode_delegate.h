@@ -19,12 +19,14 @@
 
 #pragma once
 
+#include <app-common/zap-generated/cluster-objects.h>
+#include <app-common/zap-generated/ids/Attributes.h>
+#include <app-common/zap-generated/ids/Clusters.h>
 #include <app/clusters/mode-base-server/mode-base-server.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
-
 namespace LaundryWasherMode {
 
 const uint8_t ModeNormal   = 0;
@@ -75,7 +77,6 @@ CHIP_ERROR AmebaLaundryWasherModeDelegateInit(EndpointId endpoint);
 void AmebaLaundryWasherModeDelegateShutdown(void);
 
 } // namespace LaundryWasherMode
-
 } // namespace Clusters
 } // namespace app
 } // namespace chip

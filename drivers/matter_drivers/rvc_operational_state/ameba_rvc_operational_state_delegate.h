@@ -20,14 +20,13 @@
 #pragma once
 
 #include <app-common/zap-generated/cluster-objects.h>
+#include <app-common/zap-generated/ids/Attributes.h>
+#include <app-common/zap-generated/ids/Clusters.h>
 #include <app/clusters/operational-state-server/operational-state-server.h>
-
-#include <protocols/interaction_model/StatusCode.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
-
 namespace RvcOperationalState {
 
 // This is an application level delegate to handle operational state commands according to the specific business logic.
@@ -54,55 +53,21 @@ private:
 
 public:
     AmebaRvcOperationalStateDelegate() {}
-
-    /**
-     * Get the countdown time. This attribute is not used in this application.
-     * @return The current countdown time.
-     */
     app::DataModel::Nullable<uint32_t> GetCountdownTime() override { return {}; };
 
-    /**
-     * Fills in the provided GenericOperationalState with the state at index `index` if there is one,
-     * or returns CHIP_ERROR_NOT_FOUND if the index is out of range for the list of states.
-     * Note: This is used by the SDK to populate the operational state list attribute. If the contents of this list changes,
-     * the device SHALL call the Instance's ReportOperationalStateListChange method to report that this attribute has changed.
-     * @param index The index of the state, with 0 representing the first state.
-     * @param operationalState  The GenericOperationalState is filled.
-     */
     CHIP_ERROR GetOperationalStateAtIndex(size_t index, OperationalState::GenericOperationalState & operationalState) override;
-
-    /**
-     * Fills in the provided GenericOperationalPhase with the phase at index `index` if there is one,
-     * or returns CHIP_ERROR_NOT_FOUND if the index is out of range for the list of phases.
-     * Note: This is used by the SDK to populate the phase list attribute. If the contents of this list changes, the
-     * device SHALL call the Instance's ReportPhaseListChange method to report that this attribute has changed.
-     * @param index The index of the phase, with 0 representing the first phase.
-     * @param operationalPhase  The GenericOperationalPhase is filled.
-     */
     CHIP_ERROR GetOperationalPhaseAtIndex(size_t index, MutableCharSpan & operationalPhase) override;
 
-    // command callback
-    /**
-     * Handle Command Callback in application: Pause
-     * @param[out] get operational error after callback.
-     */
     void HandlePauseStateCallback(OperationalState::GenericOperationalError & err) override;
-
-    /**
-     * Handle Command Callback in application: Resume
-     * @param[out] get operational error after callback.
-     */
     void HandleResumeStateCallback(OperationalState::GenericOperationalError & err) override;
-
-    /**
-     * Handle the GoHome command.
-     * @param err
-     */
     void HandleGoHomeCommandCallback(OperationalState::GenericOperationalError & err) override;
 };
 
+AmebaRvcOperationalStateDelegate * GetAmebaRvcOperationalStateDelegate(void);
+CHIP_ERROR AmebaRvcOperationalStateDelegateInit(EndpointId endpoint);
+void AmebaRvcOperationalStateDelegateShutdown(void);
+
 } // namespace RvcOperationalState
 } // namespace Clusters
-
 } // namespace app
 } // namespace chip

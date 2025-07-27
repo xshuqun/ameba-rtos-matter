@@ -18,8 +18,8 @@
  */
 
 #include <rvc_run_mode/ameba_rvc_run_mode_delegate.h>
-#include <rvc_operational_state/ameba_rvc_operational_state_delegate.h>
-#include <rvc_operational_state/ameba_rvc_operational_state_manager.h>
+#include <rvc_run_mode/ameba_rvc_run_mode_instance.h>
+#include <rvc_operational_state/ameba_rvc_operational_state_instance.h>
 
 using namespace chip;
 using namespace chip::app;
@@ -32,7 +32,6 @@ using List              = chip::app::DataModel::List<T>;
 using ModeTagStructType = chip::app::Clusters::detail::Structs::ModeTagStruct::Type;
 
 static AmebaRvcRunModeDelegate * gAmebaRvcRunModeDelegate = nullptr;
-static ModeBase::Instance * gAmebaRvcRunModeInstance = nullptr;
 
 CHIP_ERROR AmebaRvcRunModeDelegate::Init()
 {
@@ -43,7 +42,7 @@ void AmebaRvcRunModeDelegate::HandleChangeToMode(uint8_t NewMode, ModeBase::Comm
 {
     uint8_t currentMode = mInstance->GetCurrentMode();
 
-    if (!gAmebaRvcRunModeInstance->HasFeature(static_cast<ModeBase::Feature>(RvcRunMode::Feature::kDirectModeChange)))
+    if (!GetAmebaRvcRunModeInstance()->HasFeature(static_cast<ModeBase::Feature>(RvcRunMode::Feature::kDirectModeChange)))
     {
         // Our business logic states that we can only switch into a running mode from the idle state.
         if (NewMode != RvcRunMode::ModeIdle && currentMode != RvcRunMode::ModeIdle)
@@ -54,7 +53,7 @@ void AmebaRvcRunModeDelegate::HandleChangeToMode(uint8_t NewMode, ModeBase::Comm
         }
     }
 
-    auto rvcOpStateInstance = RvcOperationalState::GetRvcOperationalStateInstance();
+    auto rvcOpStateInstance = RvcOperationalState::GetAmebaRvcOperationalStateInstance();
     if (NewMode == RvcRunMode::ModeIdle)
     {
         rvcOpStateInstance->SetOperationalState(to_underlying(OperationalState::OperationalStateEnum::kStopped));
@@ -102,4 +101,29 @@ CHIP_ERROR AmebaRvcRunModeDelegate::GetModeTagsByIndex(uint8_t modeIndex, List<M
     tags.reduce_size(kModeOptions[modeIndex].modeTags.size());
 
     return CHIP_NO_ERROR;
+}
+
+AmebaRvcRunModeDelegate * RvcRunMode::GetAmebaRvcRunModeDelegate(void)
+{
+    return gAmebaRvcRunModeDelegate;
+}
+
+CHIP_ERROR RvcRunMode::AmebaRvcRunModeDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaRvcRunModeDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaRvcRunModeDelegate = new RvcRunMode::AmebaRvcRunModeDelegate;
+
+    VerifyOrReturnError(gAmebaRvcRunModeDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    return CHIP_NO_ERROR;
+}
+
+void RvcRunMode::AmebaRvcRunModeDelegateShutdown(void)
+{
+    if (gAmebaRvcRunModeDelegate != nullptr)
+    {
+        delete gAmebaRvcRunModeDelegate;
+        gAmebaRvcRunModeDelegate = nullptr;
+    }
 }

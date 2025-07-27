@@ -19,6 +19,9 @@
 
 #pragma once
 
+#include <app-common/zap-generated/cluster-objects.h>
+#include <app-common/zap-generated/ids/Attributes.h>
+#include <app-common/zap-generated/ids/Clusters.h>
 #include <app/clusters/actions-server/actions-server.h>
 
 namespace chip {
@@ -26,7 +29,7 @@ namespace app {
 namespace Clusters {
 namespace Actions {
 
-AmebaActionsDelegateImpl * GetAmebaActionsServer(void);
+ActionsServer * GetAmebaActionsServer(void);
 CHIP_ERROR AmebaActionsServerInit(EndpointId endpoint);
 void AmebaActionsServerShutdown(void);
 

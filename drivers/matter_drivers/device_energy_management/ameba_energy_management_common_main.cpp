@@ -27,7 +27,7 @@
 #include <water_heater_management/ameba_water_heater_management_main.h>
 #include <water_heater_management/ameba_water_heater_management_manufacturer.h>
 #include <water_heater_mode/ameba_water_heater_mode_delegate.h>
-#include <water_heater_mode/ameba_water_heater_mode_manager.h>
+#include <water_heater_mode/ameba_water_heater_mode_instance.h>
 
 #include <app/clusters/electrical-energy-measurement-server/electrical-energy-measurement-server.h>
 #include <app-common/zap-generated/ids/Attributes.h>
@@ -388,5 +388,6 @@ void WaterHeaterApplicationShutdown()
     WhmApplicationShutdown();
 
     Clusters::DeviceEnergyManagementMode::Shutdown();
-    Clusters::WaterHeaterMode::Shutdown();
+    WaterHeaterMode::AmebaWaterHeaterModeInstanceShutdown();
+    WaterHeaterMode::AmebaWaterHeaterModeDelegateShutdown();
 }

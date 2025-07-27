@@ -19,12 +19,14 @@
 
 #pragma once
 
+#include <app-common/zap-generated/cluster-objects.h>
+#include <app-common/zap-generated/ids/Attributes.h>
+#include <app-common/zap-generated/ids/Clusters.h>
 #include <app/clusters/mode-base-server/mode-base-server.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
-
 namespace WaterHeaterMode {
 
 constexpr uint8_t kModeOff    = 0;
@@ -60,8 +62,11 @@ public:
     ~AmebaWaterHeaterModeDelegate() override = default;
 };
 
-} // namespace WaterHeaterMode
+AmebaWaterHeaterModeDelegate * GetAmebaWaterHeaterModeDelegate(void);
+CHIP_ERROR AmebaWaterHeaterModeDelegateInit(EndpointId endpoint);
+void AmebaWaterHeaterModeDelegateShutdown(void);
 
+} // namespace WaterHeaterMode
 } // namespace Clusters
 } // namespace app
 } // namespace chip

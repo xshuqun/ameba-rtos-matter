@@ -18,10 +18,9 @@
  */
 
 #include <rvc_clean_mode/ameba_rvc_clean_mode_delegate.h>
+#include <rvc_clean_mode/ameba_rvc_clean_mode_instance.h>
 #include <rvc_run_mode/ameba_rvc_run_mode_delegate.h>
-#include <rvc_run_mode/ameba_rvc_run_mode_manager.h>
-#include <rvc_operational_state/ameba_rvc_operational_state_delegate.h>
-#include <rvc_operational_state/ameba_rvc_operational_state_manager.h>
+#include <rvc_run_mode/ameba_rvc_run_mode_instance.h>
 
 using namespace chip;
 using namespace chip::app;
@@ -33,9 +32,7 @@ template <typename T>
 using List              = chip::app::DataModel::List<T>;
 using ModeTagStructType = chip::app::Clusters::detail::Structs::ModeTagStruct::Type;
 
-// RVC Clean
 static AmebaRvcCleanModeDelegate * gAmebaRvcCleanModeDelegate = nullptr;
-static ModeBase::Instance * gAmebaRvcCleanModeInstance   = nullptr;
 
 CHIP_ERROR AmebaRvcCleanModeDelegate::Init()
 {
@@ -44,9 +41,9 @@ CHIP_ERROR AmebaRvcCleanModeDelegate::Init()
 
 void AmebaRvcCleanModeDelegate::HandleChangeToMode(uint8_t NewMode, ModeBase::Commands::ChangeToModeResponse::Type & response)
 {
-    if (!gAmebaRvcCleanModeInstance->HasFeature(static_cast<ModeBase::Feature>(RvcCleanMode::Feature::kDirectModeChange)))
+    if (!GetAmebaRvcCleanModeInstance()->HasFeature(static_cast<ModeBase::Feature>(RvcCleanMode::Feature::kDirectModeChange)))
     {
-        uint8_t rvcRunCurrentMode = RvcRunMode::GetRvcRunModeInstance()->GetCurrentMode();
+        uint8_t rvcRunCurrentMode = RvcRunMode::GetAmebaRvcRunModeInstance()->GetCurrentMode();
 
         if (rvcRunCurrentMode != RvcRunMode::ModeIdle)
         {
@@ -95,4 +92,29 @@ CHIP_ERROR AmebaRvcCleanModeDelegate::GetModeTagsByIndex(uint8_t modeIndex, List
     tags.reduce_size(kModeOptions[modeIndex].modeTags.size());
 
     return CHIP_NO_ERROR;
+}
+
+AmebaRvcCleanModeDelegate * RvcCleanMode::GetAmebaRvcCleanModeDelegate(void)
+{
+    return gAmebaRvcCleanModeDelegate;
+}
+
+CHIP_ERROR RvcCleanMode::AmebaRvcCleanModeDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaRvcCleanModeDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaRvcCleanModeDelegate = new RvcCleanMode::AmebaRvcCleanModeDelegate;
+
+    VerifyOrReturnError(gAmebaRvcCleanModeDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    return CHIP_NO_ERROR;
+}
+
+void RvcCleanMode::AmebaRvcCleanModeDelegateShutdown(void)
+{
+    if (gAmebaRvcCleanModeDelegate != nullptr)
+    {
+        delete gAmebaRvcCleanModeDelegate;
+        gAmebaRvcCleanModeDelegate = nullptr;
+    }
 }

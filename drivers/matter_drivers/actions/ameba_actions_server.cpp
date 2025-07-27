@@ -29,12 +29,12 @@ namespace {
 std::unique_ptr<ActionsServer> sAmebaActionsServer = nullptr;
 } // namespace
 
-ActionsServer * GetAmebaActionsServer(void)
+ActionsServer * Actions::GetAmebaActionsServer(void)
 {
     return sAmebaActionsServer.get();
 }
 
-CHIP_ERROR AmebaActionsServerInit(EndpointId endpoint)
+CHIP_ERROR Actions::AmebaActionsServerInit(EndpointId endpoint)
 {
     VerifyOrReturnError(sAmebaActionsServer == nullptr, CHIP_ERROR_INTERNAL);
 
@@ -47,7 +47,7 @@ CHIP_ERROR AmebaActionsServerInit(EndpointId endpoint)
     return CHIP_NO_ERROR;
 }
 
-void AmebaActionsServerShutdown(void)
+void Actions::AmebaActionsServerShutdown(void)
 {
     if (sAmebaActionsServer != nullptr)
     {

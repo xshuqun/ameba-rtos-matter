@@ -17,7 +17,6 @@
  *    limitations under the License.
  */
 
-#include <app-common/zap-generated/attributes/Accessors.h>
 #include <laundry_washer_mode/ameba_laundry_washer_mode_delegate.h>
 
 using namespace chip;
@@ -79,12 +78,12 @@ CHIP_ERROR AmebaLaundryWasherModeDelegate::GetModeTagsByIndex(uint8_t modeIndex,
     return CHIP_NO_ERROR;
 }
 
-AmebaLaundryWasherModeDelegate * GetAmebaLaundryWasherModeDelegate(void)
+AmebaLaundryWasherModeDelegate * LaundryWasherMode::GetAmebaLaundryWasherModeDelegate(void)
 {
     return gAmebaLaundryWasherModeDelegate;
 }
 
-CHIP_ERROR AmebaLaundryWasherModeDelegateInit(EndpointId endpoint)
+CHIP_ERROR LaundryWasherMode::AmebaLaundryWasherModeDelegateInit(EndpointId endpoint)
 {
     VerifyOrReturnError(gAmebaLaundryWasherModeDelegate == nullptr, CHIP_ERROR_INTERNAL);
 
@@ -95,7 +94,7 @@ CHIP_ERROR AmebaLaundryWasherModeDelegateInit(EndpointId endpoint)
     return CHIP_NO_ERROR;
 }
 
-void AmebaLaundryWasherModeDelegateShutdown(void)
+void LaundryWasherMode::AmebaLaundryWasherModeDelegateShutdown(void)
 {
     if (gAmebaLaundryWasherModeDelegate != nullptr)
     {

@@ -124,12 +124,12 @@ Status AmebaActionsDelegateImpl::HandleDisableActionWithDuration(uint16_t action
     return Status::NotFound;
 }
 
-AmebaActionsDelegateImpl * GetAmebaActionsDelegate(void)
+AmebaActionsDelegateImpl * Actions::GetAmebaActionsDelegate(void)
 {
     return sAmebaActionsDelegateImpl.get();
 }
 
-CHIP_ERROR AmebaActionsDelegateInit(EndpointId endpoint)
+CHIP_ERROR Actions::AmebaActionsDelegateInit(EndpointId endpoint)
 {
     VerifyOrReturnError(sAmebaActionsDelegateImpl == nullptr, CHIP_ERROR_INTERNAL);
 
@@ -140,7 +140,7 @@ CHIP_ERROR AmebaActionsDelegateInit(EndpointId endpoint)
     return CHIP_NO_ERROR;
 }
 
-void AmebaActionsDelegateShutdown(void)
+void Actions::AmebaActionsDelegateShutdown(void)
 {
     sAmebaActionsDelegateImpl.reset();
 }

@@ -18,12 +18,14 @@
  */
 
 #include <rvc_operational_state/ameba_rvc_operational_state_delegate.h>
-#include <rvc_operational_state/ameba_rvc_operational_state_manager.h>
+#include <rvc_operational_state/ameba_rvc_operational_state_instance.h>
 
 using namespace chip;
 using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::RvcOperationalState;
+
+static AmebaRvcOperationalStateDelegate * gAmebaRvcOperationalStateDelegate = nullptr;
 
 CHIP_ERROR AmebaRvcOperationalStateDelegate::GetOperationalStateAtIndex(size_t index,
                                                                    OperationalState::GenericOperationalState & operationalState)
@@ -47,8 +49,7 @@ CHIP_ERROR AmebaRvcOperationalStateDelegate::GetOperationalPhaseAtIndex(size_t i
 
 void AmebaRvcOperationalStateDelegate::HandlePauseStateCallback(OperationalState::GenericOperationalError & err)
 {
-    // placeholder implementation
-    auto error = GetRvcOperationalStateInstance()->SetOperationalState(to_underlying(OperationalState::OperationalStateEnum::kPaused));
+    auto error = GetAmebaRvcOperationalStateInstance()->SetOperationalState(to_underlying(OperationalState::OperationalStateEnum::kPaused));
     if (error == CHIP_NO_ERROR)
     {
         err.Set(to_underlying(OperationalState::ErrorStateEnum::kNoError));
@@ -61,8 +62,7 @@ void AmebaRvcOperationalStateDelegate::HandlePauseStateCallback(OperationalState
 
 void AmebaRvcOperationalStateDelegate::HandleResumeStateCallback(OperationalState::GenericOperationalError & err)
 {
-    // placeholder implementation
-    auto error = GetRvcOperationalStateInstance()->SetOperationalState(to_underlying(OperationalState::OperationalStateEnum::kRunning));
+    auto error = GetAmebaRvcOperationalStateInstance()->SetOperationalState(to_underlying(OperationalState::OperationalStateEnum::kRunning));
     if (error == CHIP_NO_ERROR)
     {
         err.Set(to_underlying(OperationalState::ErrorStateEnum::kNoError));
@@ -75,8 +75,7 @@ void AmebaRvcOperationalStateDelegate::HandleResumeStateCallback(OperationalStat
 
 void AmebaRvcOperationalStateDelegate::HandleGoHomeCommandCallback(OperationalState::GenericOperationalError & err)
 {
-    // placeholder implementation
-    auto error = GetRvcOperationalStateInstance()->SetOperationalState(to_underlying(OperationalStateEnum::kSeekingCharger));
+    auto error = GetAmebaRvcOperationalStateInstance()->SetOperationalState(to_underlying(OperationalStateEnum::kSeekingCharger));
     if (error == CHIP_NO_ERROR)
     {
         err.Set(to_underlying(OperationalState::ErrorStateEnum::kNoError));
@@ -84,5 +83,30 @@ void AmebaRvcOperationalStateDelegate::HandleGoHomeCommandCallback(OperationalSt
     else
     {
         err.Set(to_underlying(OperationalState::ErrorStateEnum::kUnableToCompleteOperation));
+    }
+}
+
+AmebaRvcOperationalStateDelegate * RvcOperationalState::GetAmebaRvcOperationalStateDelegate(void)
+{
+    return gAmebaRvcOperationalStateDelegate;
+}
+
+CHIP_ERROR RvcOperationalState::AmebaRvcOperationalStateDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaRvcOperationalStateDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaRvcOperationalStateDelegate = new RvcOperationalState::AmebaRvcOperationalStateDelegate;
+
+    VerifyOrReturnError(gAmebaRvcOperationalStateDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    return CHIP_NO_ERROR;
+}
+
+void RvcOperationalState::AmebaRvcOperationalStateDelegateShutdown(void)
+{
+    if (gAmebaRvcOperationalStateDelegate != nullptr)
+    {
+        delete gAmebaRvcOperationalStateDelegate;
+        gAmebaRvcOperationalStateDelegate = nullptr;
     }
 }

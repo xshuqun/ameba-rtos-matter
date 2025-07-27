@@ -49,7 +49,7 @@ Instance * AirQuality::GetAmebaAirQualityInstance(void)
     return gAmebaAirQualityInstance;
 }
 
-CHIP_ERROR AmebaAirQualityInstanceInit(EndpointId endpoint)
+CHIP_ERROR AirQuality::AmebaAirQualityInstanceInit(EndpointId endpoint)
 {
     VerifyOrReturnError(gAmebaAirQualityInstance == nullptr, CHIP_ERROR_INTERNAL);
 
@@ -67,7 +67,7 @@ CHIP_ERROR AmebaAirQualityInstanceInit(EndpointId endpoint)
     return CHIP_NO_ERROR;
 }
 
-void AmebaAirQualityInstanceShutdown(void)
+void AirQuality::AmebaAirQualityInstanceShutdown(void)
 {
     if (gAmebaAirQualityInstance != nullptr) {
         delete gAmebaAirQualityInstance;

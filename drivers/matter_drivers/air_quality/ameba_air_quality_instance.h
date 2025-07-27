@@ -18,6 +18,7 @@
  */
 #pragma once
 
+#include <app-common/zap-generated/cluster-objects.h>
 #include <app-common/zap-generated/ids/Attributes.h>
 #include <app-common/zap-generated/ids/Clusters.h>
 #include <app/clusters/air-quality-server/air-quality-server.h>

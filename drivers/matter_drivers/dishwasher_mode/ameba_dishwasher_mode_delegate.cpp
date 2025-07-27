@@ -79,12 +79,12 @@ CHIP_ERROR AmebaDishwasherModeDelegate::GetModeTagsByIndex(uint8_t modeIndex, Li
     return CHIP_NO_ERROR;
 }
 
-AmebaDishwasherModeDelegate * GetAmebaDishwasherModeDelegate(void)
+AmebaDishwasherModeDelegate * DishwasherMode::GetAmebaDishwasherModeDelegate(void)
 {
     return gAmebaDishwasherModeDelegate;
 }
 
-CHIP_ERROR AmebaDishwasherModeDelegateInit(EndpointId endpoint)
+CHIP_ERROR DishwasherMode::AmebaDishwasherModeDelegateInit(EndpointId endpoint)
 {
     VerifyOrReturnError(gAmebaDishwasherModeDelegate == nullptr, CHIP_ERROR_INTERNAL);
 
@@ -95,7 +95,7 @@ CHIP_ERROR AmebaDishwasherModeDelegateInit(EndpointId endpoint)
     return CHIP_NO_ERROR;
 }
 
-void AmebaDishwasherModeDelegateShutdown(void)
+void DishwasherMode::AmebaDishwasherModeDelegateShutdown(void)
 {
     if (gAmebaDishwasherModeDelegate != nullptr)
     {

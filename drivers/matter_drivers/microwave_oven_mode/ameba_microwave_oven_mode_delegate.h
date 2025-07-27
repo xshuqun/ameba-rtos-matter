@@ -18,15 +18,14 @@
 
 #pragma once
 
+#include <app-common/zap-generated/cluster-objects.h>
+#include <app-common/zap-generated/ids/Attributes.h>
+#include <app-common/zap-generated/ids/Clusters.h>
 #include <app/clusters/mode-base-server/mode-base-server.h>
-#include <app/util/config.h>
-#include <cstring>
-#include <utility>
 
 namespace chip {
 namespace app {
 namespace Clusters {
-
 namespace MicrowaveOvenMode {
 
 const uint8_t ModeNormal  = 0;
@@ -60,8 +59,11 @@ public:
     ~AmebaMicrowaveOvenModeDelegate() override = default;
 };
 
-} // namespace MicrowaveOvenMode
+AmebaMicrowaveOvenModeDelegate * GetAmebaMicrowaveOvenModeDelegate(void);
+CHIP_ERROR AmebaMicrowaveOvenModeDelegateInit(EndpointId endpoint);
+void AmebaMicrowaveOvenModeDelegateShutdown(void);
 
+} // namespace MicrowaveOvenMode
 } // namespace Clusters
 } // namespace app
 } // namespace chip

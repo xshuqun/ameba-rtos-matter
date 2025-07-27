@@ -18,7 +18,7 @@
  */
 
 #include <operational_state/ameba_operational_state_delegate.h>
-#include <operational_state/ameba_operational_state_manager.h>
+#include <operational_state/ameba_operational_state_instance.h>
 #include <platform/CHIPDeviceLayer.h>
 
 using namespace chip;
@@ -27,6 +27,8 @@ using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::OperationalState;
 
 static void onOperationalStateTimerTick(System::Layer * systemLayer, void * data);
+
+static AmebaOperationalStateDelegate * gAmebaOperationalStateDelegate   = nullptr;
 
 DataModel::Nullable<uint32_t> AmebaOperationalStateDelegate::GetCountdownTime(void)
 {
@@ -140,9 +142,9 @@ void AmebaOperationalStateDelegate::HandleStopStateCallback(GenericOperationalEr
 
 static void onOperationalStateTimerTick(System::Layer * systemLayer, void * data)
 {
-    AmebaOperationalStateDelegate * delegate = OperationalState::GetOperationalStateDelegate();
+    AmebaOperationalStateDelegate * delegate = OperationalState::GetAmebaOperationalStateDelegate();
 
-    OperationalState::Instance * instance = OperationalState::GetOperationalStateInstance();
+    OperationalState::Instance * instance = OperationalState::GetAmebaOperationalStateInstance();
     OperationalState::OperationalStateEnum state =
         static_cast<OperationalState::OperationalStateEnum>(instance->GetCurrentOperationalState());
 
@@ -172,5 +174,31 @@ static void onOperationalStateTimerTick(System::Layer * systemLayer, void * data
     else
     {
         (void) DeviceLayer::SystemLayer().CancelTimer(onOperationalStateTimerTick, delegate);
+    }
+}
+
+AmebaOperationalStateDelegate * OperationalState::GetAmebaOperationalStateDelegate(void)
+{
+    return gAmebaOperationalStateDelegate;
+}
+
+CHIP_ERROR OperationalState::AmebaOperationalStateDelegateInit(EndpointId endpoint)
+{
+    if (gAmebaOperationalStateDelegate == nullptr)
+    {
+        gAmebaOperationalStateDelegate = new OperationalState::AmebaOperationalStateDelegate;
+
+        VerifyOrReturnError(gAmebaOperationalStateDelegate != nullptr, CHIP_ERROR_INTERNAL);
+    }
+
+    return CHIP_NO_ERROR;
+}
+
+void OperationalState::AmebaOperationalStateDelegateShutdown(void)
+{
+    if (gAmebaOperationalStateDelegate != nullptr)
+    {
+        delete gAmebaOperationalStateDelegate;
+        gAmebaOperationalStateDelegate = nullptr;
     }
 }

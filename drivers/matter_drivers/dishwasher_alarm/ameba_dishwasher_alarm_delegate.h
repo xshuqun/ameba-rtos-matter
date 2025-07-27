@@ -20,6 +20,8 @@
 #pragma once
 
 #include <app-common/zap-generated/cluster-objects.h>
+#include <app-common/zap-generated/ids/Attributes.h>
+#include <app-common/zap-generated/ids/Clusters.h>
 #include <app/clusters/dishwasher-alarm-server/dishwasher-alarm-server.h>
 
 namespace chip {
@@ -52,7 +54,9 @@ public:
     ~AmebaDishwasherAlarmDelegate() = default;
 };
 
+AmebaDishwasherAlarmDelegate * GetAmebaDishwasherAlarmDelegate(void);
 CHIP_ERROR AmebaDishWasherAlarmDelegateInit(EndpointId endpoint);
+void AmebaDishWasherAlarmDelegateShutdown(void);
 
 } // namespace DishwasherAlarm
 } // namespace Clusters

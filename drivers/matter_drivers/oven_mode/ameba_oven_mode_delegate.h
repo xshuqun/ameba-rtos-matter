@@ -19,12 +19,14 @@
 
 #pragma once
 
+#include <app-common/zap-generated/cluster-objects.h>
+#include <app-common/zap-generated/ids/Attributes.h>
+#include <app-common/zap-generated/ids/Clusters.h>
 #include <app/clusters/mode-base-server/mode-base-server.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
-
 namespace OvenMode {
 
 const uint8_t ModeBake            = 0;
@@ -92,8 +94,11 @@ public:
     ~AmebaOvenModeDelegate() override = default;
 };
 
-} // namespace OvenMode
+AmebaOvenModeDelegate * GetAmebaOvenModeDelegate(void);
+CHIP_ERROR AmebaOvenModeDelegateInit(EndpointId endpoint);
+void AmebaOvenModeDelegateShutdown(void);
 
+} // namespace OvenMode
 } // namespace Clusters
 } // namespace app
 } // namespace chip

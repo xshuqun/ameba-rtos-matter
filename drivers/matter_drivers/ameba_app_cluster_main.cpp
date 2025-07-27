@@ -24,7 +24,7 @@ using namespace chip::app;
 using namespace chip::app::Clusters;
 
 // Action Cluster
-void emberAfActionsClusterInitCallback(EndpointId endpoint)
+void emberAfActionsClusterInitCallback(chip::EndpointId endpoint)
 {
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
@@ -43,10 +43,30 @@ void emberAfActionsClusterInitCallback(EndpointId endpoint)
     }
 }
 
-void emberAfActionsClusterShutdownCallback(EndpointId endpoint)
+void emberAfActionsClusterShutdownCallback(chip::EndpointId endpoint)
 {
     Actions::AmebaActionsServerShutdown();
     Actions::AmebaActionsDelegateShutdown();
+}
+
+// Resource Monitoring - Activated Carbon Filter Cluster
+void emberAfActivatedCarbonFilterMonitoringClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
+
+    ret = ActivatedCarbonFilterMonitoring::AmebaActivatedCarbonFilterDelegateInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaActivatedCarbonFilterDelegateInit Failed");
+        return;
+    }
+
+    ret = ActivatedCarbonFilterMonitoring::AmebaActivatedCarbonFilterInstanceInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaActivatedCarbonInstanceInit Failed");
+        return;
+    }
 }
 
 // Air Quality Cluster
@@ -62,9 +82,35 @@ void emberAfAirQualityClusterInitCallback(chip::EndpointId endpointId)
     }
 }
 
-void emberAfAirQualityClusterShutdownCallback(EndpointId endpoint)
+void emberAfAirQualityClusterShutdownCallback(chip::EndpointId endpoint)
 {
     AirQuality::AmebaAirQualityInstanceShutdown();
+}
+
+// Carbon Dioxide Concentration Measurement Cluster
+void emberAfCarbonDioxideConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
+
+    ret = ConcentrationMeasurement::AmebaCarbonDioxideCMInstanceInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaCarbonDioxideCMInstanceInit Failed");
+        return;
+    }
+}
+
+// Carbon Monoxide Concentration Measurement Cluster
+void emberAfCarbonMonoxideConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
+
+    ret = ConcentrationMeasurement::AmebaCarbonMonoxideCMInstanceInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaCarbonMonoxideCMInstanceInit Failed");
+        return;
+    }
 }
 
 // Dishwasher Alarm Cluster
@@ -85,6 +131,11 @@ void emberAfDishwasherAlarmClusterInitCallback(chip::EndpointId endpoint)
         ChipLogProgress(Zcl, "AmebaDishWasherAlarmInstanceInit Failed");
         return;
     }
+}
+
+void emberAfDishwasherAlarmClusterShutdownCallback(chip::EndpointId endpoint)
+{
+    DishwasherAlarm::AmebaDishWasherAlarmDelegateShutdown();
 }
 
 // Dishwasher Mode Cluster
@@ -114,7 +165,7 @@ void emberAfDishwasherModeClusterShutdownCallback(chip::EndpointId endpointId)
 }
 
 // Fan Control Cluster
-void emberAfFanControlClusterInitCallback(EndpointId endpoint)
+void emberAfFanControlClusterInitCallback(chip::EndpointId endpoint)
 {
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
@@ -126,8 +177,46 @@ void emberAfFanControlClusterInitCallback(EndpointId endpoint)
     }
 }
 
+void emberAfFanControlClusterShutdownCallback(chip::EndpointId endpoint)
+{
+    FanControl::AmebaFanControlDelegateShutdown();
+}
+
+// Formaldehyde Concentration Measurement Cluster
+void emberAfFormaldehydeConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
+
+    ret = ConcentrationMeasurement::AmebaFormaldehydeCMInstanceInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaFormaldehydeCMInstanceInit Failed");
+        return;
+    }
+}
+
+// Resource Monitoring - HEPA Filter Monitoring Cluster
+void emberAfHepaFilterMonitoringClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
+
+    ret = HepaFilterMonitoring::AmebaHepaFilterDelegateInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaHepaFilterDelegateInit Failed");
+        return;
+    }
+
+    ret = HepaFilterMonitoring::AmebaHepaFilterInstanceInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaHepaInstanceInit Failed");
+        return;
+    }
+}
+
 // Laundry Dryer Controls Cluster
-void emberAfLaundryDryerControlsClusterInitCallback(EndpointId endpoint)
+void emberAfLaundryDryerControlsClusterInitCallback(chip::EndpointId endpoint)
 {
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
@@ -139,13 +228,13 @@ void emberAfLaundryDryerControlsClusterInitCallback(EndpointId endpoint)
     }
 }
 
-void emberAfLaundryDryerControlsClusterShutdownCallback(EndpointId endpoint)
+void emberAfLaundryDryerControlsClusterShutdownCallback(chip::EndpointId endpoint)
 {
     LaundryDryerControls::AmebaLaundryDryerControlsDelegateShutdown();
 }
 
 // Laundry Washer Controls Cluster
-void emberAfLaundryWasherControlsClusterInitCallback(EndpointId endpoint)
+void emberAfLaundryWasherControlsClusterInitCallback(chip::EndpointId endpoint)
 {
 CHIP_ERROR ret = CHIP_NO_ERROR;
 
@@ -157,7 +246,7 @@ CHIP_ERROR ret = CHIP_NO_ERROR;
     }
 }
 
-void emberAfLaundryWasherControlsClusterShutdownCallback(EndpointId endpoint)
+void emberAfLaundryWasherControlsClusterShutdownCallback(chip::EndpointId endpoint)
 {
     LaundryWasherControls::AmebaLaundryWasherControlsDelegateShutdown();
 }
@@ -180,7 +269,6 @@ void emberAfLaundryWasherModeClusterInitCallback(chip::EndpointId endpointId)
         ChipLogProgress(Zcl, "AmebaLaundryWasherModeInstanceInit Failed");
         return;
     }
-
 }
 
 void emberAfLaundryWasherModeClusterShutdownCallback(chip::EndpointId endpointId)
@@ -192,333 +280,414 @@ void emberAfLaundryWasherModeClusterShutdownCallback(chip::EndpointId endpointId
 // Microwave Oven Control Cluster
 void emberAfMicrowaveOvenControlClusterInitCallback(chip::EndpointId endpointId)
 {
-    VerifyOrDie(MicrowaveOvenControl::GetMicrowaveOvenControlInstance() == nullptr);
-    VerifyOrDie(MicrowaveOvenControl::GetMicrowaveOvenControlDelegate() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
-
-    if (OperationalState::GetOperationalStateInstance() == nullptr ||
-        OperationalState::GetOperationalStateDelegate() == nullptr)
+    ret = MicrowaveOvenControl::AmebaMicrowaveOvenControlDelegateInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
     {
-        auto * opstateDelegate = new OperationalState::AmebaOperationalStateDelegate;
-        OperationalState::SetOperationalStateDelegate(opstateDelegate);
-        auto * opstateInstance = new OperationalState::Instance(opstateDelegate, endpointId);
-        opstateInstance->Init();
-        OperationalState::SetOperationalStateInstance(opstateInstance);
+        ChipLogProgress(Zcl, "AmebaMicrowaveOvenControlDelegateInit Failed");
+        return;
     }
 
-    if (MicrowaveOvenMode::GetMicrowaveOvenModeInstance() == nullptr ||
-        MicrowaveOvenMode::GetMicrowaveOvenModeDelegate() == nullptr)
+    ret = MicrowaveOvenControl::AmebaMicrowaveOvenControlInstanceInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
     {
-        auto * modeDelegate = new MicrowaveOvenMode::AmebaMicrowaveOvenModeDelegate;
-        MicrowaveOvenMode::SetMicrowaveOvenModeDelegate(modeDelegate);
-        auto * modeInstance = new ModeBase::Instance(modeDelegate, endpointId, MicrowaveOvenMode::Id, 0x0);
-        MicrowaveOvenMode::SetMicrowaveOvenModeInstance(modeInstance);
-        modeInstance->Init();
+        ChipLogProgress(Zcl, "AmebaMicrowaveOvenControlInstanceInit Failed");
+        return;
     }
-
-    // Microwave Oven Control Delegate and Instance
-    auto * ctrlDelegate = new MicrowaveOvenControl::AmebaMicrowaveOvenControlDelegate;
-    MicrowaveOvenControl::SetMicrowaveOvenControlDelegate(ctrlDelegate);
-
-    auto * ctrlInstance = new MicrowaveOvenControl::Instance(
-        ctrlDelegate,
-        endpointId,
-        MicrowaveOvenControl::Id,
-        chip::BitMask<MicrowaveOvenControl::Feature>(
-            MicrowaveOvenControl::Feature::kPowerAsNumber,
-            MicrowaveOvenControl::Feature::kPowerNumberLimits),
-        *OperationalState::GetOperationalStateInstance(),
-        *MicrowaveOvenMode::GetMicrowaveOvenModeInstance());
-
-    MicrowaveOvenControl::SetMicrowaveOvenControlInstance(ctrlInstance);
-
-    ctrlInstance->Init();
 }
 
 void emberAfMicrowaveOvenControlClusterShutdownCallback(chip::EndpointId endpointId)
 {
-    MicrowaveOvenMode::Shutdown();
+    MicrowaveOvenControl::AmebaMicrowaveOvenControlDelegateShutdown();
 }
 
 // Microwave Oven Mode Cluster
 void emberAfMicrowaveOvenModeClusterInitCallback(chip::EndpointId endpointId)
 {
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    if (MicrowaveOvenMode::GetMicrowaveOvenModeInstance() == nullptr ||
-        MicrowaveOvenMode::GetMicrowaveOvenModeDelegate() == nullptr)
+    ret = MicrowaveOvenMode::AmebaMicrowaveOvenModeDelegateInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
     {
-        auto * delegate = new MicrowaveOvenMode::AmebaMicrowaveOvenModeDelegate;
-        MicrowaveOvenMode::SetMicrowaveOvenModeDelegate(delegate);
-        auto * instance = new ModeBase::Instance(delegate, endpointId, MicrowaveOvenMode::Id, 0x0);
-        MicrowaveOvenMode::SetMicrowaveOvenModeInstance(instance);
-        instance->Init();
+        ChipLogProgress(Zcl, "AmebaMicrowaveOvenModeDelegateInit Failed");
+        return;
+    }
+
+    ret = MicrowaveOvenMode::AmebaMicrowaveOvenModeInstanceInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaMicrowaveOvenModeInstanceInit Failed");
+        return;
     }
 }
 
 void emberAfMicrowaveOvenModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
-    if (MicrowaveOvenMode::GetMicrowaveOvenModeInstance())
+    MicrowaveOvenMode::AmebaMicrowaveOvenModeInstanceShutdown();
+    MicrowaveOvenMode::AmebaMicrowaveOvenModeDelegateShutdown();
+}
+
+// Nitrogen Dioxide Concentration Measurement Cluster
+void emberAfNitrogenDioxideConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
+
+    ret = ConcentrationMeasurement::AmebaNitrogenDioxideCMInstanceInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
     {
-        MicrowaveOvenMode::GetMicrowaveOvenModeInstance()->Shutdown();
+        ChipLogProgress(Zcl, "AmebaNitrogenDioxideCMInstanceInit Failed");
+        return;
     }
-    MicrowaveOvenMode::Shutdown();
 }
 
 // Occupancry Sensing Cluster
-void emberAfOccupancySensingClusterInitCallback(EndpointId endpointId)
+void emberAfOccupancySensingClusterInitCallback(chip::EndpointId endpointId)
 {
-    VerifyOrDie(OccupancySensing::GetOccupancySensingInstance() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
-
-    BitMask<OccupancySensing::Feature, uint32_t> Features(
-        OccupancySensing::Feature::kPassiveInfrared);
-
-    auto * instance = new OccupancySensing::Instance(Features);
-    OccupancySensing::SetOccupancySensingInstance(instance);
-
-    instance->Init();
-
-    CHIP_ERROR ret;
-    ret = OccupancySensing::AmebaOccupancySensingInit(endpointId);
+    ret = OccupancySensing::AmebaOccupancySensingInstanceInit(endpointId);
     if (ret != CHIP_NO_ERROR)
     {
-        ChipLogProgress(Zcl, "AmebaDishWasherInit Failed");
-        VerifyOrDie(ret == CHIP_NO_ERROR);
+        ChipLogProgress(Zcl, "AmebaOccupancySensingInstanceInit Failed");
+        return;
     }
+}
 
+void emberAfOccupancySensingClusterShutdownCallback(chip::EndpointId endpointId)
+{
+    OccupancySensing::AmebaOccupancySensingInstanceShutdown();
 }
 
 // Operational State Cluster
 void emberAfOperationalStateClusterInitCallback(chip::EndpointId endpointId)
 {
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    if (OperationalState::GetOperationalStateInstance() == nullptr ||
-        OperationalState::GetOperationalStateDelegate() == nullptr)
+    ret = OperationalState::AmebaOperationalStateDelegateInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
     {
-        auto * delegate = new OperationalState::AmebaOperationalStateDelegate;
-        OperationalState::SetOperationalStateDelegate(delegate);
-        auto * instance = new OperationalState::Instance(delegate, endpointId);
-
-        OperationalState::SetOperationalStateInstance(instance);
-
-        instance->SetOperationalState(to_underlying(OperationalState::OperationalStateEnum::kStopped));
-        instance->Init();
+        ChipLogProgress(Zcl, "AmebaOperationalStateDelegateInit Failed");
+        return;
     }
+
+    ret = OperationalState::AmebaOperationalStateInstanceInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaOperationalStateInstanceInit Failed");
+        return;
+    }
+}
+
+void emberAfOperationalStateClusterShutdownCallback(chip::EndpointId endpointId)
+{
+    OperationalState::AmebaOperationalStateDelegateShutdown();
+    OperationalState::AmebaOperationalStateInstanceShutdown();
 }
 
 // Oven Mode Cluster
 void emberAfOvenModeClusterInitCallback(chip::EndpointId endpointId)
 {
-    VerifyOrDie(OvenMode::GetOvenModeInstance() == nullptr && OvenMode::GetOvenModeDelegate() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
+    ret = OvenMode::AmebaOvenModeDelegateInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaOvenModeDelegateInit Failed");
+        return;
+    }
 
-    auto * delegate = new OvenMode::AmebaOvenModeDelegate;
-    OvenMode::SetOvenModeDelegate(delegate);
-    auto * instance = new ModeBase::Instance(delegate, endpointId, OvenMode::Id, 0x0);
-    OvenMode::SetOvenModeInstance(instance);
-    instance->Init();
+    ret = OvenMode::AmebaOvenModeInstanceInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaOvenModeInstanceInit Failed");
+        return;
+    }
 }
 
 void emberAfOvenModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
-    if (OvenMode::GetOvenModeInstance())
-    {
-        OvenMode::GetOvenModeInstance()->Shutdown();
-    }
-    OvenMode::Shutdown();
+    OvenMode::AmebaOvenModeInstanceShutdown();
+    OvenMode::AmebaOvenModeDelegateShutdown();
 }
 
 // Oven Cavity Operational State Cluster
 void emberAfOvenCavityOperationalStateClusterInitCallback(chip::EndpointId endpointId)
 {
-    VerifyOrDie(OvenCavityOperationalState::GetOvenCavityOperationalStateInstance() == nullptr &&
-                OvenCavityOperationalState::GetOvenCavityOperationalStateDelegate() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
+    ret = OvenCavityOperationalState::AmebaOvenCavityOperationalStateDelegateInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaOvenCavityOperationalStateDelegateInit Failed");
+        return;
+    }
 
-    auto * delegate = new OvenCavityOperationalState::AmebaOvenCavityOperationalStateDelegate;
-    OvenCavityOperationalState::SetOvenCavityOperationalStateDelegate(delegate);
-
-    auto * instance = new OvenCavityOperationalState::Instance(delegate, endpointId);
-    OvenCavityOperationalState::SetOvenCavityOperationalStateInstance(instance);
-
-    instance->SetOperationalState(to_underlying(OperationalState::OperationalStateEnum::kStopped));
-    instance->Init();
+    ret = OvenCavityOperationalState::AmebaOvenCavityOperationalStateInstanceInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaOvenCavityOperationalStateInstanceInit Failed");
+        return;
+    }
 }
 
+void emberAfOvenCavityOperationalStateClusterShutdownCallback(chip::EndpointId endpointId)
+{
+    OvenCavityOperationalState::AmebaOvenCavityOperationalStateInstanceShutdown();
+    OvenCavityOperationalState::AmebaOvenCavityOperationalStateDelegateShutdown();
+}
+
+// Ozone Concentration Measurement Cluster
+void emberAfOzoneConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
+
+    ret = ConcentrationMeasurement::AmebaOzoneCMInstanceInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaOzoneCMInstanceInit Failed");
+        return;
+    }
+}
+
+// Pm1 Concentration Measurement Cluster
+void emberAfPm1ConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
+
+    ret = ConcentrationMeasurement::AmebaPm1CMInstanceInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaPm1CMInstanceInit Failed");
+        return;
+    }
+}
+
+// Pm10 Concentration Measurement Cluster
+void emberAfPm10ConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
+
+    ret = ConcentrationMeasurement::AmebaPm10CMInstanceInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaPm10CMInstanceInit Failed");
+        return;
+    }
+}
+
+// Pm25 Concentration Measurement Cluster
+void emberAfPm25ConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
+
+    ret = ConcentrationMeasurement::AmebaPm25CMInstanceInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaPm25CMInstanceInit Failed");
+        return;
+    }
+}
+
+// Radon Concentration Measurement Cluster
+void emberAfRadonConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
+
+    ret = ConcentrationMeasurement::AmebaRadonCMInstanceInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaRadonCMInstanceInit Failed");
+        return;
+    }
+}
 
 // Refrigerator And Temperature Controlled Cabinet (TCC) Mode Cluster
 void emberAfRefrigeratorAndTemperatureControlledCabinetModeClusterInitCallback(chip::EndpointId endpointId)
 {
-    VerifyOrDie(RefrigeratorAndTemperatureControlledCabinetMode::GetRefrigeratorModeInstance() == nullptr &&
-                RefrigeratorAndTemperatureControlledCabinetMode::GetRefrigeratorModeDelegate() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
+    ret = RefrigeratorAndTemperatureControlledCabinetMode::AmebaRefrigeratorModeDelegateInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaRefrigeratorModeDelegateInit Failed");
+        return;
+    }
 
-    auto * delegate = new RefrigeratorAndTemperatureControlledCabinetMode::AmebaRefrigeratorModeDelegate;
-    RefrigeratorAndTemperatureControlledCabinetMode::SetRefrigeratorModeDelegate(delegate);
-    auto * instance = new ModeBase::Instance(delegate, endpointId,
-                            RefrigeratorAndTemperatureControlledCabinetMode::Id, 0x0);
-    RefrigeratorAndTemperatureControlledCabinetMode::SetRefrigeratorModeInstance(instance);
-    instance->Init();
+    ret = RefrigeratorAndTemperatureControlledCabinetMode::AmebaRefrigeratorModeInstanceInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaRefrigeratorModeInstanceInit Failed");
+        return;
+    }
 }
 
 void emberAfRefrigeratorAndTemperatureControlledCabinetModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
-    if (RefrigeratorAndTemperatureControlledCabinetMode::GetRefrigeratorModeInstance())
-    {
-        RefrigeratorAndTemperatureControlledCabinetMode::GetRefrigeratorModeInstance()->Shutdown();
-    }
-    RefrigeratorAndTemperatureControlledCabinetMode::Shutdown();
+    RefrigeratorAndTemperatureControlledCabinetMode::AmebaRefrigeratorModeInstanceShutdown();
+    RefrigeratorAndTemperatureControlledCabinetMode::AmebaRefrigeratorModeDelegateShutdown();
 }
 
 // RVC Clean Mode Cluster
 void emberAfRvcCleanModeClusterInitCallback(chip::EndpointId endpointId)
 {
-    VerifyOrDie(RvcCleanMode::GetRvcCleanModeInstance() == nullptr && RvcCleanMode::GetRvcCleanModeDelegate() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
+    ret = RvcCleanMode::AmebaRvcCleanModeDelegateInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaRvcCleanModeDelegateInit Failed");
+        return;
+    }
 
-    auto * delegate = new RvcCleanMode::AmebaRvcCleanModeDelegate;
-    RvcCleanMode::SetRvcCleanModeDelegate(delegate);
-    auto * instance = new ModeBase::Instance(delegate, endpointId, RvcCleanMode::Id, 0x0);
-    RvcCleanMode::SetRvcCleanModeInstance(instance);
-    instance->Init();
+    ret = RvcCleanMode::AmebaRvcCleanModeInstanceInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaRvcCleanModeInstanceInit Failed");
+        return;
+    }
 }
 
 void emberAfRvcCleanModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
-    if (RvcCleanMode::GetRvcCleanModeInstance())
-    {
-        RvcCleanMode::GetRvcCleanModeInstance()->Shutdown();
-    }
-    RvcCleanMode::Shutdown();
+    RvcCleanMode::AmebaRvcCleanModeInstanceShutdown();
+    RvcCleanMode::AmebaRvcCleanModeDelegateShutdown();
 }
 
 // RVC Operational Mode Cluster
 void emberAfRvcOperationalStateClusterInitCallback(chip::EndpointId endpointId)
 {
-    VerifyOrDie(RvcOperationalState::GetRvcOperationalStateInstance() == nullptr &&
-                RvcOperationalState::GetRvcOperationalStateDelegate() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
+    ret = RvcOperationalState::AmebaRvcOperationalStateDelegateInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaRvcOperationalStateDelegateInit Failed");
+        return;
+    }
 
-    auto * delegate = new RvcOperationalState::AmebaRvcOperationalStateDelegate;
-    RvcOperationalState::SetRvcOperationalStateDelegate(delegate);
+    ret = RvcOperationalState::AmebaRvcOperationalStateInstanceInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaRvcOperationalStateInstanceInit Failed");
+        return;
+    }
+}
 
-    auto * instance = new RvcOperationalState::Instance(delegate, endpointId);
-    RvcOperationalState::SetRvcOperationalStateInstance(instance);
-
-    instance->SetOperationalState(to_underlying(OperationalState::OperationalStateEnum::kStopped));
-    instance->Init();
-
+void emberAfRvcOperationalStateClusterShutdownCallback(chip::EndpointId endpointId)
+{
+    RvcOperationalState::AmebaRvcOperationalStateInstanceShutdown();
+    RvcOperationalState::AmebaRvcOperationalStateDelegateShutdown();
 }
 
 // RVC Run Mode Cluster
 void emberAfRvcRunModeClusterInitCallback(chip::EndpointId endpointId)
 {
-    VerifyOrDie(RvcRunMode::GetRvcRunModeInstance() == nullptr && RvcRunMode::GetRvcRunModeDelegate() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
+    ret = RvcRunMode::AmebaRvcRunModeDelegateInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaRvcRunModeDelegateInit Failed");
+        return;
+    }
 
-    auto * delegate = new RvcRunMode::AmebaRvcRunModeDelegate;
-    RvcRunMode::SetRvcRunModeDelegate(delegate);
-    auto * instance = new ModeBase::Instance(delegate, endpointId, RvcRunMode::Id, 0x0);
-    RvcRunMode::SetRvcRunModeInstance(instance);
-    instance->Init();
+    ret = RvcRunMode::AmebaRvcRunModeInstanceInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaRvcRunModeInstanceInit Failed");
+        return;
+    }
 }
 
 void emberAfRvcRunModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
-    if (RvcRunMode::GetRvcRunModeInstance())
+    RvcRunMode::AmebaRvcRunModeInstanceShutdown();
+    RvcRunMode::AmebaRvcRunModeDelegateShutdown();
+}
+
+void emberAfSmokeCoAlarmClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
+
+    ret = SmokeCoAlarm::AmebaSmokeCoAlarmTestEventInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
     {
-        RvcRunMode::GetRvcRunModeInstance()->Shutdown();
+        ChipLogProgress(Zcl, "AmebaRvcRunModeDelegateInit Failed");
+        return;
     }
-    RvcRunMode::Shutdown();
 }
 
-// Resource Monitoring - Activated Carbon Filter Cluster
-void emberAfActivatedCarbonFilterMonitoringClusterInitCallback(chip::EndpointId endpoint)
+// Temperature Control Cluster
+void emberAfTemperatureControlClusterInitCallback(chip::EndpointId endpoint)
 {
-    VerifyOrDie(ActivatedCarbonFilterMonitoring::GetActivatedCarbonInstance() == nullptr &&
-                ActivatedCarbonFilterMonitoring::GetActivatedCarbonDelegate() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpoint);
-
-    constexpr std::bitset<4> Features{
-        static_cast<uint32_t>(ResourceMonitoring::Feature::kCondition)
-    };
-
-    auto * delegate = new ActivatedCarbonFilterMonitoring::AmebaActivatedCarbonFilterMonitoringDelegate;
-
-    ActivatedCarbonFilterMonitoring::SetActivatedCarbonDelegate(delegate);
-
-    auto * instance = new ResourceMonitoring::Instance(
-        delegate,
-        endpoint,
-        ActivatedCarbonFilterMonitoring::Id,
-        static_cast<uint32_t>(Features.to_ulong()),
-        ResourceMonitoring::DegradationDirectionEnum::kDown,
-        true);
-
-    ActivatedCarbonFilterMonitoring::SetActivatedCarbonInstance(instance);
-
-    instance->Init();
+    ret = TemperatureControl::AmebaTemperatureControlDelegateInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaTemperatureControlDelegateInit Failed");
+        return;
+    }
 }
 
-// Resource Monitoring - HEPA Filter Monitoring Cluster
-void emberAfHepaFilterMonitoringClusterInitCallback(chip::EndpointId endpoint)
+void emberAfTemperatureControlClusterShutdownCallback(chip::EndpointId endpoint)
 {
-    VerifyOrDie(HepaFilterMonitoring::GetHepaInstance() == nullptr &&
-                HepaFilterMonitoring::GetHepaDelegate() == nullptr);
+    TemperatureControl::AmebaTemperatureControlDelegateShutdown();
+}
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpoint);
+// Total Volatile Organic Compounds Concentration Measurement Cluster
+void emberAfTotalVolatileOrganicCompoundsConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    constexpr std::bitset<4> Features{
-        static_cast<uint32_t>(ResourceMonitoring::Feature::kCondition)
-    };
+    ret = ConcentrationMeasurement::AmebaTotalVolatileOrganicCompoundsCMInstanceInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaTotalVolatileOrganicCompoundsCMInstanceInit Failed");
+        return;
+    }
+}
 
-    auto * delegate = new HepaFilterMonitoring::AmebaHepaFilterMonitoringDelegate;
+// Valve Configuration and Control Cluster
+void emberAfValveConfigurationAndControlClusterInitCallback(chip::EndpointId endpoint)
+{
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    HepaFilterMonitoring::SetHepaDelegate(delegate);
+    ret = ValveConfigurationAndControl::AmebaValveControlDelegateInit(endpoint);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaValveControlDelegateInit Failed");
+        return;
+    }
+}
 
-    auto * instance = new ResourceMonitoring::Instance(
-        delegate,
-        endpoint,
-        HepaFilterMonitoring::Id,
-        static_cast<uint32_t>(Features.to_ulong()),
-        ResourceMonitoring::DegradationDirectionEnum::kDown,
-        true);
-
-    HepaFilterMonitoring::SetHepaInstance(instance);
-
-    instance->Init();
+void emberAfValveConfigurationAndControlClusterShutdownCallback(chip::EndpointId endpoint)
+{
+    ValveConfigurationAndControl::AmebaValveControlDelegateShutdown();
 }
 
 void emberAfWaterHeaterModeClusterInitCallback(chip::EndpointId endpointId)
 {
-    VerifyOrDie(WaterHeaterMode::GetWaterHeaterModeInstance() == nullptr &&
-                WaterHeaterMode::GetWaterHeaterModeDelegate() == nullptr);
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ChipLogDetail(DeviceLayer,"%s on ep%d", __FUNCTION__, endpointId);
+    ret = WaterHeaterMode::AmebaWaterHeaterModeDelegateInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaWaterHeaterModeDelegateInit Failed");
+        return;
+    }
 
-    auto * delegate = new WaterHeaterMode::AmebaWaterHeaterModeDelegate;
-    WaterHeaterMode::SetWaterHeaterModeDelegate(delegate);
-    auto * instance = new ModeBase::Instance(delegate, endpointId, WaterHeaterMode::Id, 0x0);
-    WaterHeaterMode::SetWaterHeaterModeInstance(instance);
-    instance->Init();
+    ret = WaterHeaterMode::AmebaWaterHeaterModeInstanceInit(endpointId);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaWaterHeaterModeInstanceInit Failed");
+        return;
+    }
 }
 
 void emberAfWaterHeaterModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
-    if (WaterHeaterMode::GetWaterHeaterModeInstance())
-    {
-        WaterHeaterMode::GetWaterHeaterModeInstance()->Shutdown();
-    }
-    WaterHeaterMode::Shutdown();
+    WaterHeaterMode::AmebaWaterHeaterModeInstanceShutdown();
+    WaterHeaterMode::AmebaWaterHeaterModeDelegateShutdown();
 }

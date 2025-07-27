@@ -19,12 +19,14 @@
 
 #pragma once
 
+#include <app-common/zap-generated/cluster-objects.h>
+#include <app-common/zap-generated/ids/Attributes.h>
+#include <app-common/zap-generated/ids/Clusters.h>
 #include <app/clusters/mode-base-server/mode-base-server.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
-
 namespace RvcCleanMode {
 
 const uint8_t ModeVacuum    = 0;
@@ -63,8 +65,11 @@ public:
     ~AmebaRvcCleanModeDelegate() override = default;
 };
 
-} // namespace RvcCleanMode
+AmebaRvcCleanModeDelegate * GetAmebaRvcCleanModeDelegate(void);
+CHIP_ERROR AmebaRvcCleanModeDelegateInit(EndpointId endpoint);
+void AmebaRvcCleanModeDelegateShutdown(void);
 
+} // namespace RvcCleanMode
 } // namespace Clusters
 } // namespace app
 } // namespace chip

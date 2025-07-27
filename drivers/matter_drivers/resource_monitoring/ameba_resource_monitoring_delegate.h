@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <app-common/zap-generated/cluster-objects.h>
 #include <app-common/zap-generated/ids/Attributes.h>
 #include <app-common/zap-generated/ids/Clusters.h>
 #include <app/clusters/resource-monitoring-server/resource-monitoring-cluster-objects.h>
@@ -27,7 +28,6 @@
 namespace chip {
 namespace app {
 namespace Clusters {
-
 namespace ActivatedCarbonFilterMonitoring {
 
 class AmebaActivatedCarbonFilterMonitoringDelegate : public ResourceMonitoring::Delegate
@@ -39,8 +39,11 @@ private:
     CHIP_ERROR Init() override;
     chip::Protocols::InteractionModel::Status PreResetCondition() override;
     chip::Protocols::InteractionModel::Status PostResetCondition() override;
-
 };
+
+AmebaActivatedCarbonFilterMonitoringDelegate * GetAmebaActivatedCarbonFilterDelegate(void);
+CHIP_ERROR AmebaActivatedCarbonFilterDelegateInit(EndpointId endpoint);
+void AmebaActivatedCarbonFilterDelegateShutdown(void);
 
 } // namespace ActivatedCarbonFilterMonitoring
 
@@ -57,6 +60,10 @@ private:
     chip::Protocols::InteractionModel::Status PostResetCondition() override;
 };
 
+AmebaHepaFilterMonitoringDelegate * GetAmebaHepaFilterDelegate(void);
+CHIP_ERROR AmebaHepaFilterDelegateInit(EndpointId endpoint);
+void AmebaHepaFilterDelegateInit(void);
+
 class AmebaImmutableReplacementProductListManager : public ResourceMonitoring::ReplacementProductListManager
 {
 public:
@@ -64,8 +71,6 @@ public:
 };
 
 } // namespace HepaFilterMonitoring
-
 } // namespace Clusters
 } // namespace app
 } // namespace chip
-

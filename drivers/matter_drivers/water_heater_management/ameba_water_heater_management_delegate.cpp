@@ -20,7 +20,7 @@
 #include <water_heater_management/ameba_water_heater_management_delegate.h>
 #include <water_heater_management/ameba_water_heater_management_manufacturer.h>
 #include <water_heater_mode/ameba_water_heater_mode_delegate.h>
-#include <water_heater_mode/ameba_water_heater_mode_manager.h>
+#include <water_heater_mode/ameba_water_heater_mode_instance.h>
 
 #include <algorithm>
 
@@ -465,9 +465,9 @@ Status WaterHeaterManagementDelegate::DetermineIfChangingHeatingState(HeatingOp 
 
     if (!HasWaterTemperatureReachedTarget())
     {
-        VerifyOrReturnError(WaterHeaterMode::GetWaterHeaterModeInstance() != nullptr, Status::InvalidInState);
+        VerifyOrReturnError(WaterHeaterMode::GetAmebaWaterHeaterModeInstance() != nullptr, Status::InvalidInState);
 
-        uint8_t mode = WaterHeaterMode::GetWaterHeaterModeInstance()->GetCurrentMode();
+        uint8_t mode = WaterHeaterMode::GetAmebaWaterHeaterModeInstance()->GetCurrentMode();
 
         // The water in the tank is not at the target temperature. See if heating is currently off
         if (mHeatDemand.Raw() == 0)
@@ -508,15 +508,15 @@ Status WaterHeaterManagementDelegate::DetermineIfChangingHeatingState(HeatingOp 
 
 Status WaterHeaterManagementDelegate::SetWaterHeaterMode(uint8_t modeValue)
 {
-    VerifyOrReturnError(WaterHeaterMode::GetWaterHeaterModeInstance() != nullptr, Status::InvalidInState);
+    VerifyOrReturnError(WaterHeaterMode::GetAmebaWaterHeaterModeInstance() != nullptr, Status::InvalidInState);
 
-    if (!WaterHeaterMode::GetWaterHeaterModeInstance()->IsSupportedMode(modeValue))
+    if (!WaterHeaterMode::GetAmebaWaterHeaterModeInstance()->IsSupportedMode(modeValue))
     {
         ChipLogError(AppServer, "SetWaterHeaterMode bad mode");
         return Status::ConstraintError;
     }
 
-    Status status = WaterHeaterMode::GetWaterHeaterModeInstance()->UpdateCurrentMode(modeValue);
+    Status status = WaterHeaterMode::GetAmebaWaterHeaterModeInstance()->UpdateCurrentMode(modeValue);
     if (status != Status::Success)
     {
         ChipLogError(AppServer, "SetWaterHeaterMode updateMode failed 0x%02x", to_underlying(status));

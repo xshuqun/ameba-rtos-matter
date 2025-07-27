@@ -24,6 +24,8 @@ using namespace chip::app;
 using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::DishwasherAlarm;
 
+static AmebaDishwasherAlarmDelegate * gAmebaDishwasherAlarmDelegate = nullptr;
+
 bool AmebaDishwasherAlarmDelegate::ModifyEnabledAlarmsCallback(const BitMask<AlarmMap> mask)
 {
     return true;
@@ -34,10 +36,29 @@ bool AmebaDishwasherAlarmDelegate::ResetAlarmsCallback(const BitMask<AlarmMap> a
     return true;
 }
 
-CHIP_ERROR AmebaDishWasherAlarmDelegateInit(EndpointId endpoint)
+AmebaDishwasherAlarmDelegate * DishwasherAlarm::GetAmebaDishwasherAlarmDelegate(void)
 {
-    static DishwasherAlarm::AmebaDishwasherAlarmDelegate delegate;
-    DishwasherAlarm::SetDefaultDelegate(endpoint, &delegate);
+    return gAmebaDishwasherAlarmDelegate;
+}
+
+CHIP_ERROR DishwasherAlarm::AmebaDishWasherAlarmDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaDishwasherAlarmDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaDishwasherAlarmDelegate = new DishwasherAlarm::AmebaDishwasherAlarmDelegate;
+
+    VerifyOrReturnError(gAmebaDishwasherAlarmDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    DishwasherAlarm::SetDefaultDelegate(endpoint, gAmebaDishwasherAlarmDelegate);
 
     return CHIP_NO_ERROR;
+}
+
+void DishwasherAlarm::AmebaDishWasherAlarmDelegateShutdown(void)
+{
+    if (gAmebaDishwasherAlarmDelegate != nullptr)
+    {
+        delete gAmebaDishwasherAlarmDelegate;
+        gAmebaDishwasherAlarmDelegate = nullptr;
+    }
 }

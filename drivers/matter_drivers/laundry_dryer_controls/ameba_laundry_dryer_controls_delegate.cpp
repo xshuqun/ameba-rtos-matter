@@ -42,20 +42,25 @@ CHIP_ERROR AmebaLaundryDryerControlsDelegate::GetSupportedDrynessLevelAtIndex(si
     return CHIP_NO_ERROR;
 }
 
-AmebaLaundryDryerControlsDelegate * GetAmebaLaundryDryerControlsDelegate(void)
+AmebaLaundryDryerControlsDelegate * LaundryDryerControls::GetAmebaLaundryDryerControlsDelegate(void)
 {
     return gAmebaLaundryDryerControlsDelegate;
 }
 
-CHIP_ERROR AmebaLaundryDryerControlsDelegateInit(EndpointId endpoint)
+CHIP_ERROR LaundryDryerControls::AmebaLaundryDryerControlsDelegateInit(EndpointId endpoint)
 {
-    auto * delegate = new AmebaLaundryDryerControlsDelegate();
-    LaundryDryerControlsServer::SetDefaultDelegate(endpoint, delegate);
+    VerifyOrReturnError(gAmebaLaundryDryerControlsDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    gAmebaLaundryDryerControlsDelegate = new AmebaLaundryDryerControlsDelegate();
+
+    VerifyOrReturnError(gAmebaLaundryDryerControlsDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    LaundryDryerControlsServer::SetDefaultDelegate(endpoint, gAmebaLaundryDryerControlsDelegate);
 
     return CHIP_NO_ERROR;
 }
 
-void AmebaLaundryDryerControlsDelegateShutdown(void)
+void LaundryDryerControls::AmebaLaundryDryerControlsDelegateShutdown(void)
 {
     if (gAmebaLaundryDryerControlsDelegate) {
         delete gAmebaLaundryDryerControlsDelegate;

@@ -17,12 +17,7 @@
  *    limitations under the License.
  */
 
-#include <app-common/zap-generated/ids/Attributes.h>
-#include <app-common/zap-generated/ids/Clusters.h>
-#include <app/clusters/resource-monitoring-server/resource-monitoring-cluster-objects.h>
-#include <app/clusters/resource-monitoring-server/resource-monitoring-server.h>
 #include <resource_monitoring/ameba_resource_monitoring_delegate.h>
-#include <resource_monitoring/ameba_resource_monitoring_manager.h>
 
 using namespace chip;
 using namespace chip::app;
@@ -32,6 +27,8 @@ using namespace chip::app::Clusters::ActivatedCarbonFilterMonitoring;
 using namespace chip::app::Clusters::HepaFilterMonitoring;
 using chip::Protocols::InteractionModel::Status;
 
+AmebaActivatedCarbonFilterMonitoringDelegate * gAmebaActivatedCarbonFilterDelegate = nullptr;
+AmebaHepaFilterMonitoringDelegate * gAmebaHepaFilterDelegate = nullptr;
 static AmebaImmutableReplacementProductListManager sReplacementProductListManager;
 
 //-- Activated Carbon Filter Monitoring delegate methods
@@ -67,7 +64,6 @@ Status AmebaHepaFilterMonitoringDelegate::PostResetCondition()
 {
     return Status::Success;
 }
-
 
 CHIP_ERROR AmebaImmutableReplacementProductListManager::Next(ReplacementProductStruct & item)
 {
@@ -105,4 +101,63 @@ CHIP_ERROR AmebaImmutableReplacementProductListManager::Next(ReplacementProductS
     }
     mIndex++;
     return CHIP_NO_ERROR;
+}
+
+AmebaActivatedCarbonFilterMonitoringDelegate *
+ActivatedCarbonFilterMonitoring::GetAmebaActivatedCarbonFilterDelegate(void)
+{
+    return gAmebaActivatedCarbonFilterDelegate;
+}
+
+CHIP_ERROR ActivatedCarbonFilterMonitoring::AmebaActivatedCarbonFilterDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaActivatedCarbonFilterDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    constexpr std::bitset<4> Features{
+        static_cast<uint32_t>(ResourceMonitoring::Feature::kCondition)
+    };
+
+    gAmebaActivatedCarbonFilterDelegate = new ActivatedCarbonFilterMonitoring::AmebaActivatedCarbonFilterMonitoringDelegate;
+
+    VerifyOrReturnError(gAmebaActivatedCarbonFilterDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    return CHIP_NO_ERROR;
+}
+
+void ActivatedCarbonFilterMonitoring::AmebaActivatedCarbonFilterDelegateShutdown(void)
+{
+    if (gAmebaActivatedCarbonFilterDelegate != nullptr)
+    {
+        delete gAmebaActivatedCarbonFilterDelegate;
+        gAmebaActivatedCarbonFilterDelegate = nullptr;
+    }
+}
+
+AmebaHepaFilterMonitoringDelegate * HepaFilterMonitoring::GetAmebaHepaFilterDelegate(void)
+{
+    return gAmebaHepaFilterDelegate;
+}
+
+CHIP_ERROR HepaFilterMonitoring::AmebaHepaFilterDelegateInit(EndpointId endpoint)
+{
+    VerifyOrReturnError(gAmebaHepaFilterDelegate == nullptr, CHIP_ERROR_INTERNAL);
+
+    constexpr std::bitset<4> Features{
+        static_cast<uint32_t>(ResourceMonitoring::Feature::kCondition)
+    };
+
+    gAmebaHepaFilterDelegate = new HepaFilterMonitoring::AmebaHepaFilterMonitoringDelegate;
+
+    VerifyOrReturnError(gAmebaHepaFilterDelegate != nullptr, CHIP_ERROR_INTERNAL);
+
+    return CHIP_NO_ERROR;
+}
+
+void HepaFilterMonitoring::AmebaHepaFilterDelegateInit(void)
+{
+    if (gAmebaHepaFilterDelegate != nullptr)
+    {
+        delete gAmebaHepaFilterDelegate;
+        gAmebaHepaFilterDelegate = nullptr;
+    }
 }

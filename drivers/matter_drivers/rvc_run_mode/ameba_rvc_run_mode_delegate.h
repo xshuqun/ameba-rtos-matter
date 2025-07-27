@@ -19,6 +19,9 @@
 
 #pragma once
 
+#include <app-common/zap-generated/cluster-objects.h>
+#include <app-common/zap-generated/ids/Attributes.h>
+#include <app-common/zap-generated/ids/Clusters.h>
 #include <app/clusters/mode-base-server/mode-base-server.h>
 
 namespace chip {
@@ -62,6 +65,10 @@ private:
 public:
     ~AmebaRvcRunModeDelegate() override = default;
 };
+
+AmebaRvcRunModeDelegate * GetAmebaRvcRunModeDelegate(void);
+CHIP_ERROR AmebaRvcRunModeDelegateInit(EndpointId endpoint);
+void AmebaRvcRunModeDelegateShutdown(void);
 
 } // namespace RvcRunMode
 

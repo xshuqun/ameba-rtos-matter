@@ -26,14 +26,14 @@ using namespace chip::app::Clusters;
 using namespace chip::app::Clusters::LaundryWasherMode;
 using chip::Protocols::InteractionModel::Status;
 
-static ModeBase::Instance * gAmebaLaundryWasherModeInstance     = nullptr;
+static ModeBase::Instance * gAmebaLaundryWasherModeInstance = nullptr;
 
-ModeBase::Instance * GetAmebaLaundryWasherModeInstance(void)
+ModeBase::Instance * LaundryWasherMode::GetAmebaLaundryWasherModeInstance(void)
 {
     return gAmebaLaundryWasherModeInstance;
 }
 
-CHIP_ERROR AmebaLaundryWasherModeInstanceInit(EndpointId endpoint)
+CHIP_ERROR LaundryWasherMode::AmebaLaundryWasherModeInstanceInit(EndpointId endpoint)
 {
     VerifyOrReturnError(gAmebaLaundryWasherModeInstance == nullptr, CHIP_ERROR_INTERNAL);
 
@@ -48,7 +48,7 @@ CHIP_ERROR AmebaLaundryWasherModeInstanceInit(EndpointId endpoint)
     return CHIP_NO_ERROR;
 }
 
-void AmebaLaundryWasherModeInstanceShutdown(void)
+void LaundryWasherMode::AmebaLaundryWasherModeInstanceShutdown(void)
 {
     if (gAmebaLaundryWasherModeInstance != nullptr)
     {

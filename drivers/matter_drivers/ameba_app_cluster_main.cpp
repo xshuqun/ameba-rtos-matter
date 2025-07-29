@@ -23,9 +23,13 @@ using namespace chip;
 using namespace chip::app;
 using namespace chip::app::Clusters;
 
+#define matter_dbg
+
 // Action Cluster
 void emberAfActionsClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = Actions::AmebaActionsDelegateInit(endpoint);
@@ -52,6 +56,8 @@ void emberAfActionsClusterShutdownCallback(chip::EndpointId endpoint)
 // Resource Monitoring - Activated Carbon Filter Cluster
 void emberAfActivatedCarbonFilterMonitoringClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = ActivatedCarbonFilterMonitoring::AmebaActivatedCarbonFilterDelegateInit(endpoint);
@@ -72,6 +78,8 @@ void emberAfActivatedCarbonFilterMonitoringClusterInitCallback(chip::EndpointId 
 // Air Quality Cluster
 void emberAfAirQualityClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = AirQuality::AmebaAirQualityInstanceInit(endpointId);
@@ -84,12 +92,16 @@ void emberAfAirQualityClusterInitCallback(chip::EndpointId endpointId)
 
 void emberAfAirQualityClusterShutdownCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     AirQuality::AmebaAirQualityInstanceShutdown();
 }
 
 // Carbon Dioxide Concentration Measurement Cluster
 void emberAfCarbonDioxideConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = ConcentrationMeasurement::AmebaCarbonDioxideCMInstanceInit(endpoint);
@@ -103,6 +115,8 @@ void emberAfCarbonDioxideConcentrationMeasurementClusterInitCallback(chip::Endpo
 // Carbon Monoxide Concentration Measurement Cluster
 void emberAfCarbonMonoxideConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = ConcentrationMeasurement::AmebaCarbonMonoxideCMInstanceInit(endpoint);
@@ -116,6 +130,8 @@ void emberAfCarbonMonoxideConcentrationMeasurementClusterInitCallback(chip::Endp
 // Dishwasher Alarm Cluster
 void emberAfDishwasherAlarmClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = DishwasherAlarm::AmebaDishWasherAlarmDelegateInit(endpoint);
@@ -135,12 +151,16 @@ void emberAfDishwasherAlarmClusterInitCallback(chip::EndpointId endpoint)
 
 void emberAfDishwasherAlarmClusterShutdownCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     DishwasherAlarm::AmebaDishWasherAlarmDelegateShutdown();
 }
 
 // Dishwasher Mode Cluster
 void emberAfDishwasherModeClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = DishwasherMode::AmebaDishwasherModeDelegateInit(endpointId);
@@ -160,6 +180,8 @@ void emberAfDishwasherModeClusterInitCallback(chip::EndpointId endpointId)
 
 void emberAfDishwasherModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     DishwasherMode::AmebaDishwasherModeInstanceShutdown();
     DishwasherMode::AmebaDishwasherModeDelegateShutdown();
 }
@@ -167,6 +189,8 @@ void emberAfDishwasherModeClusterShutdownCallback(chip::EndpointId endpointId)
 // Fan Control Cluster
 void emberAfFanControlClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = FanControl::AmebaFanControlDelegateInit(endpoint);
@@ -179,12 +203,16 @@ void emberAfFanControlClusterInitCallback(chip::EndpointId endpoint)
 
 void emberAfFanControlClusterShutdownCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     FanControl::AmebaFanControlDelegateShutdown();
 }
 
 // Formaldehyde Concentration Measurement Cluster
 void emberAfFormaldehydeConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = ConcentrationMeasurement::AmebaFormaldehydeCMInstanceInit(endpoint);
@@ -198,6 +226,8 @@ void emberAfFormaldehydeConcentrationMeasurementClusterInitCallback(chip::Endpoi
 // Resource Monitoring - HEPA Filter Monitoring Cluster
 void emberAfHepaFilterMonitoringClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = HepaFilterMonitoring::AmebaHepaFilterDelegateInit(endpoint);
@@ -218,6 +248,8 @@ void emberAfHepaFilterMonitoringClusterInitCallback(chip::EndpointId endpoint)
 // Laundry Dryer Controls Cluster
 void emberAfLaundryDryerControlsClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = LaundryDryerControls::AmebaLaundryDryerControlsDelegateInit(endpoint);
@@ -230,13 +262,17 @@ void emberAfLaundryDryerControlsClusterInitCallback(chip::EndpointId endpoint)
 
 void emberAfLaundryDryerControlsClusterShutdownCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     LaundryDryerControls::AmebaLaundryDryerControlsDelegateShutdown();
 }
 
 // Laundry Washer Controls Cluster
 void emberAfLaundryWasherControlsClusterInitCallback(chip::EndpointId endpoint)
 {
-CHIP_ERROR ret = CHIP_NO_ERROR;
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
+    CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = LaundryWasherControls::AmebaLaundryWasherControlsDelegateInit(endpoint);
     if (ret != CHIP_NO_ERROR)
@@ -248,12 +284,16 @@ CHIP_ERROR ret = CHIP_NO_ERROR;
 
 void emberAfLaundryWasherControlsClusterShutdownCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     LaundryWasherControls::AmebaLaundryWasherControlsDelegateShutdown();
 }
 
 // Laundry Washer Mode Cluster
 void emberAfLaundryWasherModeClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = LaundryWasherMode::AmebaLaundryWasherModeDelegateInit(endpointId);
@@ -273,6 +313,8 @@ void emberAfLaundryWasherModeClusterInitCallback(chip::EndpointId endpointId)
 
 void emberAfLaundryWasherModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     LaundryWasherMode::AmebaLaundryWasherModeInstanceShutdown();
     LaundryWasherMode::AmebaLaundryWasherModeDelegateShutdown();
 }
@@ -280,6 +322,8 @@ void emberAfLaundryWasherModeClusterShutdownCallback(chip::EndpointId endpointId
 // Microwave Oven Control Cluster
 void emberAfMicrowaveOvenControlClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = MicrowaveOvenControl::AmebaMicrowaveOvenControlDelegateInit(endpointId);
@@ -289,22 +333,30 @@ void emberAfMicrowaveOvenControlClusterInitCallback(chip::EndpointId endpointId)
         return;
     }
 
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     ret = MicrowaveOvenControl::AmebaMicrowaveOvenControlInstanceInit(endpointId);
     if (ret != CHIP_NO_ERROR)
     {
         ChipLogProgress(Zcl, "AmebaMicrowaveOvenControlInstanceInit Failed");
         return;
     }
+
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
 }
 
 void emberAfMicrowaveOvenControlClusterShutdownCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     MicrowaveOvenControl::AmebaMicrowaveOvenControlDelegateShutdown();
 }
 
 // Microwave Oven Mode Cluster
 void emberAfMicrowaveOvenModeClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = MicrowaveOvenMode::AmebaMicrowaveOvenModeDelegateInit(endpointId);
@@ -324,6 +376,8 @@ void emberAfMicrowaveOvenModeClusterInitCallback(chip::EndpointId endpointId)
 
 void emberAfMicrowaveOvenModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     MicrowaveOvenMode::AmebaMicrowaveOvenModeInstanceShutdown();
     MicrowaveOvenMode::AmebaMicrowaveOvenModeDelegateShutdown();
 }
@@ -331,6 +385,8 @@ void emberAfMicrowaveOvenModeClusterShutdownCallback(chip::EndpointId endpointId
 // Nitrogen Dioxide Concentration Measurement Cluster
 void emberAfNitrogenDioxideConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = ConcentrationMeasurement::AmebaNitrogenDioxideCMInstanceInit(endpoint);
@@ -344,6 +400,8 @@ void emberAfNitrogenDioxideConcentrationMeasurementClusterInitCallback(chip::End
 // Occupancry Sensing Cluster
 void emberAfOccupancySensingClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = OccupancySensing::AmebaOccupancySensingInstanceInit(endpointId);
@@ -356,12 +414,16 @@ void emberAfOccupancySensingClusterInitCallback(chip::EndpointId endpointId)
 
 void emberAfOccupancySensingClusterShutdownCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     OccupancySensing::AmebaOccupancySensingInstanceShutdown();
 }
 
 // Operational State Cluster
 void emberAfOperationalStateClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = OperationalState::AmebaOperationalStateDelegateInit(endpointId);
@@ -381,6 +443,8 @@ void emberAfOperationalStateClusterInitCallback(chip::EndpointId endpointId)
 
 void emberAfOperationalStateClusterShutdownCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     OperationalState::AmebaOperationalStateDelegateShutdown();
     OperationalState::AmebaOperationalStateInstanceShutdown();
 }
@@ -388,6 +452,8 @@ void emberAfOperationalStateClusterShutdownCallback(chip::EndpointId endpointId)
 // Oven Mode Cluster
 void emberAfOvenModeClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = OvenMode::AmebaOvenModeDelegateInit(endpointId);
@@ -407,6 +473,8 @@ void emberAfOvenModeClusterInitCallback(chip::EndpointId endpointId)
 
 void emberAfOvenModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     OvenMode::AmebaOvenModeInstanceShutdown();
     OvenMode::AmebaOvenModeDelegateShutdown();
 }
@@ -414,6 +482,8 @@ void emberAfOvenModeClusterShutdownCallback(chip::EndpointId endpointId)
 // Oven Cavity Operational State Cluster
 void emberAfOvenCavityOperationalStateClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = OvenCavityOperationalState::AmebaOvenCavityOperationalStateDelegateInit(endpointId);
@@ -433,6 +503,8 @@ void emberAfOvenCavityOperationalStateClusterInitCallback(chip::EndpointId endpo
 
 void emberAfOvenCavityOperationalStateClusterShutdownCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     OvenCavityOperationalState::AmebaOvenCavityOperationalStateInstanceShutdown();
     OvenCavityOperationalState::AmebaOvenCavityOperationalStateDelegateShutdown();
 }
@@ -440,6 +512,8 @@ void emberAfOvenCavityOperationalStateClusterShutdownCallback(chip::EndpointId e
 // Ozone Concentration Measurement Cluster
 void emberAfOzoneConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = ConcentrationMeasurement::AmebaOzoneCMInstanceInit(endpoint);
@@ -453,6 +527,8 @@ void emberAfOzoneConcentrationMeasurementClusterInitCallback(chip::EndpointId en
 // Pm1 Concentration Measurement Cluster
 void emberAfPm1ConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = ConcentrationMeasurement::AmebaPm1CMInstanceInit(endpoint);
@@ -466,6 +542,8 @@ void emberAfPm1ConcentrationMeasurementClusterInitCallback(chip::EndpointId endp
 // Pm10 Concentration Measurement Cluster
 void emberAfPm10ConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = ConcentrationMeasurement::AmebaPm10CMInstanceInit(endpoint);
@@ -479,6 +557,8 @@ void emberAfPm10ConcentrationMeasurementClusterInitCallback(chip::EndpointId end
 // Pm25 Concentration Measurement Cluster
 void emberAfPm25ConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = ConcentrationMeasurement::AmebaPm25CMInstanceInit(endpoint);
@@ -492,6 +572,8 @@ void emberAfPm25ConcentrationMeasurementClusterInitCallback(chip::EndpointId end
 // Radon Concentration Measurement Cluster
 void emberAfRadonConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = ConcentrationMeasurement::AmebaRadonCMInstanceInit(endpoint);
@@ -505,6 +587,8 @@ void emberAfRadonConcentrationMeasurementClusterInitCallback(chip::EndpointId en
 // Refrigerator And Temperature Controlled Cabinet (TCC) Mode Cluster
 void emberAfRefrigeratorAndTemperatureControlledCabinetModeClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = RefrigeratorAndTemperatureControlledCabinetMode::AmebaRefrigeratorModeDelegateInit(endpointId);
@@ -524,6 +608,8 @@ void emberAfRefrigeratorAndTemperatureControlledCabinetModeClusterInitCallback(c
 
 void emberAfRefrigeratorAndTemperatureControlledCabinetModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     RefrigeratorAndTemperatureControlledCabinetMode::AmebaRefrigeratorModeInstanceShutdown();
     RefrigeratorAndTemperatureControlledCabinetMode::AmebaRefrigeratorModeDelegateShutdown();
 }
@@ -531,6 +617,8 @@ void emberAfRefrigeratorAndTemperatureControlledCabinetModeClusterShutdownCallba
 // RVC Clean Mode Cluster
 void emberAfRvcCleanModeClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = RvcCleanMode::AmebaRvcCleanModeDelegateInit(endpointId);
@@ -550,6 +638,8 @@ void emberAfRvcCleanModeClusterInitCallback(chip::EndpointId endpointId)
 
 void emberAfRvcCleanModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     RvcCleanMode::AmebaRvcCleanModeInstanceShutdown();
     RvcCleanMode::AmebaRvcCleanModeDelegateShutdown();
 }
@@ -557,6 +647,8 @@ void emberAfRvcCleanModeClusterShutdownCallback(chip::EndpointId endpointId)
 // RVC Operational Mode Cluster
 void emberAfRvcOperationalStateClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = RvcOperationalState::AmebaRvcOperationalStateDelegateInit(endpointId);
@@ -565,6 +657,8 @@ void emberAfRvcOperationalStateClusterInitCallback(chip::EndpointId endpointId)
         ChipLogProgress(Zcl, "AmebaRvcOperationalStateDelegateInit Failed");
         return;
     }
+
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
 
     ret = RvcOperationalState::AmebaRvcOperationalStateInstanceInit(endpointId);
     if (ret != CHIP_NO_ERROR)
@@ -576,6 +670,8 @@ void emberAfRvcOperationalStateClusterInitCallback(chip::EndpointId endpointId)
 
 void emberAfRvcOperationalStateClusterShutdownCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     RvcOperationalState::AmebaRvcOperationalStateInstanceShutdown();
     RvcOperationalState::AmebaRvcOperationalStateDelegateShutdown();
 }
@@ -583,6 +679,8 @@ void emberAfRvcOperationalStateClusterShutdownCallback(chip::EndpointId endpoint
 // RVC Run Mode Cluster
 void emberAfRvcRunModeClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = RvcRunMode::AmebaRvcRunModeDelegateInit(endpointId);
@@ -602,25 +700,26 @@ void emberAfRvcRunModeClusterInitCallback(chip::EndpointId endpointId)
 
 void emberAfRvcRunModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     RvcRunMode::AmebaRvcRunModeInstanceShutdown();
     RvcRunMode::AmebaRvcRunModeDelegateShutdown();
 }
 
 void emberAfSmokeCoAlarmClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
-    ret = SmokeCoAlarm::AmebaSmokeCoAlarmTestEventInit(endpoint);
-    if (ret != CHIP_NO_ERROR)
-    {
-        ChipLogProgress(Zcl, "AmebaRvcRunModeDelegateInit Failed");
-        return;
-    }
+    return;
 }
 
 // Temperature Control Cluster
 void emberAfTemperatureControlClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = TemperatureControl::AmebaTemperatureControlDelegateInit(endpoint);
@@ -633,12 +732,16 @@ void emberAfTemperatureControlClusterInitCallback(chip::EndpointId endpoint)
 
 void emberAfTemperatureControlClusterShutdownCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     TemperatureControl::AmebaTemperatureControlDelegateShutdown();
 }
 
 // Total Volatile Organic Compounds Concentration Measurement Cluster
 void emberAfTotalVolatileOrganicCompoundsConcentrationMeasurementClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = ConcentrationMeasurement::AmebaTotalVolatileOrganicCompoundsCMInstanceInit(endpoint);
@@ -652,6 +755,8 @@ void emberAfTotalVolatileOrganicCompoundsConcentrationMeasurementClusterInitCall
 // Valve Configuration and Control Cluster
 void emberAfValveConfigurationAndControlClusterInitCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = ValveConfigurationAndControl::AmebaValveControlDelegateInit(endpoint);
@@ -664,11 +769,15 @@ void emberAfValveConfigurationAndControlClusterInitCallback(chip::EndpointId end
 
 void emberAfValveConfigurationAndControlClusterShutdownCallback(chip::EndpointId endpoint)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     ValveConfigurationAndControl::AmebaValveControlDelegateShutdown();
 }
 
 void emberAfWaterHeaterModeClusterInitCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     CHIP_ERROR ret = CHIP_NO_ERROR;
 
     ret = WaterHeaterMode::AmebaWaterHeaterModeDelegateInit(endpointId);
@@ -688,6 +797,8 @@ void emberAfWaterHeaterModeClusterInitCallback(chip::EndpointId endpointId)
 
 void emberAfWaterHeaterModeClusterShutdownCallback(chip::EndpointId endpointId)
 {
+    matter_dbg("[%d]%s\n", __LINE__, __FUNCTION__);
+
     WaterHeaterMode::AmebaWaterHeaterModeInstanceShutdown();
     WaterHeaterMode::AmebaWaterHeaterModeDelegateShutdown();
 }

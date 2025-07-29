@@ -23,6 +23,7 @@
 #include <water_heater_management/ameba_water_heater_management_main.h>
 #include <mode_select/ameba_mode_select_manager.h>
 #if CONFIG_ENABLE_AMEBA_TEST_EVENT_TRIGGER
+#include <smoke_co_alarm/ameba_smoke_co_alarm_test_event.h>
 #include <app/clusters/water-heater-management-server/WaterHeaterManagementTestEventTriggerHandler.h>
 #include <test_event_trigger/AmebaTestEventTriggerDelegate.h>
 #include <app/server/Server.h>
@@ -41,6 +42,8 @@ app::Clusters::ModeSelect::AmebaSupportedModesManager sAmebaSupportedModesManage
 
 void AppTaskInit(void)
 {
+    CHIP_ERROR ret = CHIP_NO_ERROR;
+
 #if CONFIG_ENABLE_CHIP_SHELL
     InitManualOperation();
 #endif
@@ -49,7 +52,11 @@ void AppTaskInit(void)
     WaterHeaterApplicationInit();
 
 #if CONFIG_ENABLE_AMEBA_TEST_EVENT_TRIGGER
-
+    ret = SmokeCoAlarm::AmebaSmokeCoAlarmTestEventInit(1);
+    if (ret != CHIP_NO_ERROR)
+    {
+        ChipLogProgress(Zcl, "AmebaSmokeCoAlarmTestEventInit Failed");
+    }
     static WaterHeaterManagementTestEventTriggerHandler sWaterHeaterManagementTestEventTriggerHandler;
     Server::GetInstance().GetTestEventTriggerDelegate()->AddHandler(&sWaterHeaterManagementTestEventTriggerHandler);
 #endif

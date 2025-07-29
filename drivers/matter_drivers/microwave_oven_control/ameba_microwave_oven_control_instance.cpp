@@ -31,7 +31,7 @@ using namespace chip::app::Clusters::MicrowaveOvenControl;
 using namespace chip::app::Clusters::MicrowaveOvenMode;
 using namespace chip::app::Clusters::OperationalState;
 
-static MicrowaveOvenControl::Instance * gAmebaMicrowaveOvenControlInstance;
+static MicrowaveOvenControl::Instance * gAmebaMicrowaveOvenControlInstance = nullptr;
 
 MicrowaveOvenControl::Instance * MicrowaveOvenControl::GetAmebaMicrowaveOvenControlInstance(void)
 {
@@ -68,12 +68,15 @@ CHIP_ERROR MicrowaveOvenControl::AmebaMicrowaveOvenControlInstanceInit(EndpointI
         endpoint,
         MicrowaveOvenControl::Id,
         chip::BitMask<MicrowaveOvenControl::Feature>(
-            MicrowaveOvenControl::Feature::kPowerAsNumber,
-            MicrowaveOvenControl::Feature::kPowerNumberLimits),
+            MicrowaveOvenControl::Feature::kPowerAsNumber),
         *GetAmebaOperationalStateInstance(),
         *GetAmebaMicrowaveOvenModeInstance());
 
+    VerifyOrReturnError(gAmebaMicrowaveOvenControlInstance != nullptr, CHIP_ERROR_INTERNAL);
+
     gAmebaMicrowaveOvenControlInstance->Init();
+
+    return CHIP_NO_ERROR;
 }
 
 void MicrowaveOvenControl::AmebaMicrowaveOvenControlInstanceShutdown(void)

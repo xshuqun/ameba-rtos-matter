@@ -61,7 +61,6 @@ endif
 # connectedhomeip - src - app - server-cluster
 CPPSRC += $(CHIPDIR)/src/app/server-cluster/DefaultServerCluster.cpp
 CPPSRC += $(CHIPDIR)/src/app/server-cluster/ServerClusterInterface.cpp
-CPPSRC += $(CHIPDIR)/src/app/server-cluster/ServerClusterInterfaceRegistry.cpp
 
 # connectedhomeip - src - app - util
 CPPSRC += $(CHIPDIR)/src/app/util/attribute-storage.cpp

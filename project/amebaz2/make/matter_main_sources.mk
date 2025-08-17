@@ -84,16 +84,16 @@ SRC_CPP += $(CODEGENDIR)/app/cluster-callbacks.cpp
 SRC_CPP += $(CODEGENDIR)/zap-generated/IMClusterCommandHandler.cpp
 
 # matter - api
-SRC_CPP += $(MATTER_DIR)/api/matter_api.cpp
-SRC_CPP += $(MATTER_DIR)/api/matter_log_api.cpp
+SRC_CPP += $(MATTER_APIDIR)/matter_api.cpp
+SRC_CPP += $(MATTER_APIDIR)/matter_log_api.cpp
 
 # matter - core
-SRC_CPP += $(MATTER_DIR)/core/matter_device_utils.cpp
-SRC_CPP += $(MATTER_DIR)/core/matter_test_event_trigger.cpp # Not using AmebaTestEventTriggerDelegate.cpp
+SRC_CPP += $(MATTER_COREDIR)/matter_device_utils.cpp
+SRC_CPP += $(MATTER_COREDIR)/matter_test_event_trigger.cpp # Not using AmebaTestEventTriggerDelegate.cpp
 
 # matter - drivers
-SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_diagnosticlogs_provider_delegate_impl.cpp
-SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_logging_faultlog.cpp
-SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_logging_insert_logs.cpp
-SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_logging_redirect_handler.cpp
-SRC_CPP += $(MATTER_DIR)/drivers/matter_drivers/diagnostic_logs/ameba_logging_redirect_wrapper.cpp
+SRC_CPP += $(MATTER_DRIVERDIR)/matter_drivers/diagnostic_logs/ameba_diagnosticlogs_provider_delegate_impl.cpp
+SRC_CPP += $(MATTER_DRIVERDIR)/matter_drivers/diagnostic_logs/ameba_logging_faultlog.cpp
+SRC_CPP += $(MATTER_DRIVERDIR)/matter_drivers/diagnostic_logs/ameba_logging_insert_logs.cpp
+SRC_CPP += $(MATTER_DRIVERDIR)/matter_drivers/diagnostic_logs/ameba_logging_redirect_handler.cpp
+SRC_CPP += $(MATTER_DRIVERDIR)/matter_drivers/diagnostic_logs/ameba_logging_redirect_wrapper.cpp

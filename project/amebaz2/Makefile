@@ -3,12 +3,19 @@ all: all_clusters
 OS := $(shell uname)
 LBITS := $(shell getconf LONG_BIT)
 
-SDKROOTDIR         := $(shell pwd)/../../..
-MATTER_DIR          = $(SDKROOTDIR)/component/common/application/matter
-MATTER_BUILDDIR     = $(MATTER_DIR)/project/amebaz2
-MATTER_INCLUDE      = $(MATTER_BUILDDIR)/Makefile.include.matter
+SDKROOTDIR                  := $(shell pwd)/../../..
+MATTER_DIR                  = $(SDKROOTDIR)/component/common/application/matter
+MATTER_BUILDDIR             = $(MATTER_DIR)/project/amebaz2
+MATTER_INCLUDE              = $(MATTER_BUILDDIR)/Makefile.include.matter
+MATTER_INCLUDE_HDR          = $(MATTER_BUILDDIR)/Makefile.include.hdr.list
+MATTER_INCLUDE_BUILD_OPT    = $(MATTER_BUILDDIR)/Makefile.include.build.opts
+MATTER_MAIN_SRC             = $(MATTER_BUILDDIR)/make/matter_main_sources.mk
+MATTER_TOOLCHAIN            = $(MATTER_BUILDDIR)/Makefile.include.toolchain
 
-include $(MATTER_INCLUDE)
+include $(MATTER_INCLUDE) $(MATTER_TOOLCHAIN)
+
+export MATTER_INCLUDE MATTER_TOOLCHAIN MATTER_INCLUDE_HDR MATTER_MAIN_SRC
+export MATTER_INCLUDE_BUILD_OPT
 
 #*****************************************************************************#
 #                         Toolchain Extraction                                #

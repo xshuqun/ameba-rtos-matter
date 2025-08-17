@@ -1,27 +1,14 @@
-SHELL = /bin/bash
-
-OS := $(shell uname)
+include $(MATTER_INCLUDE)
 
 # Directory
 # -------------------------------------------------------------------
 
-SDKROOTDIR         := $(shell pwd)/../../..
-AMEBAZ2_TOOLDIR     = $(SDKROOTDIR)/component/soc/realtek/8710c/misc/iar_utility
-CHIPDIR             = $(SDKROOTDIR)/third_party/connectedhomeip
-MATTER_DIR          = $(SDKROOTDIR)/component/common/application/matter
-MATTER_BUILDDIR     = $(MATTER_DIR)/project/amebaz2
-MATTER_EXAMPLEDIR   = $(MATTER_DIR)/examples
-OUTPUT_DIR          = $(MATTER_EXAMPLEDIR)/temperature_sensor/build/chip
-CODEGENDIR          = $(OUTPUT_DIR)/codegen
-
-MATTER_INCLUDE      = $(MATTER_BUILDDIR)/Makefile.include.matter
-MATTER_INCLUDE_HDR  = $(MATTER_BUILDDIR)/Makefile.include.hdr.list
-MATTER_MAIN_SRC     = $(MATTER_BUILDDIR)/make/matter_main_sources.mk
+OUTPUT_DIR = $(MATTER_EXAMPLEDIR)/temperature_sensor/build/chip
+CODEGENDIR = $(OUTPUT_DIR)/codegen
 
 # Initialize tool chain
 # -------------------------------------------------------------------
 
-#CROSS_COMPILE = $(ARM_GCC_TOOLCHAIN)/arm-none-eabi-
 CROSS_COMPILE = arm-none-eabi-
 
 # Compilation tools
@@ -49,9 +36,7 @@ INFO_DIR=$(TARGET)/Debug/info
 # Build Definition
 # -------------------------------------------------------------------
 
-CHIP_ENABLE_AMEBA_DLOG = $(shell grep "\#define CONFIG_ENABLE_AMEBA_DLOG " $(MATTER_DIR)/common/include/platform_opts_matter.h | tr -s '[:space:]' | cut -d' ' -f3)
-CHIP_ENABLE_AMEBA_TC = $(shell grep '\#define CHIP_ENABLE_AMEBA_TERMS_AND_CONDITION ' $(MATTER_DIR)/common/include/platform_opts_matter.h | tr -s '[:space:]' | cut -d' ' -f3)
-CHIP_ENABLE_OTA_REQUESTOR = $(shell grep 'chip_enable_ota_requestor' $(OUTPUT_DIR)/args.gn | cut -d' ' -f3)
+include $(MATTER_INCLUDE_BUILD_OPT)
 
 # Include folder list
 # -------------------------------------------------------------------
@@ -76,13 +61,13 @@ SRC_C =
 SRC_CPP =
 
 # porting layer source files
-SRC_CPP += $(SDKROOTDIR)/component/common/application/matter/core/matter_core.cpp
-SRC_CPP += $(SDKROOTDIR)/component/common/application/matter/core/matter_interaction.cpp
-ifeq ($(CHIP_ENABLE_OTA_REQUESTOR), true)
-SRC_CPP += $(SDKROOTDIR)/component/common/application/matter/core/matter_ota_initializer.cpp
+SRC_CPP += $(MATTER_COREDIR)/matter_core.cpp
+SRC_CPP += $(MATTER_COREDIR)/matter_interaction.cpp
+ifeq ($(CHIP_ENABLE_OTA_REQUESTOR), 1)
+SRC_CPP += $(MATTER_COREDIR)/matter_ota_initializer.cpp
 endif
 
-SRC_CPP += $(SDKROOTDIR)/component/common/application/matter/drivers/device/temp_sensor_driver.cpp
+SRC_CPP += $(MATTER_DRIVERDIR)/device/temp_sensor_driver.cpp
 SRC_CPP += $(MATTER_EXAMPLEDIR)/temperature_sensor/example_matter_temp_sensor.cpp
 SRC_CPP += $(MATTER_EXAMPLEDIR)/temperature_sensor/matter_drivers.cpp
 

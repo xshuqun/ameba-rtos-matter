@@ -3,12 +3,19 @@ all: all_clusters
 OS := $(shell uname)
 LBITS := $(shell getconf LONG_BIT)
 
-SDKROOTDIR         := $(shell pwd)/../../..
-MATTER_DIR          = $(SDKROOTDIR)/component/common/application/matter
-MATTER_BUILDDIR     = $(MATTER_DIR)/project/amebaz2plus
-MATTER_INCLUDE      = $(MATTER_BUILDDIR)/Makefile.include.matter
+SDKROOTDIR                  := $(shell pwd)/../../..
+MATTER_DIR                  = $(SDKROOTDIR)/component/common/application/matter
+MATTER_BUILDDIR             = $(MATTER_DIR)/project/amebaz2plus
+MATTER_INCLUDE              = $(MATTER_BUILDDIR)/Makefile.include.matter
+MATTER_INCLUDE_HDR          = $(MATTER_BUILDDIR)/Makefile.include.hdr.list
+MATTER_INCLUDE_BUILD_OPT    = $(MATTER_BUILDDIR)/Makefile.include.build.opts
+MATTER_MAIN_SRC             = $(MATTER_BUILDDIR)/make/matter_main_sources.mk
+MATTER_TOOLCHAIN            = $(MATTER_BUILDDIR)/Makefile.include.toolchain
 
-include $(MATTER_INCLUDE)
+include $(MATTER_INCLUDE) $(MATTER_TOOLCHAIN)
+
+export MATTER_INCLUDE MATTER_TOOLCHAIN MATTER_INCLUDE_HDR MATTER_MAIN_SRC
+export MATTER_INCLUDE_BUILD_OPT
 
 #*****************************************************************************#
 #                         Toolchain Extraction                                #
@@ -216,7 +223,7 @@ all_clusters: toolchain_matter $(ALL_CLUSTERS_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/all_clusters/lib_chip_main.mk all
 
 .PHONY: aircon_port
-aircon_port: toolchain_matter  $(AIRCON_FILE)
+aircon_port: toolchain_matter $(AIRCON_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/aircon/lib_chip_aircon_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/aircon/lib_chip_aircon_main.mk all
 
@@ -226,7 +233,7 @@ air_purifier: toolchain_matter $(AIR_PURIFIER_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/air_purifier/lib_chip_air_purifier_main.mk all
 
 .PHONY: bridge_dm
-bridge_dm: toolchain_matter  $(BRIDGE_DM_FILE)
+bridge_dm: toolchain_matter $(BRIDGE_DM_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/bridge_dm/lib_chip_bridge_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/bridge_dm/lib_chip_bridge_main.mk all
 
@@ -236,12 +243,12 @@ chef: toolchain_matter $(CHEF_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/chef/lib_chip_chef_main.mk all
 
 .PHONY: dishwasher_port
-dishwasher_port: toolchain_matter  $(DISHWASHER_FILE)
+dishwasher_port: toolchain_matter $(DISHWASHER_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/dishwasher/lib_chip_dishwasher_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/dishwasher/lib_chip_dishwasher_main.mk all
 
 .PHONY: fan_port
-fan_port: toolchain_matter  $(FAN_FILE)
+fan_port: toolchain_matter $(FAN_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/fan/lib_chip_fan_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/fan/lib_chip_fan_main.mk all
 
@@ -251,22 +258,22 @@ generic_switch_port: toolchain_matter $(GENERIC_SWITCH_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/generic_switch/lib_chip_generic_switch_main.mk all
 
 .PHONY: laundrywasher_port
-laundrywasher_port: toolchain_matter  $(LAUNDRYWASHER_FILE)
+laundrywasher_port: toolchain_matter $(LAUNDRYWASHER_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/laundrywasher/lib_chip_laundrywasher_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/laundrywasher/lib_chip_laundrywasher_main.mk all
 
 .PHONY: light
-light: toolchain_matter  $(LIGHTING_FILE)
+light: toolchain_matter $(LIGHTING_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/light/lib_chip_light_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/light/lib_chip_light_main.mk all
 
 .PHONY: light_dm
-light_dm: toolchain_matter  $(LIGHTING_FILE) copy_gen_files_light_dm
+light_dm: toolchain_matter $(LIGHTING_FILE) copy_gen_files_light_dm
 	$(MAKE) -f $(MATTER_MAKEDIR)/light_dm/lib_chip_light_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/light_dm/lib_chip_light_main.mk all
 
 .PHONY: light_port
-light_port: toolchain_matter  $(LIGHTING_FILE)
+light_port: toolchain_matter $(LIGHTING_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/light_port/lib_chip_light_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/light_port/lib_chip_light_main.mk all
 
@@ -276,7 +283,7 @@ light_switch: toolchain_matter $(LIGHT_SWITCH_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/light_switch/lib_chip_light_switch_main.mk all
 
 .PHONY: microwaveoven_port
-microwaveoven_port: toolchain_matter  $(MICROWAVEOVEN_FILE)
+microwaveoven_port: toolchain_matter $(MICROWAVEOVEN_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/microwaveoven/lib_chip_microwaveoven_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/microwaveoven/lib_chip_microwaveoven_main.mk all
 
@@ -286,7 +293,7 @@ otar: toolchain_matter $(OTAR_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/otar/lib_chip_otar_main.mk all
 
 .PHONY: refrigerator_port
-refrigerator_port: toolchain_matter  $(REFRIGERATOR_FILE)
+refrigerator_port: toolchain_matter $(REFRIGERATOR_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/refrigerator/lib_chip_refrigerator_core.mk all
 	$(MAKE) -f $(MATTER_MAKEDIR)/refrigerator/lib_chip_refrigerator_main.mk all
 
@@ -301,7 +308,6 @@ thermostat_port: toolchain_matter $(THERMOSTAT_FILE)
 	$(MAKE) -f $(MATTER_MAKEDIR)/thermostat/lib_chip_thermostat_main.mk all
 
 .PHONY: clean_matter_libs
-clean_matter_libs:
 clean_matter_libs:
 	@$(MAKE) -f $(MATTER_MAKEDIR)/all_clusters/lib_chip_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKEDIR)/aircon/lib_chip_aircon_main.mk clean

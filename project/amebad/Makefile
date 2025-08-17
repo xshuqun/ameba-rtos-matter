@@ -5,8 +5,12 @@
 MATTER_ROOTDIR           = $(shell pwd)/../../../../..
 MAIN_ROOTDIR             = $(MATTER_ROOTDIR)/project/realtek_amebaD_va0_example/GCC-RELEASE/project_hp/asdk
 MAKE_INCLUDE_GEN         = $(MAIN_ROOTDIR)/Makefile.include.gen
+MATTER_INCLUDE_BUILD_OPT = $(MATTER_BUILDDIR)/Makefile.include.build.opts
+MATTER_MAIN_SRC          = $(MATTER_BUILDDIR)/make/chip_main/matter_main_sources.mk
 
 include $(MAKE_INCLUDE_GEN)
+
+export MATTER_INCLUDE_BUILD_OPT MATTER_MAIN_SRC
 
 CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
                    else if [ -x /bin/bash ]; then echo /bin/bash; \

@@ -1,26 +1,4 @@
-#
-#    Copyright (c) 2020 Project CHIP Authors
-#    All rights reserved.
-#
-#    Licensed under the Apache License, Version 2.0 (the "License");
-#    you may not use this file except in compliance with the License.
-#    You may obtain a copy of the License at
-#
-#        http://www.apache.org/licenses/LICENSE-2.0
-#
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS,
-#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#    See the License for the specific language governing permissions and
-#    limitations under the License.
-
-#
-# This is a project Makefile. It is assumed the directory this Makefile resides in is a
-# project subdirectory.
-#
-
-include $(MAKE_INCLUDE_GEN)
-include $(MATTER_BUILDDIR)/make/chip_main/matter_main_sources.mk
+include $(MAKE_INCLUDE_GEN) $(MATTER_MAIN_SRC)
 
 .PHONY: all clean
 
@@ -42,8 +20,7 @@ vpath %.c $(DIR) $(shell find $(DIR) -type d)
 #*****************************************************************************#
 #                              BUILD DEFINITIONS                              #
 #*****************************************************************************#
-CHIP_ENABLE_AMEBA_TC = $(shell grep '\#define CHIP_ENABLE_AMEBA_TERMS_AND_CONDITION ' $(MATTER_DIR)/common/include/platform_opts_matter.h | tr -s '[:space:]' | cut -d' ' -f3)
-CHIP_ENABLE_OTA_REQUESTOR = $(shell grep 'chip_enable_ota_requestor' $(OUTPUT_DIR)/args.gn | cut -d' ' -f3)
+include $(MATTER_INCLUDE_BUILD_OPT)
 
 #*****************************************************************************#
 #                              CFLAGS                                         #
@@ -79,7 +56,7 @@ CPPSRC += $(CHIPDIR)/examples/air-purifier-app/air-purifier-common/src/air-quali
 CPPSRC += $(CHIPDIR)/examples/air-purifier-app/air-purifier-common/src/filter-delegates.cpp
 CPPSRC += $(CHIPDIR)/examples/air-purifier-app/air-purifier-common/src/thermostat-manager.cpp
 
-ifeq ($(CHIP_ENABLE_OTA_REQUESTOR), true)
+ifeq ($(CHIP_ENABLE_OTA_REQUESTOR), 1)
 CPPSRC += $(CHIPDIR)/examples/platform/ameba/ota/OTAInitializer.cpp
 endif
 

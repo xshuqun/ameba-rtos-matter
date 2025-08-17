@@ -1,3 +1,6 @@
+SHELL = /bin/bash
+OS := $(shell uname)
+
 # -------------------------------------------------------------------
 # Directory Definition
 # -------------------------------------------------------------------
@@ -6,10 +9,16 @@ SDKROOTDIR         := $(shell pwd)/../../..
 CHIPDIR             = $(SDKROOTDIR)/third_party/connectedhomeip
 MATTER_DIR          = $(SDKROOTDIR)/component/common/application/matter
 MATTER_BUILDDIR     = $(MATTER_DIR)/project/amebaz2
+MATTER_APIDIR       = $(MATTER_DIR)/api
+MATTER_COREDIR      = $(MATTER_DIR)/core
+MATTER_COMMONDIR    = $(MATTER_DIR)/common
+MATTER_DRIVERDIR    = $(MATTER_DIR)/drivers
 MATTER_EXAMPLEDIR   = $(MATTER_DIR)/examples
-MATTER_MAKEDIR      = $(MATTER_BUILDDIR)/make
 MATTER_TOOLDIR      = $(MATTER_DIR)/tools
-MATTER_TOOLCHAINDIR = $(MATTER_DIR)/tools/toolchain
+MATTER_LWIPDIR      = $(MATTER_COMMONDIR)/lwip
+MATTER_MBEDTLSDIR   = $(MATTER_COMMONDIR)/mbedtls
+MATTER_MAKEDIR      = $(MATTER_BUILDDIR)/make
+MATTER_TOOLCHAINDIR = $(MATTER_TOOLDIR)/toolchain
 
 # -------------------------------------------------------------------
 # Toolchain Definition
@@ -25,6 +34,9 @@ include $(MATTER_INCLUDE_TOOLCHAIN)
 FREERTOS_VERSION   = freertos_v10.0.1
 LWIP_VERSION       = lwip_v2.1.2
 MBEDTLS_VERSION    = mbedtls-2.28.1
+
+LWIP_DIR           = $(MATTER_LWIPDIR)
+MBEDTLS_DIR        = $(MATTER_MBEDTLSDIR)
 
 # -------------------------------------------------------------------
 # CHIP options

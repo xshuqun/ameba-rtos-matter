@@ -60,11 +60,14 @@ SRC_CPP += $(CHIPDIR)/src/app/util/util.cpp
 SRC_CPP += $(CHIPDIR)/src/app/util/privilege-storage.cpp
 
 # connectedhomeip - src - app - persistence
+SRC_CPP += $(CHIPDIR)/src/app/persistence/AttributePersistence.cpp
 SRC_CPP += $(CHIPDIR)/src/app/persistence/AttributePersistenceProviderInstance.cpp
 SRC_CPP += $(CHIPDIR)/src/app/persistence/DefaultAttributePersistenceProvider.cpp
 SRC_CPP += $(CHIPDIR)/src/app/persistence/DeferredAttributePersistenceProvider.cpp
+SRC_CPP += $(CHIPDIR)/src/app/persistence/String.cpp
 
 # connectedhomeip - src - data-model-providers
+SRC_CPP += $(CHIPDIR)/src/data-model-providers/codegen/ClusterIntegration.cpp
 SRC_CPP += $(CHIPDIR)/src/data-model-providers/codegen/CodegenDataModelProvider.cpp
 SRC_CPP += $(CHIPDIR)/src/data-model-providers/codegen/CodegenDataModelProvider_Read.cpp
 SRC_CPP += $(CHIPDIR)/src/data-model-providers/codegen/CodegenDataModelProvider_Write.cpp

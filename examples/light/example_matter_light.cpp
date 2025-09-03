@@ -27,38 +27,39 @@ static void example_matter_light_task(void *pvParameters)
     initPref();     // init NVS
 
     err = matter_core_start();
-    if (err != CHIP_NO_ERROR)
-    {
+    if (err != CHIP_NO_ERROR) {
         ChipLogProgress(DeviceLayer, "matter_core_start failed!");
     }
 
     err = matter_driver_led_init();
-    if (err != CHIP_NO_ERROR)
-    {
+    if (err != CHIP_NO_ERROR) {
         ChipLogProgress(DeviceLayer, "matter_driver_led_init failed!");
     }
 
     err = matter_driver_led_set_startup_value();
-    if (err != CHIP_NO_ERROR)
-    {
+    if (err != CHIP_NO_ERROR) {
         ChipLogProgress(DeviceLayer, "matter_driver_led_set_startup_value failed!");
     }
 
-    err = matter_driver_button_init();
-    if (err != CHIP_NO_ERROR)
-    {
-        ChipLogProgress(DeviceLayer, "matter_driver_button_init failed!");
+    err = matter_driver_ep1_button_init();
+    if (err != CHIP_NO_ERROR) {
+        ChipLogProgress(DeviceLayer, "matter_driver_ep1_button_init failed!");
     }
 
+#if CONFIG_MULTIPLE_LIGHT_DEVICE
+    err = matter_driver_ep2_button_init();
+    if (err != CHIP_NO_ERROR) {
+        ChipLogProgress(DeviceLayer, "matter_driver_ep2_button_init failed!");
+    }
+#endif
+
     err = matter_interaction_start_downlink();
-    if (err != CHIP_NO_ERROR)
-    {
+    if (err != CHIP_NO_ERROR) {
         ChipLogProgress(DeviceLayer, "matter_interaction_start_downlink failed!");
     }
 
     err = matter_interaction_start_uplink();
-    if (err != CHIP_NO_ERROR)
-    {
+    if (err != CHIP_NO_ERROR) {
         ChipLogProgress(DeviceLayer, "matter_interaction_start_uplink failed!");
     }
 

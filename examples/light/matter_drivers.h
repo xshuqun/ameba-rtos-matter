@@ -13,6 +13,9 @@
 #include <app/clusters/identify-server/identify-server.h>
 #include <platform/CHIPDeviceLayer.h>
 
+#define CONFIG_MULTIPLE_LIGHT_DEVICE 1
+#define USE_LEVEL_CONTROL MATTER_DM_PLUGIN_LEVEL_CONTROL_SERVER
+
 /**
  * @brief  Callback function for starting the identify process.
  * @param[in]  identify: Pointer to the Identify structure.
@@ -32,10 +35,18 @@ void matter_driver_on_identify_stop(Identify *identify);
 void matter_driver_on_trigger_effect(Identify *identify);
 
 /**
- * @brief  Initialize the button driver.
+ * @brief  Initialize the button driver for endpoint1.
  * @return  CHIP_NO_ERROR set successfully, CHIP_ERROR_INTERNAL otherwise (if necessary).
  */
-CHIP_ERROR matter_driver_button_init(void);
+CHIP_ERROR matter_driver_ep1_button_init(void);
+
+#if CONFIG_MULTIPLE_LIGHT_DEVICE
+/**
+ * @brief  Initialize the button driver for endpoint2.
+ * @return  CHIP_NO_ERROR set successfully, CHIP_ERROR_INTERNAL otherwise (if necessary).
+ */
+CHIP_ERROR matter_driver_ep2_button_init(void);
+#endif //CONFIG_MULTIPLE_LIGHT_DEVICE
 
 /**
  * @brief  Initialize the LED driver.

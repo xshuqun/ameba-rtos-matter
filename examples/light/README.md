@@ -1,6 +1,6 @@
 # Lighting-app Example
-This example is an implementation of the *Dimmable Light* device type. 
-You will need an LED and a button. Please check the different GPIO pin used for respective ICs below.
+This example is an implementation of the *OnOff Plugin* device type. 
+You will need LED(s) and button(s). Please check the different GPIO pin used for respective ICs below.
 
 ## How it works
 The LED can be controlled in two ways, by the Matter controller, or by a button.
@@ -47,10 +47,12 @@ Ensure that `CONFIG_EXAMPLE_MATTER_CHIPTEST` is disabled.
 
 #### GPIO Pin Configuration
 
-| Peripheral | Pin   |
-| ---------- | ----- |
-| LED        | PA_23 |
-| Button     | PA_17 |
+| Peripheral  | Pin   |
+| ----------  | ----- |
+| LED1        | PA_23 |
+| Button1     | PA_17 |
+| LED2        | PA_22 |
+| Button2     | PA_18 |
 
 #### Build Matter Libraries
 

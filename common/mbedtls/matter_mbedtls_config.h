@@ -35,6 +35,7 @@
 #if (MBEDTLS_VERSION_NUMBER == 0x021C0100)
 #define SUPPORT_HW_SW_CRYPTO
 #if defined(CONFIG_PLATFORM_8710C)
+#define MBEDTLS_USE_ROM_API
 #include <rom_ssl_ram_map.h>
 #define RTL_HW_CRYPTO
 //#define SUPPORT_HW_SSL_HMAC_SHA256

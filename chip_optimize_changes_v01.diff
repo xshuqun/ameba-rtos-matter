@@ -1,0 +1,31 @@
+diff --git a/examples/platform/ameba/route_hook/ameba_route_table.c b/examples/platform/ameba/route_hook/ameba_route_table.c
+index 8446c42955..31d64d1328 100644
+--- a/examples/platform/ameba/route_hook/ameba_route_table.c
++++ b/examples/platform/ameba/route_hook/ameba_route_table.c
+@@ -7,7 +7,12 @@
+ #include "lwip/netif.h"
+ #include "lwip/timeouts.h"
+ 
++#if defined(CONFIG_ENABLE_AMEBA_OPTIMIZE) && (CONFIG_ENABLE_AMEBA_OPTIMIZE == 0)
+ #define MAX_RIO_ROUTE 20
++#else
++#define MAX_RIO_ROUTE 5
++#endif
++
+ #define MAX_RIO_TIMEOUT UINT32_MAX / (1000 * 4) // lwIP defined reasonable timeout value
+ 
+ static ameba_route_entry_t s_route_entries[MAX_RIO_ROUTE];
+diff --git a/src/platform/Ameba/CHIPDevicePlatformConfig.h b/src/platform/Ameba/CHIPDevicePlatformConfig.h
+index e10c8ddf9a..1b80c5992b 100644
+--- a/src/platform/Ameba/CHIPDevicePlatformConfig.h
++++ b/src/platform/Ameba/CHIPDevicePlatformConfig.h
+@@ -79,3 +79,9 @@
+ #define CONFIG_RENDEZVOUS_MODE 6
+ #define CHIP_DEVICE_CONFIG_ENABLE_COMMISSIONABLE_DEVICE_TYPE 1
+ // #define CHIP_DEVICE_CONFIG_UNIQUE_ID "00112233445566778899AABBCCDDEEFF"
++
++#if defined(CONFIG_ENABLE_AMEBA_OPTIMIZE) && (CONFIG_ENABLE_AMEBA_OPTIMIZE == 0)
++#define CHIP_DEVICE_CONFIG_EVENT_LOGGING_CRIT_BUFFER_SIZE (256)
++#define CHIP_DEVICE_CONFIG_EVENT_LOGGING_INFO_BUFFER_SIZE (256)
++#define CHIP_DEVICE_CONFIG_EVENT_LOGGING_DEBUG_BUFFER_SIZE (256)
++#endif

@@ -1,0 +1,553 @@
+diff --git a/common/include/lwipopts_matter.h b/common/include/lwipopts_matter.h
+index 54f4d32..25a5761 100644
+--- a/common/include/lwipopts_matter.h
++++ b/common/include/lwipopts_matter.h
+@@ -79,6 +79,24 @@ extern "C" {
+ /* Hook Options */
+ #define LWIP_HOOK_FILENAME              "lwip_default_hooks.h"
+ 
++#if defined(CONFIG_ENABLE_AMEBA_OPTIMIZE) && (CONFIG_ENABLE_AMEBA_OPTIMIZE == 1)
++#undef LWIP_IPV6_DHCP6
++#undef DNS_TABLE_SIZE
++#undef MEMP_NUM_ND6_QUEUE
++#undef LWIP_ND6_NUM_NEIGHBORS
++#undef LWIP_ND6_NUM_PREFIXES
++#undef LWIP_ND6_NUM_ROUTERS
++#undef LWIP_ND6_NUM_DESTINATIONS
++
++#define LWIP_IPV6_DHCP6                 0
++#define DNS_TABLE_SIZE                  2
++#define MEMP_NUM_ND6_QUEUE              3
++#define LWIP_ND6_NUM_NEIGHBORS          5
++#define LWIP_ND6_NUM_PREFIXES           5
++#define LWIP_ND6_NUM_ROUTERS            5
++#define LWIP_ND6_NUM_DESTINATIONS       10
++#endif
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/common/mbedtls/matter_mbedtls_config.h b/common/mbedtls/matter_mbedtls_config.h
+index 9f85cb0..6d7996c 100755
+--- a/common/mbedtls/matter_mbedtls_config.h
++++ b/common/mbedtls/matter_mbedtls_config.h
+@@ -35,6 +35,7 @@
+ #if (MBEDTLS_VERSION_NUMBER == 0x021C0100)
+ #define SUPPORT_HW_SW_CRYPTO
+ #if defined(CONFIG_PLATFORM_8710C)
++#define MBEDTLS_USE_ROM_API
+ #include <rom_ssl_ram_map.h>
+ #define RTL_HW_CRYPTO
+ //#define SUPPORT_HW_SSL_HMAC_SHA256
+diff --git a/common/mbedtls/mbedtls-2.28.1/library/bignum.c b/common/mbedtls/mbedtls-2.28.1/library/bignum.c
+index 6ecb863..213b2e5 100644
+--- a/common/mbedtls/mbedtls-2.28.1/library/bignum.c
++++ b/common/mbedtls/mbedtls-2.28.1/library/bignum.c
+@@ -3133,6 +3133,201 @@ cleanup:
+ 
+ #endif /* MBEDTLS_SELF_TEST */
+ 
++#else
++static mbedtls_mpi_uint mpi_uint_bigendian_to_host( mbedtls_mpi_uint x )
++{
++#if defined(__BYTE_ORDER__)
++
++/* Nothing to do on bigendian systems. */
++#if ( __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__ )
++    return( x );
++#endif /* __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__ */
++
++#if ( __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__ )
++
++/* For GCC and Clang, have builtins for byte swapping. */
++#if defined(__GNUC__) && defined(__GNUC_PREREQ)
++#if __GNUC_PREREQ(4,3)
++#define have_bswap
++#endif
++#endif
++
++#if defined(__clang__) && defined(__has_builtin)
++#if __has_builtin(__builtin_bswap32)  &&                 \
++    __has_builtin(__builtin_bswap64)
++#define have_bswap
++#endif
++#endif
++
++#if defined(have_bswap)
++    /* The compiler is hopefully able to statically evaluate this! */
++    switch( sizeof(mbedtls_mpi_uint) )
++    {
++        case 4:
++            return( __builtin_bswap32(x) );
++        case 8:
++            return( __builtin_bswap64(x) );
++    }
++#endif
++#endif /* __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__ */
++#endif /* __BYTE_ORDER__ */
++
++    /* Fall back to C-based reordering if we don't know the byte order
++     * or we couldn't use a compiler-specific builtin. */
++    return( mpi_uint_bigendian_to_host_c( x ) );
++}
++
++static void mpi_bigendian_to_host( mbedtls_mpi_uint * const p, size_t limbs )
++{
++    mbedtls_mpi_uint *cur_limb_left;
++    mbedtls_mpi_uint *cur_limb_right;
++    if( limbs == 0 )
++        return;
++
++    /*
++     * Traverse limbs and
++     * - adapt byte-order in each limb
++     * - swap the limbs themselves.
++     * For that, simultaneously traverse the limbs from left to right
++     * and from right to left, as long as the left index is not bigger
++     * than the right index (it's not a problem if limbs is odd and the
++     * indices coincide in the last iteration).
++     */
++    for( cur_limb_left = p, cur_limb_right = p + ( limbs - 1 );
++         cur_limb_left <= cur_limb_right;
++         cur_limb_left++, cur_limb_right-- )
++    {
++        mbedtls_mpi_uint tmp;
++        /* Note that if cur_limb_left == cur_limb_right,
++         * this code effectively swaps the bytes only once. */
++        tmp             = mpi_uint_bigendian_to_host( *cur_limb_left  );
++        *cur_limb_left  = mpi_uint_bigendian_to_host( *cur_limb_right );
++        *cur_limb_right = tmp;
++    }
++}
++
++/* Resize X to have exactly n limbs and set it to 0. */
++static int mbedtls_mpi_resize_clear( mbedtls_mpi *X, size_t limbs )
++{
++    if( limbs == 0 )
++    {
++        mbedtls_mpi_free( X );
++        return( 0 );
++    }
++    else if( X->n == limbs )
++    {
++        memset( X->p, 0, limbs * ciL );
++        X->s = 1;
++        return( 0 );
++    }
++    else
++    {
++        mbedtls_mpi_free( X );
++        return( mbedtls_mpi_grow( X, limbs ) );
++    }
++}
++
++/* Fill X with n_bytes random bytes.
++ * X must already have room for those bytes.
++ * The ordering of the bytes returned from the RNG is suitable for
++ * deterministic ECDSA (see RFC 6979 §3.3 and mbedtls_mpi_random()).
++ * The size and sign of X are unchanged.
++ * n_bytes must not be 0.
++ */
++static int mpi_fill_random_internal(
++    mbedtls_mpi *X, size_t n_bytes,
++    int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
++{
++    int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
++    const size_t limbs = CHARS_TO_LIMBS( n_bytes );
++    const size_t overhead = ( limbs * ciL ) - n_bytes;
++
++    if( X->n < limbs )
++        return( MBEDTLS_ERR_MPI_BAD_INPUT_DATA );
++
++    memset( X->p, 0, overhead );
++    memset( (unsigned char *) X->p + limbs * ciL, 0, ( X->n - limbs ) * ciL );
++    MBEDTLS_MPI_CHK( f_rng( p_rng, (unsigned char *) X->p + overhead, n_bytes ) );
++    mpi_bigendian_to_host( X->p, limbs );
++
++cleanup:
++    return( ret );
++}
++
++int mbedtls_mpi_random( mbedtls_mpi *X,
++                        mbedtls_mpi_sint min,
++                        const mbedtls_mpi *N,
++                        int (*f_rng)(void *, unsigned char *, size_t),
++                        void *p_rng )
++{
++    int ret = MBEDTLS_ERR_MPI_BAD_INPUT_DATA;
++    int count;
++    unsigned lt_lower = 1, lt_upper = 0;
++    size_t n_bits = mbedtls_mpi_bitlen( N );
++    size_t n_bytes = ( n_bits + 7 ) / 8;
++    mbedtls_mpi lower_bound;
++
++    if( min < 0 )
++        return( MBEDTLS_ERR_MPI_BAD_INPUT_DATA );
++    if( mbedtls_mpi_cmp_int( N, min ) <= 0 )
++        return( MBEDTLS_ERR_MPI_BAD_INPUT_DATA );
++
++    /*
++     * When min == 0, each try has at worst a probability 1/2 of failing
++     * (the msb has a probability 1/2 of being 0, and then the result will
++     * be < N), so after 30 tries failure probability is a most 2**(-30).
++     *
++     * When N is just below a power of 2, as is the case when generating
++     * a random scalar on most elliptic curves, 1 try is enough with
++     * overwhelming probability. When N is just above a power of 2,
++     * as when generating a random scalar on secp224k1, each try has
++     * a probability of failing that is almost 1/2.
++     *
++     * The probabilities are almost the same if min is nonzero but negligible
++     * compared to N. This is always the case when N is crypto-sized, but
++     * it's convenient to support small N for testing purposes. When N
++     * is small, use a higher repeat count, otherwise the probability of
++     * failure is macroscopic.
++     */
++    count = ( n_bytes > 4 ? 30 : 250 );
++
++    mbedtls_mpi_init( &lower_bound );
++
++    /* Ensure that target MPI has exactly the same number of limbs
++     * as the upper bound, even if the upper bound has leading zeros.
++     * This is necessary for the mbedtls_mpi_lt_mpi_ct() check. */
++    MBEDTLS_MPI_CHK( mbedtls_mpi_resize_clear( X, N->n ) );
++    MBEDTLS_MPI_CHK( mbedtls_mpi_grow( &lower_bound, N->n ) );
++    MBEDTLS_MPI_CHK( mbedtls_mpi_lset( &lower_bound, min ) );
++
++    /*
++     * Match the procedure given in RFC 6979 §3.3 (deterministic ECDSA)
++     * when f_rng is a suitably parametrized instance of HMAC_DRBG:
++     * - use the same byte ordering;
++     * - keep the leftmost n_bits bits of the generated octet string;
++     * - try until result is in the desired range.
++     * This also avoids any bias, which is especially important for ECDSA.
++     */
++    do
++    {
++        MBEDTLS_MPI_CHK( mpi_fill_random_internal( X, n_bytes, f_rng, p_rng ) );
++        MBEDTLS_MPI_CHK( mbedtls_mpi_shift_r( X, 8 * n_bytes - n_bits ) );
++
++        if( --count == 0 )
++        {
++            ret = MBEDTLS_ERR_MPI_NOT_ACCEPTABLE;
++            goto cleanup;
++        }
++
++        MBEDTLS_MPI_CHK( mbedtls_mpi_lt_mpi_ct( X, &lower_bound, &lt_lower ) );
++        MBEDTLS_MPI_CHK( mbedtls_mpi_lt_mpi_ct( X, N, &lt_upper ) );
++    }
++    while( lt_lower != 0 || lt_upper == 0 );
++
++cleanup:
++    mbedtls_mpi_free( &lower_bound );
++    return( ret );
++}
+ #endif /* !defined(MBEDTLS_USE_ROM_API) */
+ 
+ #endif /* MBEDTLS_BIGNUM_C */
+diff --git a/common/mbedtls/mbedtls-2.28.1/library/ecp.c b/common/mbedtls/mbedtls-2.28.1/library/ecp.c
+index 1bd29b2..78fd103 100644
+--- a/common/mbedtls/mbedtls-2.28.1/library/ecp.c
++++ b/common/mbedtls/mbedtls-2.28.1/library/ecp.c
+@@ -655,20 +655,6 @@ const mbedtls_ecp_curve_info *mbedtls_ecp_curve_info_from_name( const char *name
+     return( NULL );
+ }
+ 
+-/*
+- * Get the type of a curve
+- */
+-mbedtls_ecp_curve_type mbedtls_ecp_get_type( const mbedtls_ecp_group *grp )
+-{
+-    if( grp->G.X.p == NULL )
+-        return( MBEDTLS_ECP_TYPE_NONE );
+-
+-    if( grp->G.Y.p == NULL )
+-        return( MBEDTLS_ECP_TYPE_MONTGOMERY );
+-    else
+-        return( MBEDTLS_ECP_TYPE_SHORT_WEIERSTRASS );
+-}
+-
+ /*
+  * Initialize (the components of) a point
+  */
+@@ -3112,81 +3098,6 @@ int mbedtls_ecp_check_privkey( const mbedtls_ecp_group *grp,
+     return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
+ }
+ 
+-#if defined(MBEDTLS_ECP_MONTGOMERY_ENABLED)
+-MBEDTLS_STATIC_TESTABLE
+-int mbedtls_ecp_gen_privkey_mx( size_t high_bit,
+-                                mbedtls_mpi *d,
+-                                int (*f_rng)(void *, unsigned char *, size_t),
+-                                void *p_rng )
+-{
+-    int ret = MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
+-    size_t n_random_bytes = high_bit / 8 + 1;
+-
+-    /* [Curve25519] page 5 */
+-    /* Generate a (high_bit+1)-bit random number by generating just enough
+-     * random bytes, then shifting out extra bits from the top (necessary
+-     * when (high_bit+1) is not a multiple of 8). */
+-    MBEDTLS_MPI_CHK( mbedtls_mpi_fill_random( d, n_random_bytes,
+-                                              f_rng, p_rng ) );
+-    MBEDTLS_MPI_CHK( mbedtls_mpi_shift_r( d, 8 * n_random_bytes - high_bit - 1 ) );
+-
+-    MBEDTLS_MPI_CHK( mbedtls_mpi_set_bit( d, high_bit, 1 ) );
+-
+-    /* Make sure the last two bits are unset for Curve448, three bits for
+-       Curve25519 */
+-    MBEDTLS_MPI_CHK( mbedtls_mpi_set_bit( d, 0, 0 ) );
+-    MBEDTLS_MPI_CHK( mbedtls_mpi_set_bit( d, 1, 0 ) );
+-    if( high_bit == 254 )
+-    {
+-        MBEDTLS_MPI_CHK( mbedtls_mpi_set_bit( d, 2, 0 ) );
+-    }
+-
+-cleanup:
+-    return( ret );
+-}
+-#endif /* MBEDTLS_ECP_MONTGOMERY_ENABLED */
+-
+-#if defined(MBEDTLS_ECP_SHORT_WEIERSTRASS_ENABLED)
+-static int mbedtls_ecp_gen_privkey_sw(
+-    const mbedtls_mpi *N, mbedtls_mpi *d,
+-    int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
+-{
+-    int ret = mbedtls_mpi_random( d, 1, N, f_rng, p_rng );
+-    switch( ret )
+-    {
+-        case MBEDTLS_ERR_MPI_NOT_ACCEPTABLE:
+-            return( MBEDTLS_ERR_ECP_RANDOM_FAILED );
+-        default:
+-            return( ret );
+-    }
+-}
+-#endif /* MBEDTLS_ECP_SHORT_WEIERSTRASS_ENABLED */
+-
+-/*
+- * Generate a private key
+- */
+-int mbedtls_ecp_gen_privkey( const mbedtls_ecp_group *grp,
+-                     mbedtls_mpi *d,
+-                     int (*f_rng)(void *, unsigned char *, size_t),
+-                     void *p_rng )
+-{
+-    ECP_VALIDATE_RET( grp   != NULL );
+-    ECP_VALIDATE_RET( d     != NULL );
+-    ECP_VALIDATE_RET( f_rng != NULL );
+-
+-#if defined(MBEDTLS_ECP_MONTGOMERY_ENABLED)
+-    if( mbedtls_ecp_get_type( grp ) == MBEDTLS_ECP_TYPE_MONTGOMERY )
+-        return( mbedtls_ecp_gen_privkey_mx( grp->nbits, d, f_rng, p_rng ) );
+-#endif /* MBEDTLS_ECP_MONTGOMERY_ENABLED */
+-
+-#if defined(MBEDTLS_ECP_SHORT_WEIERSTRASS_ENABLED)
+-    if( mbedtls_ecp_get_type( grp ) == MBEDTLS_ECP_TYPE_SHORT_WEIERSTRASS )
+-        return( mbedtls_ecp_gen_privkey_sw( &grp->N, d, f_rng, p_rng ) );
+-#endif /* MBEDTLS_ECP_SHORT_WEIERSTRASS_ENABLED */
+-
+-    return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
+-}
+-
+ /*
+  * Generate a keypair with configurable base point
+  */
+@@ -3604,4 +3515,93 @@ cleanup:
+ 
+ #endif /* MBEDTLS_USE_ROM_API */
+ 
++/*
++ * Get the type of a curve
++ */
++mbedtls_ecp_curve_type mbedtls_ecp_get_type( const mbedtls_ecp_group *grp )
++{
++    if( grp->G.X.p == NULL )
++        return( MBEDTLS_ECP_TYPE_NONE );
++
++    if( grp->G.Y.p == NULL )
++        return( MBEDTLS_ECP_TYPE_MONTGOMERY );
++    else
++        return( MBEDTLS_ECP_TYPE_SHORT_WEIERSTRASS );
++}
++
++#if defined(MBEDTLS_ECP_MONTGOMERY_ENABLED)
++MBEDTLS_STATIC_TESTABLE
++int mbedtls_ecp_gen_privkey_mx( size_t high_bit,
++                                mbedtls_mpi *d,
++                                int (*f_rng)(void *, unsigned char *, size_t),
++                                void *p_rng )
++{
++    int ret = MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
++    size_t n_random_bytes = high_bit / 8 + 1;
++
++    /* [Curve25519] page 5 */
++    /* Generate a (high_bit+1)-bit random number by generating just enough
++     * random bytes, then shifting out extra bits from the top (necessary
++     * when (high_bit+1) is not a multiple of 8). */
++    MBEDTLS_MPI_CHK( mbedtls_mpi_fill_random( d, n_random_bytes,
++                                              f_rng, p_rng ) );
++    MBEDTLS_MPI_CHK( mbedtls_mpi_shift_r( d, 8 * n_random_bytes - high_bit - 1 ) );
++
++    MBEDTLS_MPI_CHK( mbedtls_mpi_set_bit( d, high_bit, 1 ) );
++
++    /* Make sure the last two bits are unset for Curve448, three bits for
++       Curve25519 */
++    MBEDTLS_MPI_CHK( mbedtls_mpi_set_bit( d, 0, 0 ) );
++    MBEDTLS_MPI_CHK( mbedtls_mpi_set_bit( d, 1, 0 ) );
++    if( high_bit == 254 )
++    {
++        MBEDTLS_MPI_CHK( mbedtls_mpi_set_bit( d, 2, 0 ) );
++    }
++
++cleanup:
++    return( ret );
++}
++#endif /* MBEDTLS_ECP_MONTGOMERY_ENABLED */
++
++#if defined(MBEDTLS_ECP_SHORT_WEIERSTRASS_ENABLED)
++static int mbedtls_ecp_gen_privkey_sw(
++    const mbedtls_mpi *N, mbedtls_mpi *d,
++    int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
++{
++    int ret = mbedtls_mpi_random( d, 1, N, f_rng, p_rng );
++    switch( ret )
++    {
++        case MBEDTLS_ERR_MPI_NOT_ACCEPTABLE:
++            return( MBEDTLS_ERR_ECP_RANDOM_FAILED );
++        default:
++            return( ret );
++    }
++}
++#endif /* MBEDTLS_ECP_SHORT_WEIERSTRASS_ENABLED */
++
++/*
++ * Generate a private key
++ */
++int mbedtls_ecp_gen_privkey( const mbedtls_ecp_group *grp,
++                     mbedtls_mpi *d,
++                     int (*f_rng)(void *, unsigned char *, size_t),
++                     void *p_rng )
++{
++    ECP_VALIDATE_RET( grp   != NULL );
++    ECP_VALIDATE_RET( d     != NULL );
++    ECP_VALIDATE_RET( f_rng != NULL );
++
++#if defined(MBEDTLS_ECP_MONTGOMERY_ENABLED)
++    if( mbedtls_ecp_get_type( grp ) == MBEDTLS_ECP_TYPE_MONTGOMERY )
++        return( mbedtls_ecp_gen_privkey_mx( grp->nbits, d, f_rng, p_rng ) );
++#endif /* MBEDTLS_ECP_MONTGOMERY_ENABLED */
++
++#if defined(MBEDTLS_ECP_SHORT_WEIERSTRASS_ENABLED)
++    if( mbedtls_ecp_get_type( grp ) == MBEDTLS_ECP_TYPE_SHORT_WEIERSTRASS )
++        return( mbedtls_ecp_gen_privkey_sw( &grp->N, d, f_rng, p_rng ) );
++#endif /* MBEDTLS_ECP_SHORT_WEIERSTRASS_ENABLED */
++
++    return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
++}
++
+ #endif /* MBEDTLS_ECP_C */
+\ No newline at end of file
+diff --git a/common/port/matter_ota.c b/common/port/matter_ota.c
+index 017f4df..96e1ecf 100755
+--- a/common/port/matter_ota.c
++++ b/common/port/matter_ota.c
+@@ -26,14 +26,14 @@ static flash_t matter_ota_flash;
+ update_ota_target_hdr targetHeader;
+ #endif
+ 
+-bool matter_ota_first_sector_written = false;
+-uint32_t matter_ota_flash_sector_base;
+-uint32_t matter_ota_new_firmware_addr;
++static bool matter_ota_first_sector_written = false;
++static uint32_t matter_ota_flash_sector_base;
++static uint32_t matter_ota_new_firmware_addr;
+ 
+-uint8_t matter_ota_header[MATTER_OTA_HEADER_SIZE];
+-uint8_t matter_ota_header_size = 0; // variable to track size of ota header
+-uint8_t matter_ota_buffer[MATTER_OTA_SECTOR_SIZE]; // 4KB buffer to be written to one sector
+-uint16_t matter_ota_buffer_size = 0; // variable to track size of buffer
++static uint8_t matter_ota_header[MATTER_OTA_HEADER_SIZE];
++static uint8_t matter_ota_header_size = 0; // variable to track size of ota header
++static uint8_t *matter_ota_buffer; // 4KB buffer to be written to one sector
++static uint16_t matter_ota_buffer_size = 0; // variable to track size of buffer
+ 
+ uint8_t matter_ota_get_total_header_size(void)
+ {
+@@ -47,6 +47,11 @@ uint8_t matter_ota_get_current_header_size(void)
+ 
+ void matter_ota_prepare_partition(void)
+ {
++    matter_ota_buffer = (uint8_t *)malloc(MATTER_OTA_SECTOR_SIZE);
++    if (matter_ota_buffer == NULL) {
++        printf("matter_ota_buffer malloc failed\n");
++        return;
++    }
+     memset(matter_ota_buffer, 0, sizeof(matter_ota_buffer));
+     memset(matter_ota_header, 0, sizeof(matter_ota_header));
+     matter_ota_header_size = 0;
+@@ -163,6 +168,8 @@ int8_t matter_ota_flush_last(void)
+ 
+         matter_ota_flash_sector_base += MATTER_OTA_SECTOR_SIZE; // point to next sector
+         memset(matter_ota_buffer, 0, sizeof(matter_ota_buffer)); // clear buffer after writing
++        free(matter_ota_buffer);
++        matter_ota_buffer = NULL;
+         matter_ota_buffer_size = 0;
+     }
+ #elif defined(CONFIG_PLATFORM_8721D)
+@@ -258,6 +265,10 @@ static void matter_ota_abort_task(void *pvParameters)
+     }
+ #endif
+     matter_ota_first_sector_written = false;
++
++    free(matter_ota_buffer);
++    matter_ota_buffer = NULL;
++
+     vTaskDelete(NULL);
+ }
+ 
+diff --git a/common/port/matter_ota.h b/common/port/matter_ota.h
+index f1bd5f9..cbf38ad 100755
+--- a/common/port/matter_ota.h
++++ b/common/port/matter_ota.h
+@@ -23,7 +23,7 @@ extern "C" {
+   * @brief  Matter OTA error number.
+   */
+ enum {
+-    OTA_SUCCESS = 0,            /**< Matter OTA success */
++    OTA_SUCCESS = 1,            /**< Matter OTA success */
+     OTA_ERROR = -1,             /**< Matter OTA error */
+ };
+ 
+diff --git a/project/amebaz2plus/Makefile.include.matter b/project/amebaz2plus/Makefile.include.matter
+index ce8e8a0..63fb46a 100644
+--- a/project/amebaz2plus/Makefile.include.matter
++++ b/project/amebaz2plus/Makefile.include.matter
+@@ -126,3 +126,5 @@ CFLAGS += -DCHIP_CONFIG_ERROR_SOURCE=1
+ CFLAGS += -DCHIP_CONFIG_ERROR_FORMAT_AS_STRING=1
+ CFLAGS += -DCHIP_CONFIG_ENABLE_BDX_LOG_TRANSFER=1
+ endif
++
++CFLAGS += -DCONFIG_ENABLE_AMEBA_OPTIMIZE=1
+\ No newline at end of file
+diff --git a/project/amebaz2plus/make/light/lib_chip_light_main.mk b/project/amebaz2plus/make/light/lib_chip_light_main.mk
+index 554dd02..1a6098f 100644
+--- a/project/amebaz2plus/make/light/lib_chip_light_main.mk
++++ b/project/amebaz2plus/make/light/lib_chip_light_main.mk
+@@ -88,7 +88,7 @@ SRC_C += $(CHIPDIR)/examples/platform/ameba/route_hook/ameba_route_table.c
+ SRC_CPP = 
+ SRC_CPP += $(CHIPDIR)/examples/providers/DeviceInfoProviderImpl.cpp
+ 
+-SRC_CPP += $(CHIPDIR)/src/app/icd/server/ICDMonitoringTable.cpp
++#SRC_CPP += $(CHIPDIR)/src/app/icd/server/ICDMonitoringTable.cpp
+ SRC_CPP += $(CHIPDIR)/src/app/server/AclStorage.cpp
+ SRC_CPP += $(CHIPDIR)/src/app/server/DefaultAclStorage.cpp
+ SRC_CPP += $(CHIPDIR)/src/app/server/EchoHandler.cpp
+@@ -104,7 +104,7 @@ endif
+ 
+ SRC_CPP += $(CHIPDIR)/src/app/util/attribute-storage.cpp
+ SRC_CPP += $(CHIPDIR)/src/app/util/attribute-table.cpp
+-SRC_CPP += $(CHIPDIR)/src/app/util/binding-table.cpp
++#SRC_CPP += $(CHIPDIR)/src/app/util/binding-table.cpp
+ SRC_CPP += $(CHIPDIR)/src/app/util/DataModelHandler.cpp
+ SRC_CPP += $(CHIPDIR)/src/app/util/ember-compatibility-functions.cpp
+ SRC_CPP += $(CHIPDIR)/src/app/util/ember-global-attribute-access-interface.cpp

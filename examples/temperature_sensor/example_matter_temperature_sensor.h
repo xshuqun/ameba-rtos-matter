@@ -13,6 +13,6 @@
 /**
  * @brief  Create Matter Task (for Matter Temperature Sensor).
  */
-void example_matter_temp_sensor_task(void);
+void example_matter_temperature_sensor(void);
 
 #endif /* EXAMPLE_MATTER_TEMPERATURE_SENSOR_H */

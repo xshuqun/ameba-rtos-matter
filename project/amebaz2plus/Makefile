@@ -229,8 +229,25 @@ thermostat_port: toolchain_matter $(THERMOSTAT_FILE)
 	$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_core.mk all
 	$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_main.mk all
 
-.PHONY: clean_matter_libs
-clean_matter_libs:
+_clean_chip_core:
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/all_clusters/lib_chip.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/aircon/lib_chip_aircon_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/air_purifier/lib_chip_air_purifier_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/bridge_dm/lib_chip_bridge_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/dishwasher/lib_chip_dishwasher_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/fan/lib_chip_fan_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/generic_switch/lib_chip_generic_switch_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/laundry_washer/lib_chip_laundry_washer_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/light/lib_chip_light_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/light_dm/lib_chip_light_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/light_port/lib_chip_light_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/light_switch/lib_chip_light_switch_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/microwave_oven/lib_chip_microwave_oven_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/refrigerator/lib_chip_refrigerator_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/temperature_sensor/lib_chip_temperature_sensor_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_core.mk clean
+
+_clean_chip_main:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/all_clusters/lib_chip_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/aircon/lib_chip_aircon_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/air_purifier/lib_chip_air_purifier_main.mk clean
@@ -247,20 +264,10 @@ clean_matter_libs:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/refrigerator/lib_chip_refrigerator_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/temperature_sensor/lib_chip_temperature_sensor_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_main.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/all_clusters/lib_chip.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/aircon/lib_chip_aircon_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/air_purifier/lib_chip_air_purifier_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/bridge_dm/lib_chip_bridge_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/dishwasher/lib_chip_dishwasher_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/fan/lib_chip_fan_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/generic_switch/lib_chip_generic_switch_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/laundry_washer/lib_chip_laundry_washer_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/light/lib_chip_light_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/light_dm/lib_chip_light_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/light_port/lib_chip_light_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/light_switch/lib_chip_light_switch_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/microwave_oven/lib_chip_microwave_oven_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/refrigerator/lib_chip_refrigerator_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/temperature_sensor/lib_chip_temperature_sensor_core.mk clean
+
+
+.PHONY: clean_matter_libs
+clean_matter_libs:
+	@$(MAKE) _clean_chip_main
+	@$(MAKE) _clean_chip_core
 	@rm -rf $(MATTER_BUILDDIR)/lib_main*

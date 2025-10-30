@@ -53,6 +53,8 @@ THERMOSTAT_ZAP				= $(CHIPDIR)/examples/thermostat/thermostat-common/thermostat.
 
 AIRCON_FILE					= $(MATTER_EXAMPLE_DIR)/aircon/build/chip/codegen/cluster-file.txt
 AIRCON_ZAP					= $(MATTER_EXAMPLE_DIR)/aircon/aircon-app.zap
+BASIC_VIDEO_PLAYER_FILE		= $(MATTER_EXAMPLE_DIR)/basic_video_player/build/chip/codegen/cluster-file.txt
+BASIC_VIDEO_PLAYER_ZAP		= $(MATTER_EXAMPLE_DIR)/basic_video_player/basic-video-player-app.zap
 BRIDGE_DM_FILE				= $(MATTER_EXAMPLE_DIR)/bridge_dm/build/chip/codegen/cluster-file.txt
 BRIDGE_DM_ZAP				= $(MATTER_EXAMPLE_DIR)/bridge_dm/bridge-app.zap
 DISHWASHER_FILE				= $(MATTER_EXAMPLE_DIR)/dishwasher/build/chip/codegen/cluster-file.txt
@@ -105,11 +107,11 @@ $(LIGHTING_FILE): $(LIGHTING_ZAP)
 $(LIGHT_SWITCH_FILE): $(LIGHT_SWITCH_ZAP)
 	$(call GENERATE_ZAP,$(CHIPDIR)/examples/light-switch-app/ameba,$^,$(CHIPDIR)/examples/light-switch-app/light-switch-common/light-switch-app.matter,$@)
 
-$(OTAR_FILE): $(OTAR_ZAP)
-	$(call GENERATE_ZAP,$(CHIPDIR)/examples/ota-requestor-app/ameba,$^,$(CHIPDIR)/examples/ota-requestor-app/ota-requestor-common/ota-requestor-app.matter,$@)
-
 $(AIRCON_FILE): $(AIRCON_ZAP)
 	$(call GENERATE_ZAP,$(MATTER_EXAMPLE_DIR)/aircon,$^,$(MATTER_EXAMPLE_DIR)/aircon/aircon-app.matter,$@)
+
+$(BASIC_VIDEO_PLAYER_FILE): $(BASIC_VIDEO_PLAYER_ZAP)
+	$(call GENERATE_ZAP,$(MATTER_EXAMPLE_DIR)/basic_video_player,$^,$(MATTER_EXAMPLE_DIR)/basic_video_player/basic-video-player-app.matter,$@)
 
 $(BRIDGE_DM_FILE): $(BRIDGE_DM_ZAP)
 	$(call GENERATE_ZAP,$(MATTER_EXAMPLE_DIR)/bridge_dm,$^,$(MATTER_EXAMPLE_DIR)/bridge_dm/bridge-app.matter,$@)
@@ -163,6 +165,11 @@ aircon_port: toolchain_matter $(AIRCON_FILE)
 air_purifier: toolchain_matter $(AIR_PURIFIER_FILE)
 	$(MAKE) -f $(MATTER_MAKE_DIR)/air_purifier/lib_chip_air_purifier_core.mk all
 	$(MAKE) -f $(MATTER_MAKE_DIR)/air_purifier/lib_chip_air_purifier_main.mk all
+
+.PHONY: basic_video_player_port
+basic_video_player_port: toolchain_matter $(BASIC_VIDEO_PLAYER_FILE)
+	$(MAKE) -f $(MATTER_MAKE_DIR)/basic_video_player/lib_chip_basic_video_player_core.mk all
+	$(MAKE) -f $(MATTER_MAKE_DIR)/basic_video_player/lib_chip_basic_video_player_main.mk all
 
 .PHONY: bridge_dm
 bridge_dm: toolchain_matter $(BRIDGE_DM_FILE) copy_gen_files_bridge_dm
@@ -229,11 +236,11 @@ thermostat_port: toolchain_matter $(THERMOSTAT_FILE)
 	$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_core.mk all
 	$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_main.mk all
 
-.PHONY: clean_matter_libs
-clean_matter_libs:
+_clean_chip_main:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/all_clusters/lib_chip_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/aircon/lib_chip_aircon_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/air_purifier/lib_chip_air_purifier_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/basic_video_player/lib_chip_basic_video_player_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/bridge_dm/lib_chip_bridge_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/dishwasher/lib_chip_dishwasher_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/fan/lib_chip_fan_main.mk clean
@@ -247,9 +254,12 @@ clean_matter_libs:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/refrigerator/lib_chip_refrigerator_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/temperature_sensor/lib_chip_temperature_sensor_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_main.mk clean
+
+_clean_chip_core:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/all_clusters/lib_chip.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/aircon/lib_chip_aircon_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/air_purifier/lib_chip_air_purifier_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/basic_video_player/lib_chip_basic_video_player_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/bridge_dm/lib_chip_bridge_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/dishwasher/lib_chip_dishwasher_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/fan/lib_chip_fan_core.mk clean
@@ -261,6 +271,11 @@ clean_matter_libs:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/light_switch/lib_chip_light_switch_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/microwave_oven/lib_chip_microwave_oven_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/refrigerator/lib_chip_refrigerator_core.mk clean
-	@$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/temperature_sensor/lib_chip_temperature_sensor_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_core.mk clean
+
+.PHONY: clean_matter_libs
+clean_matter_libs:
+	@$(MAKE) _clean_chip_main
+	@$(MAKE) _clean_chip_core
 	@rm -rf $(MATTER_BUILDDIR)/lib_main*

@@ -173,7 +173,6 @@ void matter_driver_take_measurement(void *pvParameters)
     {
         humidity = DHTSensor.readHumidity();
         temperature = DHTSensor.readTemperature();
-        //printf("Humidity: %i %%\t Temperature: %i *C \r\n", humidity, temperature);
 
         matter_driver_set_measured_humidity_cb(humidity * 100);
         DHTSensor.setMeasuredHumidity(humidity * 100);

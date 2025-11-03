@@ -24,6 +24,7 @@
 #define CONFIG_EXAMPLE_MATTER                           1
 #define CONFIG_EXAMPLE_MATTER_CHIPTEST                  1
 #define CONFIG_EXAMPLE_MATTER_BRIDGE                    0
+#define CONFIG_EXAMPLE_MATTER_BASIC_VIDEO_PLAYER        0
 #define CONFIG_EXAMPLE_MATTER_DISHWASHER                0
 #define CONFIG_EXAMPLE_MATTER_FAN                       0
 #define CONFIG_EXAMPLE_MATTER_GENERIC_SWITCH            0

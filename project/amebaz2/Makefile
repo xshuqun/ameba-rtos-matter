@@ -53,6 +53,8 @@ THERMOSTAT_ZAP				= $(CHIPDIR)/examples/thermostat/thermostat-common/thermostat.
 
 BRIDGE_DM_FILE				= $(MATTER_EXAMPLE_DIR)/bridge_dm/build/chip/codegen/cluster-file.txt
 BRIDGE_DM_ZAP				= $(MATTER_EXAMPLE_DIR)/bridge_dm/bridge-app.zap
+BASIC_VIDEO_PLAYER_FILE		= $(MATTER_EXAMPLE_DIR)/basic_video_player/build/chip/codegen/cluster-file.txt
+BASIC_VIDEO_PLAYER_ZAP		= $(MATTER_EXAMPLE_DIR)/basic_video_player/basic-video-player-app.zap
 DISHWASHER_FILE				= $(MATTER_EXAMPLE_DIR)/dishwasher/build/chip/codegen/cluster-file.txt
 DISHWASHER_ZAP				= $(MATTER_EXAMPLE_DIR)/dishwasher/dishwasher-app.zap
 FAN_FILE					= $(MATTER_EXAMPLE_DIR)/fan/build/chip/codegen/cluster-file.txt
@@ -108,6 +110,9 @@ $(LIGHT_SWITCH_FILE): $(LIGHT_SWITCH_ZAP)
 $(BRIDGE_DM_FILE): $(BRIDGE_DM_ZAP)
 	$(call GENERATE_ZAP,$(MATTER_EXAMPLE_DIR)/bridge_dm,$^,$(MATTER_EXAMPLE_DIR)/bridge_dm/bridge-app.matter,$@)
 
+$(BASIC_VIDEO_PLAYER_FILE): $(BASIC_VIDEO_PLAYER_ZAP)
+	$(call GENERATE_ZAP,$(MATTER_EXAMPLE_DIR)/basic_video_player,$^,$(MATTER_EXAMPLE_DIR)/basic_video_player/basic-video-player-app.matter,$@)
+
 $(DISHWASHER_FILE): $(DISHWASHER_ZAP)
 	$(call GENERATE_ZAP,$(MATTER_EXAMPLE_DIR)/dishwasher,$^,$(MATTER_EXAMPLE_DIR)/dishwasher/dishwasher-app.matter,$@)
 
@@ -160,6 +165,11 @@ air_purifier: toolchain_matter $(AIR_PURIFIER_FILE)
 bridge_dm: toolchain_matter $(BRIDGE_DM_FILE) copy_gen_files_bridge_dm
 	$(MAKE) -f $(MATTER_MAKE_DIR)/bridge_dm/lib_chip_bridge_core.mk all
 	$(MAKE) -f $(MATTER_MAKE_DIR)/bridge_dm/lib_chip_bridge_main.mk all
+
+.PHONY: basic_video_player_port
+basic_video_player_port: toolchain_matter $(BASIC_VIDEO_PLAYER_FILE)
+	$(MAKE) -f $(MATTER_MAKE_DIR)/basic_video_player/lib_chip_basic_video_player_core.mk all
+	$(MAKE) -f $(MATTER_MAKE_DIR)/basic_video_player/lib_chip_basic_video_player_main.mk all
 
 .PHONY: dishwasher_port
 dishwasher_port: toolchain_matter $(DISHWASHER_FILE)
@@ -230,6 +240,7 @@ _clean_chip_core:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/all_clusters/lib_chip.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/air_purifier/lib_chip_air_purifier_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/bridge_dm/lib_chip_bridge_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/basic_video_player/lib_chip_basic_video_player_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/dishwasher/lib_chip_dishwasher_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/fan/lib_chip_fan_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/generic_switch/lib_chip_generic_switch_core.mk clean
@@ -248,6 +259,7 @@ _clean_chip_main:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/all_clusters/lib_chip_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/air_purifier/lib_chip_air_purifier_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/bridge_dm/lib_chip_bridge_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/basic_video_player/lib_chip_basic_video_player_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/dishwasher/lib_chip_dishwasher_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/fan/lib_chip_fan_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/generic_switch/lib_chip_generic_switch_main.mk clean

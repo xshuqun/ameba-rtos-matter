@@ -31,6 +31,8 @@
 #include <room_air_conditioner/example_matter_room_air_conditioner.h>
 #elif defined(CONFIG_EXAMPLE_MATTER_BRIDGE) && (CONFIG_EXAMPLE_MATTER_BRIDGE == 1)
 #include <bridge_dm/example_matter_bridge.h>
+#elif defined(CONFIG_EXAMPLE_MATTER_BASIC_VIDEO_PLAYER) && (CONFIG_EXAMPLE_MATTER_BASIC_VIDEO_PLAYER == 1)
+#include <basic_video_player/example_matter_basic_video_player.h>
 #elif defined(CONFIG_EXAMPLE_MATTER_DISHWASHER) && (CONFIG_EXAMPLE_MATTER_DISHWASHER == 1)
 #include <dishwasher/example_matter_dishwasher.h>
 #elif defined(CONFIG_EXAMPLE_MATTER_FAN) && (CONFIG_EXAMPLE_MATTER_FAN == 1)
@@ -89,6 +91,8 @@ void matter_example_entry(void)
     example_matter_room_air_conditioner();
 #elif defined(CONFIG_EXAMPLE_MATTER_BRIDGE) && (CONFIG_EXAMPLE_MATTER_BRIDGE == 1)
     example_matter_bridge();
+#elif defined(CONFIG_EXAMPLE_MATTER_BASIC_VIDEO_PLAYER) && (CONFIG_EXAMPLE_MATTER_BASIC_VIDEO_PLAYER == 1)
+    example_matter_basic_video_player();
 #elif defined(CONFIG_EXAMPLE_MATTER_DISHWASHER) && (CONFIG_EXAMPLE_MATTER_DISHWASHER == 1)
     example_matter_dishwasher();
 #elif defined(CONFIG_EXAMPLE_MATTER_FAN) && (CONFIG_EXAMPLE_MATTER_FAN == 1)

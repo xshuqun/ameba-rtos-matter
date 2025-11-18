@@ -9,6 +9,17 @@
 
 using namespace chip::app::Clusters;
 
+#define STORAGE_MASK                ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE)
+#define WRITABLE_MASK               ZAP_ATTRIBUTE_MASK(WRITABLE)
+#define SINGLETON_MASK              ZAP_ATTRIBUTE_MASK(SINGLETON)
+#define NULLABLE_MASK               ZAP_ATTRIBUTE_MASK(NULLABLE)
+#define TOKENIZE_MASK               ZAP_ATTRIBUTE_MASK(TOKENIZE)
+
+#define WRITABLE_STORAGE            (STORAGE_MASK | WRITABLE_MASK)
+#define SINGLETON_STORAGE           (STORAGE_MASK | SINGLETON_MASK)
+#define NULLABLE_STORAGE            (STORAGE_MASK | NULLABLE_MASK)
+#define TOKENIZE_COMBO              (STORAGE_MASK | TOKENIZE_MASK | SINGLETON_MASK | WRITABLE_MASK)
+
 namespace Presets {
 namespace Clusters {
 
@@ -19,131 +30,159 @@ uint8_t generalcommissioningBreadCrumbValue[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0
 
 void matter_cluster_descriptor_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig descriptorDeviceTypeList(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig descriptorServerList(0x00000001, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig descriptorClientList(0x00000002, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig descriptorPartsList(0x00000003, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig descriptorFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig descriptorClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
     clusterConfig->clusterId = 0x0000001D;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
-    clusterConfig->attributeConfigs.push_back(descriptorDeviceTypeList);
-    clusterConfig->attributeConfigs.push_back(descriptorServerList);
-    clusterConfig->attributeConfigs.push_back(descriptorClientList);
-    clusterConfig->attributeConfigs.push_back(descriptorPartsList);
-    clusterConfig->attributeConfigs.push_back(descriptorFeatureMap);
-    clusterConfig->attributeConfigs.push_back(descriptorClusterRevision);
+
+    // Attributes
+    AttributeConfig descDeviceTypeList(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig descServerList(0x00000001, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig descClientList(0x00000002, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig descPartsList(0x00000003, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(descDeviceTypeList);
+    clusterConfig->attributeConfigs.push_back(descServerList);
+    clusterConfig->attributeConfigs.push_back(descClientList);
+    clusterConfig->attributeConfigs.push_back(descPartsList);
+
+    // Global Attributes
+    AttributeConfig descFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, STORAGE_MASK);
+    AttributeConfig descClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(descFeatureMap);
+    clusterConfig->attributeConfigs.push_back(descClusterRevision);
 }
 
-void matter_cluster_acl_server(ClusterConfig *clusterConfig)
+void matter_cluster_access_control_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig aclACL(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig aclExtension(0x00000001, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig aclSubjectsPerAccessControlEntry(0x00000002, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig aclTargetsPerAccessControlEntry(0x00000003, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig aclAccessControlEntriesPerFabric(0x00000004, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig aclFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig aclClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
-    EventConfig aclAccessControlEntryChanged(0x00000000);
-    EventConfig aclAccessControlExtensionChanged(0x00000001);
-
     clusterConfig->clusterId = 0x0000001F;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
+
+    // Attributes
+    AttributeConfig aclACL(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, WRITABLE_STORAGE);
+    AttributeConfig aclExtension(0x00000001, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, WRITABLE_STORAGE);
+    AttributeConfig aclSubjectsPerAccessControlEntry(0x00000002, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, STORAGE_MASK);
+    AttributeConfig aclTargetsPerAccessControlEntry(0x00000003, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, STORAGE_MASK);
+    AttributeConfig aclAccessControlEntriesPerFabric(0x00000004, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, STORAGE_MASK);
+
     clusterConfig->attributeConfigs.push_back(aclACL);
     clusterConfig->attributeConfigs.push_back(aclExtension);
     clusterConfig->attributeConfigs.push_back(aclSubjectsPerAccessControlEntry);
     clusterConfig->attributeConfigs.push_back(aclTargetsPerAccessControlEntry);
     clusterConfig->attributeConfigs.push_back(aclAccessControlEntriesPerFabric);
+
+    // Global Attributes
+    AttributeConfig aclFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, STORAGE_MASK);
+    AttributeConfig aclClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, STORAGE_MASK);
+
     clusterConfig->attributeConfigs.push_back(aclFeatureMap);
     clusterConfig->attributeConfigs.push_back(aclClusterRevision);
+
+    // Events
+    EventConfig aclAccessControlEntryChanged(0x00000000);
+    EventConfig aclAccessControlExtensionChanged(0x00000001);
+
     clusterConfig->eventConfigs.push_back(aclAccessControlEntryChanged);
     clusterConfig->eventConfigs.push_back(aclAccessControlExtensionChanged);
 }
 
 void matter_cluster_basic_information_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig basicinfoDataModelRevision(0x00000000, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoVendorName(0x00000001, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 33, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoVendorId(0x00000002, ZAP_TYPE(VENDOR_ID), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoProductName(0x00000003, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 33, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoProductId(0x00000004, ZAP_TYPE(VENDOR_ID), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoNodeLabel(0x00000005, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 33, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(TOKENIZE) | ZAP_ATTRIBUTE_MASK(SINGLETON) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig basicinfoLocation(0x00000006, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 3, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig basicinfoHardwareVersion(0x00000007, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoHardwareVersionString(0x00000008, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 65, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoSoftwareVersion(0x00000009, ZAP_TYPE(INT32U), ZAP_EMPTY_DEFAULT(), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoSoftwareVersionString(0x0000000A, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 65, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoManufacturingDate(0x0000000B, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 17, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoPartNumber(0x0000000C, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 33, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoProductUrl(0x0000000D, ZAP_TYPE(LONG_CHAR_STRING), ZAP_EMPTY_DEFAULT(), 258, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoProductLabel(0x0000000E, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 65, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoSerialNumber(0x0000000F, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 33, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoLocalConfigDisabled(0x00000010, ZAP_TYPE(BOOLEAN), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(TOKENIZE) | ZAP_ATTRIBUTE_MASK(SINGLETON) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig basicinfoUniqueId(0x00000012, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 33, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-    AttributeConfig basicinfoCapabilityMinima(0x00000013, ZAP_TYPE(STRUCT), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig basicinfoFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig basicinfoClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(SINGLETON));
-
-    EventConfig basicinfoStartUp(0x00000000);
-    EventConfig basicinfoShutDown(0x00000001);
-    EventConfig basicinfoLeave(0x00000002);
-
     clusterConfig->clusterId = 0x00000028;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
-    clusterConfig->attributeConfigs.push_back(basicinfoDataModelRevision);
-    clusterConfig->attributeConfigs.push_back(basicinfoVendorName);
-    clusterConfig->attributeConfigs.push_back(basicinfoVendorId);
-    clusterConfig->attributeConfigs.push_back(basicinfoProductName);
-    clusterConfig->attributeConfigs.push_back(basicinfoProductId);
-    clusterConfig->attributeConfigs.push_back(basicinfoNodeLabel);
-    clusterConfig->attributeConfigs.push_back(basicinfoLocation);
-    clusterConfig->attributeConfigs.push_back(basicinfoHardwareVersion);
-    clusterConfig->attributeConfigs.push_back(basicinfoHardwareVersionString);
-    clusterConfig->attributeConfigs.push_back(basicinfoSoftwareVersion);
-    clusterConfig->attributeConfigs.push_back(basicinfoSoftwareVersionString);
-    clusterConfig->attributeConfigs.push_back(basicinfoManufacturingDate);
-    clusterConfig->attributeConfigs.push_back(basicinfoPartNumber);
-    clusterConfig->attributeConfigs.push_back(basicinfoProductUrl);
-    clusterConfig->attributeConfigs.push_back(basicinfoProductLabel);
-    clusterConfig->attributeConfigs.push_back(basicinfoSerialNumber);
-    clusterConfig->attributeConfigs.push_back(basicinfoLocalConfigDisabled);
-    clusterConfig->attributeConfigs.push_back(basicinfoUniqueId);
-    clusterConfig->attributeConfigs.push_back(basicinfoCapabilityMinima);
-    clusterConfig->attributeConfigs.push_back(basicinfoFeatureMap);
-    clusterConfig->attributeConfigs.push_back(basicinfoClusterRevision);
-    clusterConfig->eventConfigs.push_back(basicinfoStartUp);
-    clusterConfig->eventConfigs.push_back(basicinfoShutDown);
-    clusterConfig->eventConfigs.push_back(basicinfoLeave);
+
+    // Attributes
+    AttributeConfig binfoDataModelRevision(0x00000000, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, SINGLETON_STORAGE);
+    AttributeConfig binfoVendorName(0x00000001, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 33, SINGLETON_STORAGE);
+    AttributeConfig binfoVendorId(0x00000002, ZAP_TYPE(VENDOR_ID), ZAP_EMPTY_DEFAULT(), 2, SINGLETON_STORAGE);
+    AttributeConfig binfoProductName(0x00000003, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 33, SINGLETON_STORAGE);
+    AttributeConfig binfoProductId(0x00000004, ZAP_TYPE(VENDOR_ID), ZAP_EMPTY_DEFAULT(), 2, SINGLETON_STORAGE);
+    AttributeConfig binfoNodeLabel(0x00000005, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 33, TOKENIZE_COMBO);
+    AttributeConfig binfoLocation(0x00000006, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 3, SINGLETON_STORAGE | ZAP_ATTRIBUTE_MASK(WRITABLE));
+    AttributeConfig binfoHardwareVersion(0x00000007, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, SINGLETON_STORAGE);
+    AttributeConfig binfoHardwareVersionString(0x00000008, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 65, SINGLETON_STORAGE);
+    AttributeConfig binfoSoftwareVersion(0x00000009, ZAP_TYPE(INT32U), ZAP_EMPTY_DEFAULT(), 4, SINGLETON_STORAGE);
+    AttributeConfig binfoSoftwareVersionString(0x0000000A, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 65, SINGLETON_STORAGE);
+    AttributeConfig binfoManufacturingDate(0x0000000B, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 17, SINGLETON_STORAGE);
+    AttributeConfig binfoPartNumber(0x0000000C, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 33, SINGLETON_STORAGE);
+    AttributeConfig binfoProductUrl(0x0000000D, ZAP_TYPE(LONG_CHAR_STRING), ZAP_EMPTY_DEFAULT(), 258, SINGLETON_STORAGE);
+    AttributeConfig binfoProductLabel(0x0000000E, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 65, SINGLETON_STORAGE);
+    AttributeConfig binfoSerialNumber(0x0000000F, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 33, SINGLETON_STORAGE);
+    AttributeConfig binfoLocalConfigDisabled(0x00000010, ZAP_TYPE(BOOLEAN), ZAP_EMPTY_DEFAULT(), 1, TOKENIZE_COMBO);
+    AttributeConfig binfoUniqueId(0x00000012, ZAP_TYPE(CHAR_STRING), ZAP_EMPTY_DEFAULT(), 33, SINGLETON_STORAGE);
+    AttributeConfig binfoCapabilityMinima(0x00000013, ZAP_TYPE(STRUCT), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(binfoDataModelRevision);
+    clusterConfig->attributeConfigs.push_back(binfoVendorName);
+    clusterConfig->attributeConfigs.push_back(binfoVendorId);
+    clusterConfig->attributeConfigs.push_back(binfoProductName);
+    clusterConfig->attributeConfigs.push_back(binfoProductId);
+    clusterConfig->attributeConfigs.push_back(binfoNodeLabel);
+    clusterConfig->attributeConfigs.push_back(binfoLocation);
+    clusterConfig->attributeConfigs.push_back(binfoHardwareVersion);
+    clusterConfig->attributeConfigs.push_back(binfoHardwareVersionString);
+    clusterConfig->attributeConfigs.push_back(binfoSoftwareVersion);
+    clusterConfig->attributeConfigs.push_back(binfoSoftwareVersionString);
+    clusterConfig->attributeConfigs.push_back(binfoManufacturingDate);
+    clusterConfig->attributeConfigs.push_back(binfoPartNumber);
+    clusterConfig->attributeConfigs.push_back(binfoProductUrl);
+    clusterConfig->attributeConfigs.push_back(binfoProductLabel);
+    clusterConfig->attributeConfigs.push_back(binfoSerialNumber);
+    clusterConfig->attributeConfigs.push_back(binfoLocalConfigDisabled);
+    clusterConfig->attributeConfigs.push_back(binfoUniqueId);
+    clusterConfig->attributeConfigs.push_back(binfoCapabilityMinima);
+
+    // Global Attributes
+    AttributeConfig binfoFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, STORAGE_MASK);
+    AttributeConfig binfoClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(3), 2, SINGLETON_STORAGE);
+
+    clusterConfig->attributeConfigs.push_back(binfoFeatureMap);
+    clusterConfig->attributeConfigs.push_back(binfoClusterRevision);
+
+    // Event
+    EventConfig binfoStartUp(0x00000000);
+    EventConfig binfoShutDown(0x00000001);
+    EventConfig binfoLeave(0x00000002);
+
+    clusterConfig->eventConfigs.push_back(binfoStartUp);
+    clusterConfig->eventConfigs.push_back(binfoShutDown);
+    clusterConfig->eventConfigs.push_back(binfoLeave);
 }
 
 void matter_cluster_ota_requestor_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig otarDefaultOtaProviders(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig otarUpdatePossible(0x00000001, ZAP_TYPE(BOOLEAN), ZAP_SIMPLE_DEFAULT(1), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig otarUpdateState(0x00000002, ZAP_TYPE(ENUM8), ZAP_SIMPLE_DEFAULT(0), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig otarUpdateStateProgress(0x00000003, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(0), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig otarFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig otarClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
-    CommandConfig otarAnnounceOtaProvider(0x00000000, COMMAND_MASK_ACCEPTED);
-    CommandConfig otarEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
-
-    EventConfig otarStateTransition(0x00000000);
-    EventConfig otarVersionApplied(0x00000001);
-    EventConfig otarDownloadError(0x00000002);
-
     clusterConfig->clusterId = 0x0000002A;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
+
+    // Attributes
+    AttributeConfig otarDefaultOtaProviders(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, WRITABLE_STORAGE);
+    AttributeConfig otarUpdatePossible(0x00000001, ZAP_TYPE(BOOLEAN), ZAP_SIMPLE_DEFAULT(1), 1, STORAGE_MASK);
+    AttributeConfig otarUpdateState(0x00000002, ZAP_TYPE(ENUM8), ZAP_SIMPLE_DEFAULT(0), 1, STORAGE_MASK);
+    AttributeConfig otarUpdateStateProgress(0x00000003, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(0), 1, NULLABLE_STORAGE);
+
     clusterConfig->attributeConfigs.push_back(otarDefaultOtaProviders);
     clusterConfig->attributeConfigs.push_back(otarUpdatePossible);
     clusterConfig->attributeConfigs.push_back(otarUpdateState);
     clusterConfig->attributeConfigs.push_back(otarUpdateStateProgress);
+
+    // Global Attributes
+    AttributeConfig otarFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, STORAGE_MASK);
+    AttributeConfig otarClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, STORAGE_MASK);
+
     clusterConfig->attributeConfigs.push_back(otarFeatureMap);
     clusterConfig->attributeConfigs.push_back(otarClusterRevision);
+
+    // Accepted Command List
+    CommandConfig otarAnnounceOtaProvider(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig otarEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
     clusterConfig->commandConfigs.push_back(otarAnnounceOtaProvider);
     clusterConfig->commandConfigs.push_back(otarEndOfAcceptedCommandList);
+
+    // Events
+    EventConfig otarStateTransition(0x00000000);
+    EventConfig otarVersionApplied(0x00000001);
+    EventConfig otarDownloadError(0x00000002);
+
     clusterConfig->eventConfigs.push_back(otarStateTransition);
     clusterConfig->eventConfigs.push_back(otarVersionApplied);
     clusterConfig->eventConfigs.push_back(otarDownloadError);
@@ -151,205 +190,347 @@ void matter_cluster_ota_requestor_server(ClusterConfig *clusterConfig)
 
 void matter_cluster_general_commissioning_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig gencomBreadcrumb(0x00000000, ZAP_TYPE(INT64U), uint32_t(0), 8, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig gencomBasicCommissioningInfo(0x00000001, ZAP_TYPE(STRUCT), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gencomRegulatoryConfig(0x00000002, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gencomLocationCapability(0x00000003, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gencomSupportsConcurrentConnection(0x00000004, ZAP_TYPE(BOOLEAN), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gencomFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gencomClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
-    CommandConfig gencomArmFailSafe(0x00000000, COMMAND_MASK_ACCEPTED);
-    CommandConfig gencomSetRegulatoryConfig(0x00000002, COMMAND_MASK_ACCEPTED);
-    CommandConfig gencomCommissioningComplete(0x00000004, COMMAND_MASK_ACCEPTED);
-    CommandConfig gencomEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
-
-    CommandConfig gencomArmFailSafeResponse(0x00000001, COMMAND_MASK_GENERATED);
-    CommandConfig gencomSetRegulatoryConfigResponse(0x00000003, COMMAND_MASK_GENERATED);
-    CommandConfig gencomCommissioningCompleteResponse(0x00000005, COMMAND_MASK_GENERATED);
-    CommandConfig gencomEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
-
     clusterConfig->clusterId = 0x00000030;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
-    clusterConfig->attributeConfigs.push_back(gencomBreadcrumb);
-    clusterConfig->attributeConfigs.push_back(gencomBasicCommissioningInfo);
-    clusterConfig->attributeConfigs.push_back(gencomRegulatoryConfig);
-    clusterConfig->attributeConfigs.push_back(gencomLocationCapability);
-    clusterConfig->attributeConfigs.push_back(gencomSupportsConcurrentConnection);
-    clusterConfig->attributeConfigs.push_back(gencomFeatureMap);
-    clusterConfig->attributeConfigs.push_back(gencomClusterRevision);
-    clusterConfig->commandConfigs.push_back(gencomArmFailSafe);
-    clusterConfig->commandConfigs.push_back(gencomSetRegulatoryConfig);
-    clusterConfig->commandConfigs.push_back(gencomCommissioningComplete);
-    clusterConfig->commandConfigs.push_back(gencomEndOfAcceptedCommandList);
-    clusterConfig->commandConfigs.push_back(gencomArmFailSafeResponse);
-    clusterConfig->commandConfigs.push_back(gencomSetRegulatoryConfigResponse);
-    clusterConfig->commandConfigs.push_back(gencomCommissioningCompleteResponse);
-    clusterConfig->commandConfigs.push_back(gencomEndOfGeneratedCommandList);
+
+    // Attributes
+    AttributeConfig cgenBreadcrumb(0x00000000, ZAP_TYPE(INT64U), uint32_t(0), 8, WRITABLE_STORAGE);
+    AttributeConfig cgenBasicCommissioningInfo(0x00000001, ZAP_TYPE(STRUCT), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig cgenRegulatoryConfig(0x00000002, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+    AttributeConfig cgenLocationCapability(0x00000003, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+    AttributeConfig cgenSupportsConcurrentConnection(0x00000004, ZAP_TYPE(BOOLEAN), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(cgenBreadcrumb);
+    clusterConfig->attributeConfigs.push_back(cgenBasicCommissioningInfo);
+    clusterConfig->attributeConfigs.push_back(cgenRegulatoryConfig);
+    clusterConfig->attributeConfigs.push_back(cgenLocationCapability);
+    clusterConfig->attributeConfigs.push_back(cgenSupportsConcurrentConnection);
+
+    // Global Attributes
+    AttributeConfig cgenFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, STORAGE_MASK);
+    AttributeConfig cgenClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(cgenFeatureMap);
+    clusterConfig->attributeConfigs.push_back(cgenClusterRevision);
+
+    // Accepted Command Lists
+    CommandConfig cgenArmFailSafe(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig cgenSetRegulatoryConfig(0x00000002, COMMAND_MASK_ACCEPTED);
+    CommandConfig cgenCommissioningComplete(0x00000004, COMMAND_MASK_ACCEPTED);
+    CommandConfig cgenEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
+    clusterConfig->commandConfigs.push_back(cgenArmFailSafe);
+    clusterConfig->commandConfigs.push_back(cgenSetRegulatoryConfig);
+    clusterConfig->commandConfigs.push_back(cgenCommissioningComplete);
+    clusterConfig->commandConfigs.push_back(cgenEndOfAcceptedCommandList);
+
+    // Generated Command Lists
+    CommandConfig cgenArmFailSafeResponse(0x00000001, COMMAND_MASK_GENERATED);
+    CommandConfig cgenSetRegulatoryConfigResponse(0x00000003, COMMAND_MASK_GENERATED);
+    CommandConfig cgenCommissioningCompleteResponse(0x00000005, COMMAND_MASK_GENERATED);
+    CommandConfig cgenEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
+
+    clusterConfig->commandConfigs.push_back(cgenArmFailSafeResponse);
+    clusterConfig->commandConfigs.push_back(cgenSetRegulatoryConfigResponse);
+    clusterConfig->commandConfigs.push_back(cgenCommissioningCompleteResponse);
+    clusterConfig->commandConfigs.push_back(cgenEndOfGeneratedCommandList);
 }
 
 void matter_cluster_network_commissioning_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig netcomMaxNetworks(0x00000000, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig netcomNetworks(0x00000001, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig netcomScanMaxTimeSeconds(0x00000002, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig netcomConnectMaxTimeSeconds(0x00000003, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig netcomInterfaceEnabled(0x00000004, ZAP_TYPE(BOOLEAN), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig netcomLastNetworkingStatus(0x00000005, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig netcomLastNetworkId(0x00000006, ZAP_TYPE(OCTET_STRING), ZAP_EMPTY_DEFAULT(), 33, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig netcomLastConnectErrorValue(0x00000007, ZAP_TYPE(INT32S), ZAP_EMPTY_DEFAULT(), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig netcomFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(1), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig netcomClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
-    CommandConfig netcomScanNetworks(0x00000000, COMMAND_MASK_ACCEPTED);
-    CommandConfig netcomAddOrUpdateWiFiNetwork(0x00000002, COMMAND_MASK_ACCEPTED);
-    CommandConfig netcomRemoveNetwork(0x00000004, COMMAND_MASK_ACCEPTED);
-    CommandConfig netcomConnectNetwork(0x00000006, COMMAND_MASK_ACCEPTED);
-    CommandConfig netcomReorderNetwork(0x00000008, COMMAND_MASK_ACCEPTED);
-    CommandConfig netcomEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
-
-    CommandConfig netcomScanNetworksResponse(0x00000001, COMMAND_MASK_GENERATED);
-    CommandConfig netcomNetworkConfigResponse(0x00000005, COMMAND_MASK_GENERATED);
-    CommandConfig netcomConnectNetworkResponse(0x00000007, COMMAND_MASK_GENERATED);
-    CommandConfig netcomEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
-
     clusterConfig->clusterId = 0x00000031;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
-    clusterConfig->attributeConfigs.push_back(netcomMaxNetworks);
-    clusterConfig->attributeConfigs.push_back(netcomNetworks);
-    clusterConfig->attributeConfigs.push_back(netcomScanMaxTimeSeconds);
-    clusterConfig->attributeConfigs.push_back(netcomConnectMaxTimeSeconds);
-    clusterConfig->attributeConfigs.push_back(netcomInterfaceEnabled);
-    clusterConfig->attributeConfigs.push_back(netcomLastNetworkingStatus);
-    clusterConfig->attributeConfigs.push_back(netcomLastNetworkId);
-    clusterConfig->attributeConfigs.push_back(netcomLastConnectErrorValue);
-    clusterConfig->attributeConfigs.push_back(netcomFeatureMap);
-    clusterConfig->attributeConfigs.push_back(netcomClusterRevision);
-    clusterConfig->commandConfigs.push_back(netcomScanNetworks);
-    clusterConfig->commandConfigs.push_back(netcomAddOrUpdateWiFiNetwork);
-    clusterConfig->commandConfigs.push_back(netcomRemoveNetwork);
-    clusterConfig->commandConfigs.push_back(netcomConnectNetwork);
-    clusterConfig->commandConfigs.push_back(netcomReorderNetwork);
-    clusterConfig->commandConfigs.push_back(netcomEndOfAcceptedCommandList);
-    clusterConfig->commandConfigs.push_back(netcomScanNetworksResponse);
-    clusterConfig->commandConfigs.push_back(netcomNetworkConfigResponse);
-    clusterConfig->commandConfigs.push_back(netcomConnectNetworkResponse);
-    clusterConfig->commandConfigs.push_back(netcomEndOfGeneratedCommandList);
+
+    // Attributes
+    AttributeConfig cnetMaxNetworks(0x00000000, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+    AttributeConfig cnetNetworks(0x00000001, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig cnetScanMaxTimeSeconds(0x00000002, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+    AttributeConfig cnetConnectMaxTimeSeconds(0x00000003, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+    AttributeConfig cnetInterfaceEnabled(0x00000004, ZAP_TYPE(BOOLEAN), ZAP_EMPTY_DEFAULT(), 1, WRITABLE_STORAGE);
+    AttributeConfig cnetLastNetworkingStatus(0x00000005, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, NULLABLE_STORAGE);
+    AttributeConfig cnetLastNetworkId(0x00000006, ZAP_TYPE(OCTET_STRING), ZAP_EMPTY_DEFAULT(), 33, NULLABLE_STORAGE);
+    AttributeConfig cnetLastConnectErrorValue(0x00000007, ZAP_TYPE(INT32S), ZAP_EMPTY_DEFAULT(), 4, NULLABLE_STORAGE);
+
+    clusterConfig->attributeConfigs.push_back(cnetMaxNetworks);
+    clusterConfig->attributeConfigs.push_back(cnetNetworks);
+    clusterConfig->attributeConfigs.push_back(cnetScanMaxTimeSeconds);
+    clusterConfig->attributeConfigs.push_back(cnetConnectMaxTimeSeconds);
+    clusterConfig->attributeConfigs.push_back(cnetInterfaceEnabled);
+    clusterConfig->attributeConfigs.push_back(cnetLastNetworkingStatus);
+    clusterConfig->attributeConfigs.push_back(cnetLastNetworkId);
+    clusterConfig->attributeConfigs.push_back(cnetLastConnectErrorValue);
+
+    // Global Attributes
+    AttributeConfig cnetFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(1), 4, STORAGE_MASK);
+    AttributeConfig cnetClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(cnetFeatureMap);
+    clusterConfig->attributeConfigs.push_back(cnetClusterRevision);
+
+    // Accepted Command Lists
+    CommandConfig cnetScanNetworks(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig cnetAddOrUpdateWiFiNetwork(0x00000002, COMMAND_MASK_ACCEPTED);
+    CommandConfig cnetRemoveNetwork(0x00000004, COMMAND_MASK_ACCEPTED);
+    CommandConfig cnetConnectNetwork(0x00000006, COMMAND_MASK_ACCEPTED);
+    CommandConfig cnetReorderNetwork(0x00000008, COMMAND_MASK_ACCEPTED);
+    CommandConfig cnetEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
+    clusterConfig->commandConfigs.push_back(cnetScanNetworks);
+    clusterConfig->commandConfigs.push_back(cnetAddOrUpdateWiFiNetwork);
+    clusterConfig->commandConfigs.push_back(cnetRemoveNetwork);
+    clusterConfig->commandConfigs.push_back(cnetConnectNetwork);
+    clusterConfig->commandConfigs.push_back(cnetReorderNetwork);
+    clusterConfig->commandConfigs.push_back(cnetEndOfAcceptedCommandList);
+
+    // Generated Command Lists
+    CommandConfig cnetScanNetworksResponse(0x00000001, COMMAND_MASK_GENERATED);
+    CommandConfig cnetNetworkConfigResponse(0x00000005, COMMAND_MASK_GENERATED);
+    CommandConfig cnetConnectNetworkResponse(0x00000007, COMMAND_MASK_GENERATED);
+    CommandConfig cnetEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
+
+    clusterConfig->commandConfigs.push_back(cnetScanNetworksResponse);
+    clusterConfig->commandConfigs.push_back(cnetNetworkConfigResponse);
+    clusterConfig->commandConfigs.push_back(cnetConnectNetworkResponse);
+    clusterConfig->commandConfigs.push_back(cnetEndOfGeneratedCommandList);
+}
+
+void matter_cluster_diagnostic_logs_server(ClusterConfig *clusterConfig)
+{
+    clusterConfig->clusterId = 0x00000032;
+    clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
+
+    // Global Attributes
+    AttributeConfig diaglogFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, STORAGE_MASK);
+    AttributeConfig diaglogClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(diaglogFeatureMap);
+    clusterConfig->attributeConfigs.push_back(diaglogClusterRevision);
+
+    // Accepted Command Lists
+    CommandConfig diaglogRetrieveLogsRequest(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig diaglogEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
+    clusterConfig->commandConfigs.push_back(diaglogRetrieveLogsRequest);
+    clusterConfig->commandConfigs.push_back(diaglogEndOfAcceptedCommandList);
+
+    // Generated Command Lists
+    CommandConfig diaglogRetrieveLogsResponse(0x00000001, COMMAND_MASK_GENERATED);
+    CommandConfig diaglogEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
+
+    clusterConfig->commandConfigs.push_back(diaglogRetrieveLogsResponse);
+    clusterConfig->commandConfigs.push_back(diaglogEndOfGeneratedCommandList);
 }
 
 void matter_cluster_general_diagnostics_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig gendiagNetworkInterfaces(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gendiagRebootCount(0x00000001, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gendiagUpTime(0x00000002, ZAP_TYPE(INT64U), ZAP_EMPTY_DEFAULT(), 8, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gendiagTotalOperationalHours(0x00000003, ZAP_TYPE(INT32U), ZAP_EMPTY_DEFAULT(), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gendiagBootReason(0x00000004, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gendiagActiveHardwareFaults(0x00000005, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gendiagActiveRadioFaults(0x00000006, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gendiagActiveNetworkFaults(0x00000007, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gendiagTestEventTriggersEnabled(0x00000008, ZAP_TYPE(BOOLEAN), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gendiagFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gendiagClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
-    EventConfig gendiagHardwareFaultChange(0x00000000);
-    EventConfig gendiagRadioFaultChange(0x00000001);
-    EventConfig gendiagNetworkFaultChange(0x00000002);
-    EventConfig gendiagBootReasonEvent(0x00000003);
-
     clusterConfig->clusterId = 0x00000033;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
-    clusterConfig->attributeConfigs.push_back(gendiagNetworkInterfaces);
-    clusterConfig->attributeConfigs.push_back(gendiagRebootCount);
-    clusterConfig->attributeConfigs.push_back(gendiagUpTime);
-    clusterConfig->attributeConfigs.push_back(gendiagTotalOperationalHours);
-    clusterConfig->attributeConfigs.push_back(gendiagBootReason);
-    clusterConfig->attributeConfigs.push_back(gendiagActiveHardwareFaults);
-    clusterConfig->attributeConfigs.push_back(gendiagActiveRadioFaults);
-    clusterConfig->attributeConfigs.push_back(gendiagActiveNetworkFaults);
-    clusterConfig->attributeConfigs.push_back(gendiagTestEventTriggersEnabled);
-    clusterConfig->attributeConfigs.push_back(gendiagFeatureMap);
-    clusterConfig->attributeConfigs.push_back(gendiagClusterRevision);
-    clusterConfig->eventConfigs.push_back(gendiagHardwareFaultChange);
-    clusterConfig->eventConfigs.push_back(gendiagRadioFaultChange);
-    clusterConfig->eventConfigs.push_back(gendiagNetworkFaultChange);
-    clusterConfig->eventConfigs.push_back(gendiagBootReasonEvent);
+
+    // Attributes
+    AttributeConfig dggenNetworkInterfaces(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig dggenRebootCount(0x00000001, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, STORAGE_MASK);
+    AttributeConfig dggenUpTime(0x00000002, ZAP_TYPE(INT64U), ZAP_EMPTY_DEFAULT(), 8, STORAGE_MASK);
+    AttributeConfig dggenTotalOperationalHours(0x00000003, ZAP_TYPE(INT32U), ZAP_EMPTY_DEFAULT(), 4, STORAGE_MASK);
+    AttributeConfig dggenBootReason(0x00000004, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+    AttributeConfig dggenActiveHardwareFaults(0x00000005, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig dggenActiveRadioFaults(0x00000006, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig dggenActiveNetworkFaults(0x00000007, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig dggenTestEventTriggersEnabled(0x00000008, ZAP_TYPE(BOOLEAN), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(dggenNetworkInterfaces);
+    clusterConfig->attributeConfigs.push_back(dggenRebootCount);
+    clusterConfig->attributeConfigs.push_back(dggenUpTime);
+    clusterConfig->attributeConfigs.push_back(dggenTotalOperationalHours);
+    clusterConfig->attributeConfigs.push_back(dggenBootReason);
+    clusterConfig->attributeConfigs.push_back(dggenActiveHardwareFaults);
+    clusterConfig->attributeConfigs.push_back(dggenActiveRadioFaults);
+    clusterConfig->attributeConfigs.push_back(dggenActiveNetworkFaults);
+    clusterConfig->attributeConfigs.push_back(dggenTestEventTriggersEnabled);
+
+    // Global Attributes
+    AttributeConfig dggenFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, STORAGE_MASK);
+    AttributeConfig dggenClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(dggenFeatureMap);
+    clusterConfig->attributeConfigs.push_back(dggenClusterRevision);
+
+    // Accepted Command Lists
+    CommandConfig dggenTestEventTrigger(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig dggenTimeSnapshot(0x00000001, COMMAND_MASK_ACCEPTED);
+    CommandConfig dggenEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
+    clusterConfig->commandConfigs.push_back(dggenTestEventTrigger);
+    clusterConfig->commandConfigs.push_back(dggenTimeSnapshot);
+    clusterConfig->commandConfigs.push_back(dggenEndOfAcceptedCommandList);
+
+    // Generated Command Lists
+    CommandConfig dggenTimeSnapshotResponse(0x00000002, COMMAND_MASK_GENERATED);
+    CommandConfig dggenEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
+
+    clusterConfig->commandConfigs.push_back(dggenTimeSnapshotResponse);
+    clusterConfig->commandConfigs.push_back(dggenEndOfGeneratedCommandList);
+
+    // Events
+    EventConfig dggenHardwareFaultChange(0x00000000);
+    EventConfig dggenRadioFaultChange(0x00000001);
+    EventConfig dggenNetworkFaultChange(0x00000002);
+    EventConfig dggenBootReasonEvent(0x00000003);
+
+    clusterConfig->eventConfigs.push_back(dggenHardwareFaultChange);
+    clusterConfig->eventConfigs.push_back(dggenRadioFaultChange);
+    clusterConfig->eventConfigs.push_back(dggenNetworkFaultChange);
+    clusterConfig->eventConfigs.push_back(dggenBootReasonEvent);
 }
 
 void matter_cluster_software_diagnostics_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig swdiagThreadMetrics(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig swdiagCurrentHeapFree(0x00000001, ZAP_TYPE(INT64U), ZAP_EMPTY_DEFAULT(), 8, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig swdiagCurrentHeapUsed(0x00000002, ZAP_TYPE(INT64U), ZAP_EMPTY_DEFAULT(), 8, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig swdiagCurrentHeapHighWatermark(0x00000003, ZAP_TYPE(INT64U), ZAP_EMPTY_DEFAULT(), 8, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig swdiagFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(1), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig swdiagClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
     clusterConfig->clusterId = 0x00000034;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
-    clusterConfig->attributeConfigs.push_back(swdiagThreadMetrics);
-    clusterConfig->attributeConfigs.push_back(swdiagCurrentHeapFree);
-    clusterConfig->attributeConfigs.push_back(swdiagCurrentHeapUsed);
-    clusterConfig->attributeConfigs.push_back(swdiagCurrentHeapHighWatermark);
-    clusterConfig->attributeConfigs.push_back(swdiagFeatureMap);
-    clusterConfig->attributeConfigs.push_back(swdiagClusterRevision);
+
+    // Attributes
+    AttributeConfig dgswThreadMetrics(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig dgswCurrentHeapFree(0x00000001, ZAP_TYPE(INT64U), ZAP_EMPTY_DEFAULT(), 8, STORAGE_MASK);
+    AttributeConfig dgswCurrentHeapUsed(0x00000002, ZAP_TYPE(INT64U), ZAP_EMPTY_DEFAULT(), 8, STORAGE_MASK);
+    AttributeConfig dgswCurrentHeapHighWatermark(0x00000003, ZAP_TYPE(INT64U), ZAP_EMPTY_DEFAULT(), 8, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(dgswThreadMetrics);
+    clusterConfig->attributeConfigs.push_back(dgswCurrentHeapFree);
+    clusterConfig->attributeConfigs.push_back(dgswCurrentHeapUsed);
+    clusterConfig->attributeConfigs.push_back(dgswCurrentHeapHighWatermark);
+
+    // Global Attributes
+    AttributeConfig dgswFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(1), 4, STORAGE_MASK);
+    AttributeConfig dgswClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(dgswFeatureMap);
+    clusterConfig->attributeConfigs.push_back(dgswClusterRevision);
+
+    // Accepted Command Lists
+    CommandConfig dgswResetWatermarks(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig dgswEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
+    clusterConfig->commandConfigs.push_back(dgswResetWatermarks);
+    clusterConfig->commandConfigs.push_back(dgswEndOfAcceptedCommandList);
+
+    // Generated Command Lists
+    CommandConfig dgswEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
+
+    clusterConfig->commandConfigs.push_back(dgswEndOfGeneratedCommandList);
 }
 
-void matter_cluster_wifi_diagnostics_server(ClusterConfig *clusterConfig)
+void matter_cluster_wifi_network_diagnostics_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig wifidiagBssid(0x00000000, ZAP_TYPE(OCTET_STRING), ZAP_EMPTY_DEFAULT(), 7, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig wifidiagSecurityType(0x00000001, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig wifidiagWiFiVersion(0x00000002, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig wifidiagChannelNumber(0x00000003, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig wifidiagRssi(0x00000004, ZAP_TYPE(INT8S), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig wifidiagFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(3), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig wifidiagClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
-    EventConfig wifidiagDisconnection(0x00000000);
-    EventConfig wifidiagAssociationFailure(0x00000001);
-    EventConfig wifidiagConnectionStatus(0x00000002);
-
     clusterConfig->clusterId = 0x00000036;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
-    clusterConfig->attributeConfigs.push_back(wifidiagBssid);
-    clusterConfig->attributeConfigs.push_back(wifidiagSecurityType);
-    clusterConfig->attributeConfigs.push_back(wifidiagWiFiVersion);
-    clusterConfig->attributeConfigs.push_back(wifidiagChannelNumber);
-    clusterConfig->attributeConfigs.push_back(wifidiagRssi);
-    clusterConfig->attributeConfigs.push_back(wifidiagFeatureMap);
-    clusterConfig->attributeConfigs.push_back(wifidiagClusterRevision);
-    clusterConfig->eventConfigs.push_back(wifidiagDisconnection);
-    clusterConfig->eventConfigs.push_back(wifidiagAssociationFailure);
-    clusterConfig->eventConfigs.push_back(wifidiagConnectionStatus);
+
+    // Attributes
+    AttributeConfig dgwifiBssid(0x00000000, ZAP_TYPE(OCTET_STRING), ZAP_EMPTY_DEFAULT(), 7, NULLABLE_STORAGE);
+    AttributeConfig dgwifiSecurityType(0x00000001, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, NULLABLE_STORAGE);
+    AttributeConfig dgwifiWiFiVersion(0x00000002, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, NULLABLE_STORAGE);
+    AttributeConfig dgwifiChannelNumber(0x00000003, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, NULLABLE_STORAGE);
+    AttributeConfig dgwifiRssi(0x00000004, ZAP_TYPE(INT8S), ZAP_EMPTY_DEFAULT(), 1, NULLABLE_STORAGE);
+
+    clusterConfig->attributeConfigs.push_back(dgwifiBssid);
+    clusterConfig->attributeConfigs.push_back(dgwifiSecurityType);
+    clusterConfig->attributeConfigs.push_back(dgwifiWiFiVersion);
+    clusterConfig->attributeConfigs.push_back(dgwifiChannelNumber);
+    clusterConfig->attributeConfigs.push_back(dgwifiRssi);
+
+    // Global Attributes
+    AttributeConfig dgwifiFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(3), 4, STORAGE_MASK);
+    AttributeConfig dgwifiClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(dgwifiFeatureMap);
+    clusterConfig->attributeConfigs.push_back(dgwifiClusterRevision);
+
+    // Accepted Command Lists
+    CommandConfig dgwifiResetCounts(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig dgwifiEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
+    clusterConfig->commandConfigs.push_back(dgwifiResetCounts);
+    clusterConfig->commandConfigs.push_back(dgwifiEndOfAcceptedCommandList);
+
+    // Generated Command Lists
+    CommandConfig dgwifiEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
+
+    clusterConfig->commandConfigs.push_back(dgwifiEndOfGeneratedCommandList);
+
+    // Events
+    EventConfig dgwifiDisconnection(0x00000000);
+    EventConfig dgwifiAssociationFailure(0x00000001);
+    EventConfig dgwifiConnectionStatus(0x00000002);
+
+    clusterConfig->eventConfigs.push_back(dgwifiDisconnection);
+    clusterConfig->eventConfigs.push_back(dgwifiAssociationFailure);
+    clusterConfig->eventConfigs.push_back(dgwifiConnectionStatus);
 }
 
 void matter_cluster_administrator_commissioning_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig admincomWindowStatus(0x00000000, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig admincomAdminFabricIndex(0x00000001, ZAP_TYPE(FABRIC_IDX), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig admincomAdminVendorId(0x00000002, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig admincomAdminFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig admincomAdminClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
     clusterConfig->clusterId = 0x0000003C;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
-    clusterConfig->attributeConfigs.push_back(admincomWindowStatus);
-    clusterConfig->attributeConfigs.push_back(admincomAdminFabricIndex);
-    clusterConfig->attributeConfigs.push_back(admincomAdminVendorId);
-    clusterConfig->attributeConfigs.push_back(admincomAdminFeatureMap);
-    clusterConfig->attributeConfigs.push_back(admincomAdminClusterRevision);
+
+    // Attributes
+    AttributeConfig cadminWindowStatus(0x00000000, ZAP_TYPE(ENUM8), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+    AttributeConfig cadminAdminFabricIndex(0x00000001, ZAP_TYPE(FABRIC_IDX), ZAP_EMPTY_DEFAULT(), 1, NULLABLE_STORAGE);
+    AttributeConfig cadminAdminVendorId(0x00000002, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 1, NULLABLE_STORAGE);
+
+    clusterConfig->attributeConfigs.push_back(cadminWindowStatus);
+    clusterConfig->attributeConfigs.push_back(cadminAdminFabricIndex);
+    clusterConfig->attributeConfigs.push_back(cadminAdminVendorId);
+
+    // Global Attributes
+    AttributeConfig cadminAdminFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, STORAGE_MASK);
+    AttributeConfig cadminAdminClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(cadminAdminFeatureMap);
+    clusterConfig->attributeConfigs.push_back(cadminAdminClusterRevision);
+
+    // Accepted Command Lists
+    CommandConfig cadminOpenCommissioningWindow(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig cadminOpenBasicCommissioningWindow(0x00000001, COMMAND_MASK_ACCEPTED);
+    CommandConfig cadminRevokeCommissioning(0x00000002, COMMAND_MASK_ACCEPTED);
+    CommandConfig cadminEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
+    clusterConfig->commandConfigs.push_back(cadminOpenCommissioningWindow);
+    clusterConfig->commandConfigs.push_back(cadminOpenBasicCommissioningWindow);
+    clusterConfig->commandConfigs.push_back(cadminRevokeCommissioning);
+    clusterConfig->commandConfigs.push_back(cadminEndOfAcceptedCommandList);
+
+    // Generated Command Lists
+    CommandConfig cadminEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
+
+    clusterConfig->commandConfigs.push_back(cadminEndOfGeneratedCommandList);
 }
 
 void matter_cluster_operational_credentials_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig opcredsNocs(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig opcredsFabrics(0x00000001, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig opcredsSupportedFabrics(0x00000002, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig opcredsCommissionedFabrics(0x00000003, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig opcredsTrustedRootCertificates(0x00000004, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig opcredsCurrentFabricIndex(0x00000005, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig opcredsFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig opcredsClusterRevision(0x0000FFFD, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(1), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
+    clusterConfig->clusterId = 0x0000003E;
+    clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
 
+    // Attributes
+    AttributeConfig opcredsNocs(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig opcredsFabrics(0x00000001, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig opcredsSupportedFabrics(0x00000002, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+    AttributeConfig opcredsCommissionedFabrics(0x00000003, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+    AttributeConfig opcredsTrustedRootCertificates(0x00000004, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig opcredsCurrentFabricIndex(0x00000005, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(opcredsNocs);
+    clusterConfig->attributeConfigs.push_back(opcredsFabrics);
+    clusterConfig->attributeConfigs.push_back(opcredsSupportedFabrics);
+    clusterConfig->attributeConfigs.push_back(opcredsCommissionedFabrics);
+    clusterConfig->attributeConfigs.push_back(opcredsTrustedRootCertificates);
+    clusterConfig->attributeConfigs.push_back(opcredsCurrentFabricIndex);
+
+    // Global Attributes
+    AttributeConfig opcredsFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, STORAGE_MASK);
+    AttributeConfig opcredsClusterRevision(0x0000FFFD, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(1), 2, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(opcredsFeatureMap);
+    clusterConfig->attributeConfigs.push_back(opcredsClusterRevision);
+
+    // Accepted Command Lists
     CommandConfig opcredsAttestationRequest(0x00000000, COMMAND_MASK_ACCEPTED);
     CommandConfig opcredsCertificateChainRequest(0x00000002, COMMAND_MASK_ACCEPTED);
     CommandConfig opcredsCSRRequest(0x00000004, COMMAND_MASK_ACCEPTED);
@@ -359,22 +540,6 @@ void matter_cluster_operational_credentials_server(ClusterConfig *clusterConfig)
     CommandConfig opcredsAddTrustedRootCertificate(0x0000000B, COMMAND_MASK_ACCEPTED);
     CommandConfig opcredsEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
 
-    CommandConfig opcredsAttestationResponse(0x00000001, COMMAND_MASK_GENERATED);
-    CommandConfig opcredsCertificateChainResponse(0x00000003, COMMAND_MASK_GENERATED);
-    CommandConfig opcredsCSRResponse(0x00000005, COMMAND_MASK_GENERATED);
-    CommandConfig opcredsNOCResponse(0x00000008, COMMAND_MASK_GENERATED);
-    CommandConfig opcredsEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
-
-    clusterConfig->clusterId = 0x0000003E;
-    clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
-    clusterConfig->attributeConfigs.push_back(opcredsNocs);
-    clusterConfig->attributeConfigs.push_back(opcredsFabrics);
-    clusterConfig->attributeConfigs.push_back(opcredsSupportedFabrics);
-    clusterConfig->attributeConfigs.push_back(opcredsCommissionedFabrics);
-    clusterConfig->attributeConfigs.push_back(opcredsTrustedRootCertificates);
-    clusterConfig->attributeConfigs.push_back(opcredsCurrentFabricIndex);
-    clusterConfig->attributeConfigs.push_back(opcredsFeatureMap);
-    clusterConfig->attributeConfigs.push_back(opcredsClusterRevision);
     clusterConfig->commandConfigs.push_back(opcredsAttestationRequest);
     clusterConfig->commandConfigs.push_back(opcredsCertificateChainRequest);
     clusterConfig->commandConfigs.push_back(opcredsCSRRequest);
@@ -383,6 +548,14 @@ void matter_cluster_operational_credentials_server(ClusterConfig *clusterConfig)
     clusterConfig->commandConfigs.push_back(opcredsRemoveFabric);
     clusterConfig->commandConfigs.push_back(opcredsAddTrustedRootCertificate);
     clusterConfig->commandConfigs.push_back(opcredsEndOfAcceptedCommandList);
+
+    // Generated Command Lists
+    CommandConfig opcredsAttestationResponse(0x00000001, COMMAND_MASK_GENERATED);
+    CommandConfig opcredsCertificateChainResponse(0x00000003, COMMAND_MASK_GENERATED);
+    CommandConfig opcredsCSRResponse(0x00000005, COMMAND_MASK_GENERATED);
+    CommandConfig opcredsNOCResponse(0x00000008, COMMAND_MASK_GENERATED);
+    CommandConfig opcredsEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
+
     clusterConfig->commandConfigs.push_back(opcredsAttestationResponse);
     clusterConfig->commandConfigs.push_back(opcredsCertificateChainResponse);
     clusterConfig->commandConfigs.push_back(opcredsCSRResponse);
@@ -392,260 +565,340 @@ void matter_cluster_operational_credentials_server(ClusterConfig *clusterConfig)
 
 void matter_cluster_group_key_management_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig gkmGroupKeyMap(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig gkmGroupTable(0x00000001, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gkmMaxGroupsPerFabric(0x00000002, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gkmMaxGroupKeysPerFabric(0x00000003, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gkmFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig gkmClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
     clusterConfig->clusterId = 0x0000003F;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
+
+    // Attributes
+    AttributeConfig gkmGroupKeyMap(0x00000000, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, WRITABLE_STORAGE);
+    AttributeConfig gkmGroupTable(0x00000001, ZAP_TYPE(ARRAY), ZAP_EMPTY_DEFAULT(), 0, STORAGE_MASK);
+    AttributeConfig gkmMaxGroupsPerFabric(0x00000002, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, STORAGE_MASK);
+    AttributeConfig gkmMaxGroupKeysPerFabric(0x00000003, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, STORAGE_MASK);
+
     clusterConfig->attributeConfigs.push_back(gkmGroupKeyMap);
     clusterConfig->attributeConfigs.push_back(gkmGroupTable);
     clusterConfig->attributeConfigs.push_back(gkmMaxGroupsPerFabric);
     clusterConfig->attributeConfigs.push_back(gkmMaxGroupKeysPerFabric);
+
+    // Global Attributes
+    AttributeConfig gkmFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, STORAGE_MASK);
+    AttributeConfig gkmClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(1), 2, STORAGE_MASK);
+
     clusterConfig->attributeConfigs.push_back(gkmFeatureMap);
     clusterConfig->attributeConfigs.push_back(gkmClusterRevision);
+
+    // Accepted Command Lists
+    CommandConfig gkmKeySetWrite(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig gkmKeySetRead(0x00000001, COMMAND_MASK_ACCEPTED);
+    CommandConfig gkmKeySetRemove(0x00000003, COMMAND_MASK_ACCEPTED);
+    CommandConfig gkmKeySetReadAllIndices(0x00000004, COMMAND_MASK_ACCEPTED);
+    CommandConfig gkmEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
+    clusterConfig->commandConfigs.push_back(gkmKeySetWrite);
+    clusterConfig->commandConfigs.push_back(gkmKeySetRead);
+    clusterConfig->commandConfigs.push_back(gkmKeySetRemove);
+    clusterConfig->commandConfigs.push_back(gkmKeySetReadAllIndices);
+    clusterConfig->commandConfigs.push_back(gkmEndOfAcceptedCommandList);
+
+    // Generated Command Lists
+    CommandConfig gkmKeySetReadResponse(0x00000002, COMMAND_MASK_GENERATED);
+    CommandConfig gkmKeySetReadAllIndicesResponse(0x00000005, COMMAND_MASK_GENERATED);
+    CommandConfig gkmEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
+
+    clusterConfig->commandConfigs.push_back(gkmKeySetReadResponse);
+    clusterConfig->commandConfigs.push_back(gkmKeySetReadAllIndicesResponse);
+    clusterConfig->commandConfigs.push_back(gkmEndOfGeneratedCommandList);
 }
 
 void matter_cluster_identify_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig identifyIdentifyTime(0x00000000, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig identifyIdentifyType(0x00000001, ZAP_TYPE(ENUM8), ZAP_SIMPLE_DEFAULT(0x0), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig identifyFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig identifyClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(4), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
-    CommandConfig identifyIdentify(0x00000000, COMMAND_MASK_ACCEPTED);
-    CommandConfig identifyTriggerEffect(0x00000040, COMMAND_MASK_ACCEPTED);
-    CommandConfig identifyEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
-
     clusterConfig->clusterId = 0x00000003;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER) | ZAP_CLUSTER_MASK(INIT_FUNCTION) | ZAP_CLUSTER_MASK(ATTRIBUTE_CHANGED_FUNCTION);
-    clusterConfig->attributeConfigs.push_back(identifyIdentifyTime);
-    clusterConfig->attributeConfigs.push_back(identifyIdentifyType);
-    clusterConfig->attributeConfigs.push_back(identifyFeatureMap);
-    clusterConfig->attributeConfigs.push_back(identifyClusterRevision);
-    clusterConfig->commandConfigs.push_back(identifyIdentify);
-    clusterConfig->commandConfigs.push_back(identifyTriggerEffect);
-    clusterConfig->commandConfigs.push_back(identifyEndOfAcceptedCommandList);
+
+    // Attributes
+    AttributeConfig iIdentifyTime(0x00000000, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, WRITABLE_STORAGE);
+    AttributeConfig iIdentifyType(0x00000001, ZAP_TYPE(ENUM8), ZAP_SIMPLE_DEFAULT(0x0), 1, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(iIdentifyTime);
+    clusterConfig->attributeConfigs.push_back(iIdentifyType);
+
+    // Global Attributes
+    AttributeConfig iFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, STORAGE_MASK);
+    AttributeConfig iClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(4), 2, STORAGE_MASK);
+    clusterConfig->attributeConfigs.push_back(iFeatureMap);
+    clusterConfig->attributeConfigs.push_back(iClusterRevision);
+
+    // Accepted Command Lists
+    CommandConfig iIdentify(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig iTriggerEffect(0x00000040, COMMAND_MASK_ACCEPTED);
+    CommandConfig iEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
+    clusterConfig->commandConfigs.push_back(iIdentify);
+    clusterConfig->commandConfigs.push_back(iTriggerEffect);
+    clusterConfig->commandConfigs.push_back(iEndOfAcceptedCommandList);
+
+    // Functions
     clusterConfig->functionConfigs.push_back((EmberAfGenericClusterFunction) emberAfIdentifyClusterServerInitCallback);
     clusterConfig->functionConfigs.push_back((EmberAfGenericClusterFunction) MatterIdentifyClusterServerAttributeChangedCallback);
 }
 
 void matter_cluster_groups_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig groupsNameSupport(0x00000000, ZAP_TYPE(BITMAP8), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig groupsFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig groupsClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(4), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
-    CommandConfig groupsAddGroup(0x00000000, COMMAND_MASK_ACCEPTED);
-    CommandConfig groupsViewGroup(0x00000001, COMMAND_MASK_ACCEPTED);
-    CommandConfig groupsGetGroupMembership(0x00000002, COMMAND_MASK_ACCEPTED);
-    CommandConfig groupsRemoveGroup(0x00000003, COMMAND_MASK_ACCEPTED);
-    CommandConfig groupsRemoveAllGroups(0x00000004, COMMAND_MASK_ACCEPTED);
-    CommandConfig groupsAddGroupIfIdentifying(0x00000005, COMMAND_MASK_ACCEPTED);
-    CommandConfig groupsEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
-
-    CommandConfig groupsAddGroupResponse(0x00000000, COMMAND_MASK_GENERATED);
-    CommandConfig groupsViewGroupResponse(0x00000001, COMMAND_MASK_GENERATED);
-    CommandConfig groupsGetGroupMembershipResponse(0x00000002, COMMAND_MASK_GENERATED);
-    CommandConfig groupsRemoveGroupResponse(0x00000003, COMMAND_MASK_GENERATED);
-    CommandConfig groupsEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
-
     clusterConfig->clusterId = 0x00000004;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER) | ZAP_CLUSTER_MASK(INIT_FUNCTION);
-    clusterConfig->attributeConfigs.push_back(groupsNameSupport);
-    clusterConfig->attributeConfigs.push_back(groupsFeatureMap);
-    clusterConfig->attributeConfigs.push_back(groupsClusterRevision);
-    clusterConfig->commandConfigs.push_back(groupsAddGroup);
-    clusterConfig->commandConfigs.push_back(groupsViewGroup);
-    clusterConfig->commandConfigs.push_back(groupsGetGroupMembership);
-    clusterConfig->commandConfigs.push_back(groupsRemoveGroup);
-    clusterConfig->commandConfigs.push_back(groupsRemoveAllGroups);
-    clusterConfig->commandConfigs.push_back(groupsAddGroupIfIdentifying);
-    clusterConfig->commandConfigs.push_back(groupsEndOfAcceptedCommandList);
-    clusterConfig->commandConfigs.push_back(groupsAddGroupResponse);
-    clusterConfig->commandConfigs.push_back(groupsViewGroupResponse);
-    clusterConfig->commandConfigs.push_back(groupsGetGroupMembershipResponse);
-    clusterConfig->commandConfigs.push_back(groupsRemoveGroupResponse);
-    clusterConfig->commandConfigs.push_back(groupsEndOfGeneratedCommandList);
+
+    // Attributes
+    AttributeConfig gNameSupport(0x00000000, ZAP_TYPE(BITMAP8), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(gNameSupport);
+
+    // Global Attributes
+    AttributeConfig gFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, STORAGE_MASK);
+    AttributeConfig gClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(4), 2, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(gFeatureMap);
+    clusterConfig->attributeConfigs.push_back(gClusterRevision);
+
+    // Accepted Command Lists
+    CommandConfig gAddGroup(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig gViewGroup(0x00000001, COMMAND_MASK_ACCEPTED);
+    CommandConfig gGetGroupMembership(0x00000002, COMMAND_MASK_ACCEPTED);
+    CommandConfig gRemoveGroup(0x00000003, COMMAND_MASK_ACCEPTED);
+    CommandConfig gRemoveAllGroups(0x00000004, COMMAND_MASK_ACCEPTED);
+    CommandConfig gAddGroupIfIdentifying(0x00000005, COMMAND_MASK_ACCEPTED);
+    CommandConfig gEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
+    clusterConfig->commandConfigs.push_back(gAddGroup);
+    clusterConfig->commandConfigs.push_back(gViewGroup);
+    clusterConfig->commandConfigs.push_back(gGetGroupMembership);
+    clusterConfig->commandConfigs.push_back(gRemoveGroup);
+    clusterConfig->commandConfigs.push_back(gRemoveAllGroups);
+    clusterConfig->commandConfigs.push_back(gAddGroupIfIdentifying);
+    clusterConfig->commandConfigs.push_back(gEndOfAcceptedCommandList);
+
+    // Generated Command Lists
+    CommandConfig gAddGroupResponse(0x00000000, COMMAND_MASK_GENERATED);
+    CommandConfig gViewGroupResponse(0x00000001, COMMAND_MASK_GENERATED);
+    CommandConfig gGetGroupMembershipResponse(0x00000002, COMMAND_MASK_GENERATED);
+    CommandConfig gRemoveGroupResponse(0x00000003, COMMAND_MASK_GENERATED);
+    CommandConfig gEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
+
+    clusterConfig->commandConfigs.push_back(gAddGroupResponse);
+    clusterConfig->commandConfigs.push_back(gViewGroupResponse);
+    clusterConfig->commandConfigs.push_back(gGetGroupMembershipResponse);
+    clusterConfig->commandConfigs.push_back(gRemoveGroupResponse);
+    clusterConfig->commandConfigs.push_back(gEndOfGeneratedCommandList);
+
+    // Functions
     clusterConfig->functionConfigs.push_back((EmberAfGenericClusterFunction) emberAfGroupsClusterServerInitCallback);
-}
-
-void matter_cluster_scenes_server(ClusterConfig *clusterConfig)
-{
-    AttributeConfig scenesSceneCount(0x00000000, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig scenesCurrentScene(0x00000001, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(0x00), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig scenesCurrentGroup(0x00000002, ZAP_TYPE(GROUP_ID), ZAP_SIMPLE_DEFAULT(0x0000), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig scenesSceneValid(0x00000003, ZAP_TYPE(BOOLEAN), ZAP_SIMPLE_DEFAULT(0x00), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig scenesNameSupport(0x00000004, ZAP_TYPE(BITMAP8), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig scenesLastConfiguredBy(0x00000005, ZAP_TYPE(NODE_ID), uint32_t(0), 8, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig scenesSceneTableSize(0x00000006, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig scenesRemainingCapacity(0x00000007, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig scenesFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig scenesClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(5), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
-    CommandConfig scenesAddScene(0x00000000, COMMAND_MASK_ACCEPTED);
-    CommandConfig scenesViewScene(0x00000001, COMMAND_MASK_ACCEPTED);
-    CommandConfig scenesRemoveScene(0x00000002, COMMAND_MASK_ACCEPTED);
-    CommandConfig scenesRemoveAllScenes(0x00000003, COMMAND_MASK_ACCEPTED);
-    CommandConfig scenesStoreScene(0x00000004, COMMAND_MASK_ACCEPTED);
-    CommandConfig scenesRecallScene(0x00000005, COMMAND_MASK_ACCEPTED);
-    CommandConfig scenesGetSceneMembership(0x00000006, COMMAND_MASK_ACCEPTED);
-    CommandConfig scenesEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
-    
-    CommandConfig scenesAddSceneResponse(0x00000000, COMMAND_MASK_GENERATED);
-    CommandConfig scenesViewSceneResponse(0x00000001, COMMAND_MASK_GENERATED);
-    CommandConfig scenesRemoveSceneResponse(0x00000002, COMMAND_MASK_GENERATED);
-    CommandConfig scenesRemoveAllScenesResponse(0x00000003, COMMAND_MASK_GENERATED);
-    CommandConfig scenesStoreSceneResponse(0x00000004, COMMAND_MASK_GENERATED);
-    CommandConfig scenesGetSceneMembershipResponse(0x00000006, COMMAND_MASK_GENERATED);
-    CommandConfig scenesEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
-
-    clusterConfig->clusterId = 0x00000005;
-    clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
-    clusterConfig->attributeConfigs.push_back(scenesSceneCount);
-    clusterConfig->attributeConfigs.push_back(scenesCurrentScene);
-    clusterConfig->attributeConfigs.push_back(scenesCurrentGroup);
-    clusterConfig->attributeConfigs.push_back(scenesSceneValid);
-    clusterConfig->attributeConfigs.push_back(scenesNameSupport);
-    clusterConfig->attributeConfigs.push_back(scenesLastConfiguredBy);
-    clusterConfig->attributeConfigs.push_back(scenesSceneTableSize);
-    clusterConfig->attributeConfigs.push_back(scenesRemainingCapacity);
-    clusterConfig->attributeConfigs.push_back(scenesFeatureMap);
-    clusterConfig->attributeConfigs.push_back(scenesClusterRevision);
-    clusterConfig->commandConfigs.push_back(scenesAddScene);
-    clusterConfig->commandConfigs.push_back(scenesViewScene);
-    clusterConfig->commandConfigs.push_back(scenesRemoveScene);
-    clusterConfig->commandConfigs.push_back(scenesRemoveAllScenes);
-    clusterConfig->commandConfigs.push_back(scenesStoreScene);
-    clusterConfig->commandConfigs.push_back(scenesRecallScene);
-    clusterConfig->commandConfigs.push_back(scenesGetSceneMembership);
-    clusterConfig->commandConfigs.push_back(scenesEndOfAcceptedCommandList);
-    clusterConfig->commandConfigs.push_back(scenesAddSceneResponse);
-    clusterConfig->commandConfigs.push_back(scenesViewSceneResponse);
-    clusterConfig->commandConfigs.push_back(scenesRemoveSceneResponse);
-    clusterConfig->commandConfigs.push_back(scenesRemoveAllScenesResponse);
-    clusterConfig->commandConfigs.push_back(scenesStoreSceneResponse);
-    clusterConfig->commandConfigs.push_back(scenesGetSceneMembershipResponse);
-    clusterConfig->commandConfigs.push_back(scenesEndOfGeneratedCommandList);
 }
 
 void matter_cluster_onoff_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig onoffOnOff(0x00000000, ZAP_TYPE(BOOLEAN), ZAP_SIMPLE_DEFAULT(0x00), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(TOKENIZE));
-    AttributeConfig onoffGlobalSceneControl(0x00004000, ZAP_TYPE(BOOLEAN), ZAP_SIMPLE_DEFAULT(0x01), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig onoffOnTime(0x00004001, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig onoffOffWaitTime(0x00004002, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig onoffStartUpOnOff(0x00004003, ZAP_TYPE(ENUM8), &onoffStartUpOnOffMinMaxValue, 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(TOKENIZE) | ZAP_ATTRIBUTE_MASK(WRITABLE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig onoffFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(1), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig onoffClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(4), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
-    CommandConfig onoffOff(0x00000000, COMMAND_MASK_ACCEPTED);
-    CommandConfig onoffOn(0x00000001, COMMAND_MASK_ACCEPTED);
-    CommandConfig onoffToggle(0x00000002, COMMAND_MASK_ACCEPTED);
-    CommandConfig onoffOffWithEffect(0x00000040, COMMAND_MASK_ACCEPTED);
-    CommandConfig onoffOnWithRecallGlobalScene(0x00000041, COMMAND_MASK_ACCEPTED);
-    CommandConfig onoffOnWithTimedOff(0x00000042, COMMAND_MASK_ACCEPTED);
-    CommandConfig onoffEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
-
-    CommandConfig onoffMoveToLevel(0x00000000, COMMAND_MASK_GENERATED);
-    CommandConfig onoffMove(0x00000001, COMMAND_MASK_GENERATED);
-    CommandConfig onoffStep(0x00000002, COMMAND_MASK_GENERATED);
-    CommandConfig onoffStop(0x00000003, COMMAND_MASK_GENERATED);
-    CommandConfig onoffMoveToLevelWithOnOff(0x00000004, COMMAND_MASK_GENERATED);
-    CommandConfig onoffMoveWithOnOff(0x00000005, COMMAND_MASK_GENERATED);
-    CommandConfig onoffStepWithOnOff(0x00000006, COMMAND_MASK_GENERATED);
-    CommandConfig onoffStopWithOnOff(0x00000007, COMMAND_MASK_GENERATED);
-    CommandConfig onoffEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
-
     clusterConfig->clusterId = 0x00000006;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER) | ZAP_CLUSTER_MASK(INIT_FUNCTION) | ZAP_CLUSTER_MASK(SHUTDOWN_FUNCTION);
-    clusterConfig->attributeConfigs.push_back(onoffOnOff);
-    clusterConfig->attributeConfigs.push_back(onoffGlobalSceneControl);
-    clusterConfig->attributeConfigs.push_back(onoffOnTime);
-    clusterConfig->attributeConfigs.push_back(onoffOffWaitTime);
-    clusterConfig->attributeConfigs.push_back(onoffStartUpOnOff);
-    clusterConfig->attributeConfigs.push_back(onoffFeatureMap);
-    clusterConfig->attributeConfigs.push_back(onoffClusterRevision);
-    clusterConfig->commandConfigs.push_back(onoffOff);
-    clusterConfig->commandConfigs.push_back(onoffOn);
-    clusterConfig->commandConfigs.push_back(onoffToggle);
-    clusterConfig->commandConfigs.push_back(onoffOffWithEffect);
-    clusterConfig->commandConfigs.push_back(onoffOnWithRecallGlobalScene);
-    clusterConfig->commandConfigs.push_back(onoffOnWithTimedOff);
-    clusterConfig->commandConfigs.push_back(onoffEndOfAcceptedCommandList);
-    clusterConfig->commandConfigs.push_back(onoffMoveToLevel);
-    clusterConfig->commandConfigs.push_back(onoffMove);
-    clusterConfig->commandConfigs.push_back(onoffStep);
-    clusterConfig->commandConfigs.push_back(onoffStop);
-    clusterConfig->commandConfigs.push_back(onoffMoveToLevelWithOnOff);
-    clusterConfig->commandConfigs.push_back(onoffStepWithOnOff);
-    clusterConfig->commandConfigs.push_back(onoffStopWithOnOff);
-    clusterConfig->commandConfigs.push_back(onoffEndOfGeneratedCommandList);
+
+    // Attributes
+    AttributeConfig ooOnOff(0x00000000, ZAP_TYPE(BOOLEAN), ZAP_SIMPLE_DEFAULT(0x00), 1, STORAGE_MASK | ZAP_ATTRIBUTE_MASK(TOKENIZE));
+    AttributeConfig ooGlobalSceneControl(0x00004000, ZAP_TYPE(BOOLEAN), ZAP_SIMPLE_DEFAULT(0x01), 1, STORAGE_MASK);
+    AttributeConfig ooOnTime(0x00004001, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, WRITABLE_STORAGE);
+    AttributeConfig ooOffWaitTime(0x00004002, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, WRITABLE_STORAGE);
+    AttributeConfig ooStartUpOnOff(0x00004003, ZAP_TYPE(ENUM8), &onoffStartUpOnOffMinMaxValue, 1, STORAGE_MASK | ZAP_ATTRIBUTE_MASK(TOKENIZE) | ZAP_ATTRIBUTE_MASK(WRITABLE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
+
+    clusterConfig->attributeConfigs.push_back(ooOnOff);
+    clusterConfig->attributeConfigs.push_back(ooGlobalSceneControl);
+    clusterConfig->attributeConfigs.push_back(ooOnTime);
+    clusterConfig->attributeConfigs.push_back(ooOffWaitTime);
+    clusterConfig->attributeConfigs.push_back(ooStartUpOnOff);
+
+    // Global Attributes
+    AttributeConfig ooFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(1), 4, STORAGE_MASK);
+    AttributeConfig ooClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(4), 2, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(ooFeatureMap);
+    clusterConfig->attributeConfigs.push_back(ooClusterRevision);
+
+    // Accepted Command Lists
+    CommandConfig ooOff(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig ooOn(0x00000001, COMMAND_MASK_ACCEPTED);
+    CommandConfig ooToggle(0x00000002, COMMAND_MASK_ACCEPTED);
+    CommandConfig ooOffWithEffect(0x00000040, COMMAND_MASK_ACCEPTED);
+    CommandConfig ooOnWithRecallGlobalScene(0x00000041, COMMAND_MASK_ACCEPTED);
+    CommandConfig ooOnWithTimedOff(0x00000042, COMMAND_MASK_ACCEPTED);
+    CommandConfig ooEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
+    clusterConfig->commandConfigs.push_back(ooOff);
+    clusterConfig->commandConfigs.push_back(ooOn);
+    clusterConfig->commandConfigs.push_back(ooToggle);
+    clusterConfig->commandConfigs.push_back(ooOffWithEffect);
+    clusterConfig->commandConfigs.push_back(ooOnWithRecallGlobalScene);
+    clusterConfig->commandConfigs.push_back(ooOnWithTimedOff);
+    clusterConfig->commandConfigs.push_back(ooEndOfAcceptedCommandList);
+
+    // Generated Command Lists
+    CommandConfig ooMoveToLevel(0x00000000, COMMAND_MASK_GENERATED);
+    CommandConfig ooMove(0x00000001, COMMAND_MASK_GENERATED);
+    CommandConfig ooStep(0x00000002, COMMAND_MASK_GENERATED);
+    CommandConfig ooStop(0x00000003, COMMAND_MASK_GENERATED);
+    CommandConfig ooMoveToLevelWithOnOff(0x00000004, COMMAND_MASK_GENERATED);
+    CommandConfig ooMoveWithOnOff(0x00000005, COMMAND_MASK_GENERATED);
+    CommandConfig ooStepWithOnOff(0x00000006, COMMAND_MASK_GENERATED);
+    CommandConfig ooStopWithOnOff(0x00000007, COMMAND_MASK_GENERATED);
+    CommandConfig ooEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
+
+    clusterConfig->commandConfigs.push_back(ooMoveToLevel);
+    clusterConfig->commandConfigs.push_back(ooMove);
+    clusterConfig->commandConfigs.push_back(ooStep);
+    clusterConfig->commandConfigs.push_back(ooStop);
+    clusterConfig->commandConfigs.push_back(ooMoveToLevelWithOnOff);
+    clusterConfig->commandConfigs.push_back(ooStepWithOnOff);
+    clusterConfig->commandConfigs.push_back(ooStopWithOnOff);
+    clusterConfig->commandConfigs.push_back(ooEndOfGeneratedCommandList);
+
+    // Functions
     clusterConfig->functionConfigs.push_back((EmberAfGenericClusterFunction) emberAfOnOffClusterServerInitCallback);
     clusterConfig->functionConfigs.push_back((EmberAfGenericClusterFunction) MatterOnOffClusterServerShutdownCallback);
 }
 
 void matter_cluster_level_control_server(ClusterConfig *clusterConfig)
 {
-    AttributeConfig levelcontrolCurrentLevel(0x00000000, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(0x01), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(TOKENIZE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig levelcontrolRemainingTime(0x00000001, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig levelcontrolMinLevel(0x00000002, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(0x01), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig levelcontrolMaxLevel(0x00000003, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(0xFE), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig levelcontrolCurrentFrequency(0x00000004, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig levelcontrolMinFrequency(0x00000005, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig levelcontrolMaxFrequency(0x00000006, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig levelcontrolOptions(0x0000000F, ZAP_TYPE(BITMAP8), &levelcontrolOptionsMinMaxValue, 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(MIN_MAX) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig levelcontrolOnOffTransitionTime(0x00000010, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE));
-    AttributeConfig levelcontrolOnLevel(0x00000011, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(0xFF), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig levelcontrolOnTransitionTime(0x00000012, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig levelcontrolOffTransitionTime(0x00000013, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig levelcontrolDefaultMoveRate(0x00000014, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(50), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(WRITABLE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig levelcontrolStartUpCurrentLevel(0x00004000, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(255), 1, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE) | ZAP_ATTRIBUTE_MASK(TOKENIZE) | ZAP_ATTRIBUTE_MASK(WRITABLE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
-    AttributeConfig levelcontrolFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(3), 4, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-    AttributeConfig levelcontrolClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(5), 2, ZAP_ATTRIBUTE_MASK(EXTERNAL_STORAGE));
-
-    CommandConfig levelcontrolMoveToLevel(0x00000000, COMMAND_MASK_ACCEPTED);
-    CommandConfig levelcontrolMove(0x00000001, COMMAND_MASK_ACCEPTED);
-    CommandConfig levelcontrolStep(0x00000002, COMMAND_MASK_ACCEPTED);
-    CommandConfig levelcontrolStop(0x00000003, COMMAND_MASK_ACCEPTED);
-    CommandConfig levelcontrolMoveToLevelWithOnOff(0x00000004, COMMAND_MASK_ACCEPTED);
-    CommandConfig levelcontrolMoveWithOnOff(0x00000005, COMMAND_MASK_ACCEPTED);
-    CommandConfig levelcontrolStepWithOnOff(0x00000006, COMMAND_MASK_ACCEPTED);
-    CommandConfig levelcontrolStopWithOnOff(0x00000007, COMMAND_MASK_ACCEPTED);
-    CommandConfig levelcontrolEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
-
     clusterConfig->clusterId = 0x00000008;
     clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER) | ZAP_CLUSTER_MASK(INIT_FUNCTION) | ZAP_CLUSTER_MASK(SHUTDOWN_FUNCTION);
-    clusterConfig->attributeConfigs.push_back(levelcontrolCurrentLevel);
-    clusterConfig->attributeConfigs.push_back(levelcontrolRemainingTime);
-    clusterConfig->attributeConfigs.push_back(levelcontrolMinLevel);
-    clusterConfig->attributeConfigs.push_back(levelcontrolMaxLevel);
-    clusterConfig->attributeConfigs.push_back(levelcontrolCurrentFrequency);
-    clusterConfig->attributeConfigs.push_back(levelcontrolMinFrequency);
-    clusterConfig->attributeConfigs.push_back(levelcontrolMaxFrequency);
-    clusterConfig->attributeConfigs.push_back(levelcontrolOptions);
-    clusterConfig->attributeConfigs.push_back(levelcontrolOnOffTransitionTime);
-    clusterConfig->attributeConfigs.push_back(levelcontrolOnLevel);
-    clusterConfig->attributeConfigs.push_back(levelcontrolOnTransitionTime);
-    clusterConfig->attributeConfigs.push_back(levelcontrolOffTransitionTime);
-    clusterConfig->attributeConfigs.push_back(levelcontrolDefaultMoveRate);
-    clusterConfig->attributeConfigs.push_back(levelcontrolStartUpCurrentLevel);
-    clusterConfig->attributeConfigs.push_back(levelcontrolFeatureMap);
-    clusterConfig->attributeConfigs.push_back(levelcontrolClusterRevision);
-    clusterConfig->commandConfigs.push_back(levelcontrolMoveToLevel);
-    clusterConfig->commandConfigs.push_back(levelcontrolMove);
-    clusterConfig->commandConfigs.push_back(levelcontrolStep);
-    clusterConfig->commandConfigs.push_back(levelcontrolStop);
-    clusterConfig->commandConfigs.push_back(levelcontrolMoveToLevelWithOnOff);
-    clusterConfig->commandConfigs.push_back(levelcontrolMoveWithOnOff);
-    clusterConfig->commandConfigs.push_back(levelcontrolStepWithOnOff);
-    clusterConfig->commandConfigs.push_back(levelcontrolStopWithOnOff);
-    clusterConfig->commandConfigs.push_back(levelcontrolEndOfAcceptedCommandList);
+
+    // Attributes
+    AttributeConfig lvlCurrentLevel(0x00000000, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(0x01), 1, STORAGE_MASK | ZAP_ATTRIBUTE_MASK(TOKENIZE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
+    AttributeConfig lvlRemainingTime(0x00000001, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, STORAGE_MASK);
+    AttributeConfig lvlMinLevel(0x00000002, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(0x01), 1, STORAGE_MASK);
+    AttributeConfig lvlMaxLevel(0x00000003, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(0xFE), 1, STORAGE_MASK);
+    AttributeConfig lvlCurrentFrequency(0x00000004, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, STORAGE_MASK);
+    AttributeConfig lvlMinFrequency(0x00000005, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, STORAGE_MASK);
+    AttributeConfig lvlMaxFrequency(0x00000006, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, STORAGE_MASK);
+    AttributeConfig lvlOptions(0x0000000F, ZAP_TYPE(BITMAP8), &levelcontrolOptionsMinMaxValue, 1, STORAGE_MASK | ZAP_ATTRIBUTE_MASK(MIN_MAX) | ZAP_ATTRIBUTE_MASK(WRITABLE));
+    AttributeConfig lvlOnOffTransitionTime(0x00000010, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(0x0000), 2, WRITABLE_STORAGE);
+    AttributeConfig lvlOnLevel(0x00000011, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(0xFF), 1, WRITABLE_STORAGE | ZAP_ATTRIBUTE_MASK(NULLABLE));
+    AttributeConfig lvlOnTransitionTime(0x00000012, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, WRITABLE_STORAGE | ZAP_ATTRIBUTE_MASK(NULLABLE));
+    AttributeConfig lvlOffTransitionTime(0x00000013, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, WRITABLE_STORAGE | ZAP_ATTRIBUTE_MASK(NULLABLE));
+    AttributeConfig lvlDefaultMoveRate(0x00000014, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(50), 1, WRITABLE_STORAGE | ZAP_ATTRIBUTE_MASK(NULLABLE));
+    AttributeConfig lvlStartUpCurrentLevel(0x00004000, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(255), 1, STORAGE_MASK | ZAP_ATTRIBUTE_MASK(TOKENIZE) | ZAP_ATTRIBUTE_MASK(WRITABLE) | ZAP_ATTRIBUTE_MASK(NULLABLE));
+
+    clusterConfig->attributeConfigs.push_back(lvlCurrentLevel);
+    clusterConfig->attributeConfigs.push_back(lvlRemainingTime);
+    clusterConfig->attributeConfigs.push_back(lvlMinLevel);
+    clusterConfig->attributeConfigs.push_back(lvlMaxLevel);
+    clusterConfig->attributeConfigs.push_back(lvlCurrentFrequency);
+    clusterConfig->attributeConfigs.push_back(lvlMinFrequency);
+    clusterConfig->attributeConfigs.push_back(lvlMaxFrequency);
+    clusterConfig->attributeConfigs.push_back(lvlOptions);
+    clusterConfig->attributeConfigs.push_back(lvlOnOffTransitionTime);
+    clusterConfig->attributeConfigs.push_back(lvlOnLevel);
+    clusterConfig->attributeConfigs.push_back(lvlOnTransitionTime);
+    clusterConfig->attributeConfigs.push_back(lvlOffTransitionTime);
+    clusterConfig->attributeConfigs.push_back(lvlDefaultMoveRate);
+    clusterConfig->attributeConfigs.push_back(lvlStartUpCurrentLevel);
+
+    // Global Attributes
+    AttributeConfig lvlFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(3), 4, STORAGE_MASK);
+    AttributeConfig lvlClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(5), 2, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(lvlFeatureMap);
+    clusterConfig->attributeConfigs.push_back(lvlClusterRevision);
+
+    // Accepted Command Lists
+    CommandConfig lvlMoveToLevel(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig lvlMove(0x00000001, COMMAND_MASK_ACCEPTED);
+    CommandConfig lvlStep(0x00000002, COMMAND_MASK_ACCEPTED);
+    CommandConfig lvlStop(0x00000003, COMMAND_MASK_ACCEPTED);
+    CommandConfig lvlMoveToLevelWithOnOff(0x00000004, COMMAND_MASK_ACCEPTED);
+    CommandConfig lvlMoveWithOnOff(0x00000005, COMMAND_MASK_ACCEPTED);
+    CommandConfig lvlStepWithOnOff(0x00000006, COMMAND_MASK_ACCEPTED);
+    CommandConfig lvlStopWithOnOff(0x00000007, COMMAND_MASK_ACCEPTED);
+    CommandConfig lvlEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
+    clusterConfig->commandConfigs.push_back(lvlMoveToLevel);
+    clusterConfig->commandConfigs.push_back(lvlMove);
+    clusterConfig->commandConfigs.push_back(lvlStep);
+    clusterConfig->commandConfigs.push_back(lvlStop);
+    clusterConfig->commandConfigs.push_back(lvlMoveToLevelWithOnOff);
+    clusterConfig->commandConfigs.push_back(lvlMoveWithOnOff);
+    clusterConfig->commandConfigs.push_back(lvlStepWithOnOff);
+    clusterConfig->commandConfigs.push_back(lvlStopWithOnOff);
+    clusterConfig->commandConfigs.push_back(lvlEndOfAcceptedCommandList);
+
+    // Generated Command Lists
+    CommandConfig lvlEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
+
+    clusterConfig->commandConfigs.push_back(lvlEndOfGeneratedCommandList);
+
+    // Functions
     clusterConfig->functionConfigs.push_back((EmberAfGenericClusterFunction) emberAfLevelControlClusterServerInitCallback);
     clusterConfig->functionConfigs.push_back((EmberAfGenericClusterFunction) MatterLevelControlClusterServerShutdownCallback);
+}
+
+void matter_cluster_scenes_server(ClusterConfig *clusterConfig)
+{
+    clusterConfig->clusterId = 0x00000005;
+    clusterConfig->mask = ZAP_CLUSTER_MASK(SERVER);
+
+    // Attributes
+    AttributeConfig sSceneCount(0x00000000, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+    AttributeConfig sCurrentScene(0x00000001, ZAP_TYPE(INT8U), ZAP_SIMPLE_DEFAULT(0x00), 1, STORAGE_MASK);
+    AttributeConfig sCurrentGroup(0x00000002, ZAP_TYPE(GROUP_ID), ZAP_SIMPLE_DEFAULT(0x0000), 2, STORAGE_MASK);
+    AttributeConfig sSceneValid(0x00000003, ZAP_TYPE(BOOLEAN), ZAP_SIMPLE_DEFAULT(0x00), 1, STORAGE_MASK);
+    AttributeConfig sNameSupport(0x00000004, ZAP_TYPE(BITMAP8), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+    AttributeConfig sLastConfiguredBy(0x00000005, ZAP_TYPE(NODE_ID), uint32_t(0), 8, NULLABLE_STORAGE);
+    AttributeConfig sSceneTableSize(0x00000006, ZAP_TYPE(INT16U), ZAP_EMPTY_DEFAULT(), 2, STORAGE_MASK);
+    AttributeConfig sRemainingCapacity(0x00000007, ZAP_TYPE(INT8U), ZAP_EMPTY_DEFAULT(), 1, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(sSceneCount);
+    clusterConfig->attributeConfigs.push_back(sCurrentScene);
+    clusterConfig->attributeConfigs.push_back(sCurrentGroup);
+    clusterConfig->attributeConfigs.push_back(sSceneValid);
+    clusterConfig->attributeConfigs.push_back(sNameSupport);
+    clusterConfig->attributeConfigs.push_back(sLastConfiguredBy);
+    clusterConfig->attributeConfigs.push_back(sSceneTableSize);
+    clusterConfig->attributeConfigs.push_back(sRemainingCapacity);
+
+    // Global Attributes
+    AttributeConfig sFeatureMap(0x0000FFFC, ZAP_TYPE(BITMAP32), ZAP_SIMPLE_DEFAULT(0), 4, STORAGE_MASK);
+    AttributeConfig sClusterRevision(0x0000FFFD, ZAP_TYPE(INT16U), ZAP_SIMPLE_DEFAULT(5), 2, STORAGE_MASK);
+
+    clusterConfig->attributeConfigs.push_back(sFeatureMap);
+    clusterConfig->attributeConfigs.push_back(sClusterRevision);
+
+    // Accepted Command Lists
+    CommandConfig sAddScene(0x00000000, COMMAND_MASK_ACCEPTED);
+    CommandConfig sViewScene(0x00000001, COMMAND_MASK_ACCEPTED);
+    CommandConfig sRemoveScene(0x00000002, COMMAND_MASK_ACCEPTED);
+    CommandConfig sRemoveAllScenes(0x00000003, COMMAND_MASK_ACCEPTED);
+    CommandConfig sStoreScene(0x00000004, COMMAND_MASK_ACCEPTED);
+    CommandConfig sRecallScene(0x00000005, COMMAND_MASK_ACCEPTED);
+    CommandConfig sGetSceneMembership(0x00000006, COMMAND_MASK_ACCEPTED);
+    CommandConfig sEndOfAcceptedCommandList(chip::kInvalidCommandId, COMMAND_MASK_ACCEPTED);
+
+    clusterConfig->commandConfigs.push_back(sAddScene);
+    clusterConfig->commandConfigs.push_back(sViewScene);
+    clusterConfig->commandConfigs.push_back(sRemoveScene);
+    clusterConfig->commandConfigs.push_back(sRemoveAllScenes);
+    clusterConfig->commandConfigs.push_back(sStoreScene);
+    clusterConfig->commandConfigs.push_back(sRecallScene);
+    clusterConfig->commandConfigs.push_back(sGetSceneMembership);
+    clusterConfig->commandConfigs.push_back(sEndOfAcceptedCommandList);
+
+    // Generated Command Lists
+    CommandConfig sAddSceneResponse(0x00000000, COMMAND_MASK_GENERATED);
+    CommandConfig sViewSceneResponse(0x00000001, COMMAND_MASK_GENERATED);
+    CommandConfig sRemoveSceneResponse(0x00000002, COMMAND_MASK_GENERATED);
+    CommandConfig sRemoveAllScenesResponse(0x00000003, COMMAND_MASK_GENERATED);
+    CommandConfig sStoreSceneResponse(0x00000004, COMMAND_MASK_GENERATED);
+    CommandConfig sGetSceneMembershipResponse(0x00000006, COMMAND_MASK_GENERATED);
+    CommandConfig sEndOfGeneratedCommandList(chip::kInvalidCommandId, COMMAND_MASK_GENERATED);
+
+    clusterConfig->commandConfigs.push_back(sAddSceneResponse);
+    clusterConfig->commandConfigs.push_back(sViewSceneResponse);
+    clusterConfig->commandConfigs.push_back(sRemoveSceneResponse);
+    clusterConfig->commandConfigs.push_back(sRemoveAllScenesResponse);
+    clusterConfig->commandConfigs.push_back(sStoreSceneResponse);
+    clusterConfig->commandConfigs.push_back(sGetSceneMembershipResponse);
+    clusterConfig->commandConfigs.push_back(sEndOfGeneratedCommandList);
 }
 
 } // Clusters
@@ -654,79 +907,79 @@ namespace Endpoints {
 
 void matter_root_node_preset(EndpointConfig *rootNodeEndpointConfig)
 {
-    ClusterConfig descriptorServerCluster;
+    ClusterConfig descServerCluster;
     ClusterConfig aclServerCluster;
-    ClusterConfig basicInformationServerCluster;
+    ClusterConfig binfoServerCluster;
     ClusterConfig otarServerCluster;
-    ClusterConfig generalCommissioningServerCluster;
-    ClusterConfig networkCommissioningServerCluster;
-    ClusterConfig generalDiagnosticsServerCluster;
-    ClusterConfig softwareDiagnosticsServerCluster;
-    ClusterConfig wifiDiagnosticsServerCluster;
-    ClusterConfig administratorCommissioningServerCluster;
-    ClusterConfig operationalCredentialsServerCluster;
-    ClusterConfig groupKeyManagementServerCluster;
+    ClusterConfig cgenServerCluster;
+    ClusterConfig cnetServerCluster;
+    ClusterConfig dggenServerCluster;
+    ClusterConfig dgswServerCluster;
+    ClusterConfig dgwifiServerCluster;
+    ClusterConfig cadminServerCluster;
+    ClusterConfig opcreadsServerCluster;
+    ClusterConfig gkmServerCluster;
 
-    Presets::Clusters::matter_cluster_descriptor_server(&descriptorServerCluster);
-    Presets::Clusters::matter_cluster_acl_server(&aclServerCluster);
-    Presets::Clusters::matter_cluster_basic_information_server(&basicInformationServerCluster);
+    Presets::Clusters::matter_cluster_descriptor_server(&descServerCluster);
+    Presets::Clusters::matter_cluster_access_control_server(&aclServerCluster);
+    Presets::Clusters::matter_cluster_basic_information_server(&binfoServerCluster);
     Presets::Clusters::matter_cluster_ota_requestor_server(&otarServerCluster);
-    Presets::Clusters::matter_cluster_general_commissioning_server(&generalCommissioningServerCluster);
-    Presets::Clusters::matter_cluster_network_commissioning_server(&networkCommissioningServerCluster);
-    Presets::Clusters::matter_cluster_general_diagnostics_server(&generalDiagnosticsServerCluster);
-    Presets::Clusters::matter_cluster_software_diagnostics_server(&softwareDiagnosticsServerCluster);
-    Presets::Clusters::matter_cluster_wifi_diagnostics_server(&wifiDiagnosticsServerCluster);
-    Presets::Clusters::matter_cluster_administrator_commissioning_server(&administratorCommissioningServerCluster);
-    Presets::Clusters::matter_cluster_operational_credentials_server(&operationalCredentialsServerCluster);
-    Presets::Clusters::matter_cluster_group_key_management_server(&groupKeyManagementServerCluster);
+    Presets::Clusters::matter_cluster_general_commissioning_server(&cgenServerCluster);
+    Presets::Clusters::matter_cluster_network_commissioning_server(&cnetServerCluster);
+    Presets::Clusters::matter_cluster_general_diagnostics_server(&dggenServerCluster);
+    Presets::Clusters::matter_cluster_software_diagnostics_server(&dgswServerCluster);
+    Presets::Clusters::matter_cluster_wifi_network_diagnostics_server(&dgwifiServerCluster);
+    Presets::Clusters::matter_cluster_administrator_commissioning_server(&cadminServerCluster);
+    Presets::Clusters::matter_cluster_operational_credentials_server(&opcreadsServerCluster);
+    Presets::Clusters::matter_cluster_group_key_management_server(&gkmServerCluster);
 
-    rootNodeEndpointConfig->clusterConfigs.push_back(descriptorServerCluster);
+    rootNodeEndpointConfig->clusterConfigs.push_back(descServerCluster);
     rootNodeEndpointConfig->clusterConfigs.push_back(aclServerCluster);
-    rootNodeEndpointConfig->clusterConfigs.push_back(basicInformationServerCluster);
+    rootNodeEndpointConfig->clusterConfigs.push_back(binfoServerCluster);
     rootNodeEndpointConfig->clusterConfigs.push_back(otarServerCluster);
-    rootNodeEndpointConfig->clusterConfigs.push_back(generalCommissioningServerCluster);
-    rootNodeEndpointConfig->clusterConfigs.push_back(networkCommissioningServerCluster);
-    rootNodeEndpointConfig->clusterConfigs.push_back(generalDiagnosticsServerCluster);
-    rootNodeEndpointConfig->clusterConfigs.push_back(softwareDiagnosticsServerCluster);
-    rootNodeEndpointConfig->clusterConfigs.push_back(wifiDiagnosticsServerCluster);
-    rootNodeEndpointConfig->clusterConfigs.push_back(administratorCommissioningServerCluster);
-    rootNodeEndpointConfig->clusterConfigs.push_back(operationalCredentialsServerCluster);
-    rootNodeEndpointConfig->clusterConfigs.push_back(groupKeyManagementServerCluster);
+    rootNodeEndpointConfig->clusterConfigs.push_back(cgenServerCluster);
+    rootNodeEndpointConfig->clusterConfigs.push_back(cnetServerCluster);
+    rootNodeEndpointConfig->clusterConfigs.push_back(dggenServerCluster);
+    rootNodeEndpointConfig->clusterConfigs.push_back(dgswServerCluster);
+    rootNodeEndpointConfig->clusterConfigs.push_back(dgwifiServerCluster);
+    rootNodeEndpointConfig->clusterConfigs.push_back(cadminServerCluster);
+    rootNodeEndpointConfig->clusterConfigs.push_back(opcreadsServerCluster);
+    rootNodeEndpointConfig->clusterConfigs.push_back(gkmServerCluster);
 }
 
 void matter_dimmable_light_preset(EndpointConfig *dimmableLightEndpointConfig)
 {
-    ClusterConfig descriptorServerCluster;
-    ClusterConfig identifyServerCluster;
-    ClusterConfig groupsServerCluster;
-    ClusterConfig scenesServerCluster;
-    ClusterConfig onOffServerCluster;
-    ClusterConfig levelControlServerCluster;
+    ClusterConfig descServerCluster;
+    ClusterConfig iServerCluster;
+    ClusterConfig gServerCluster;
+    ClusterConfig sServerCluster;
+    ClusterConfig ooServerCluster;
+    ClusterConfig lvlServerCluster;
 
-    Presets::Clusters::matter_cluster_descriptor_server(&descriptorServerCluster);
-    Presets::Clusters::matter_cluster_identify_server(&identifyServerCluster);
-    Presets::Clusters::matter_cluster_groups_server(&groupsServerCluster);
-    Presets::Clusters::matter_cluster_scenes_server(&scenesServerCluster);
-    Presets::Clusters::matter_cluster_onoff_server(&onOffServerCluster);
-    Presets::Clusters::matter_cluster_level_control_server(&levelControlServerCluster);
+    Presets::Clusters::matter_cluster_descriptor_server(&descServerCluster);
+    Presets::Clusters::matter_cluster_identify_server(&iServerCluster);
+    Presets::Clusters::matter_cluster_groups_server(&gServerCluster);
+    Presets::Clusters::matter_cluster_scenes_server(&sServerCluster);
+    Presets::Clusters::matter_cluster_onoff_server(&ooServerCluster);
+    Presets::Clusters::matter_cluster_level_control_server(&lvlServerCluster);
 
-    dimmableLightEndpointConfig->clusterConfigs.push_back(descriptorServerCluster);
-    dimmableLightEndpointConfig->clusterConfigs.push_back(identifyServerCluster);
-    dimmableLightEndpointConfig->clusterConfigs.push_back(groupsServerCluster);
-    dimmableLightEndpointConfig->clusterConfigs.push_back(scenesServerCluster);
-    dimmableLightEndpointConfig->clusterConfigs.push_back(onOffServerCluster);
-    dimmableLightEndpointConfig->clusterConfigs.push_back(levelControlServerCluster);
+    dimmableLightEndpointConfig->clusterConfigs.push_back(descServerCluster);
+    dimmableLightEndpointConfig->clusterConfigs.push_back(iServerCluster);
+    dimmableLightEndpointConfig->clusterConfigs.push_back(gServerCluster);
+    dimmableLightEndpointConfig->clusterConfigs.push_back(sServerCluster);
+    dimmableLightEndpointConfig->clusterConfigs.push_back(ooServerCluster);
+    dimmableLightEndpointConfig->clusterConfigs.push_back(lvlServerCluster);
 }
 
 void matter_aggregator_preset(EndpointConfig *aggregatorEndpointConfig)
 {
-    ClusterConfig descriptorServerCluster;
+    ClusterConfig descServerCluster;
 
-    Presets::Clusters::matter_cluster_descriptor_server(&descriptorServerCluster);
+    Presets::Clusters::matter_cluster_descriptor_server(&descServerCluster);
 
-    aggregatorEndpointConfig->clusterConfigs.push_back(descriptorServerCluster);
+    aggregatorEndpointConfig->clusterConfigs.push_back(descServerCluster);
 }
 
 } // Endpoints
 
-} // Presets
+} // Presetst

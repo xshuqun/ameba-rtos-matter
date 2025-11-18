@@ -26,7 +26,7 @@ DEPENDENCY_LIST += $(addprefix $(OBJ_DIR)/,$(patsubst %.cpp,%_$(TARGET).d,$(SRC_
 # -------------------------------------------------------------------
 .PHONY: lib_main
 lib_main: prerequirement $(SRC_O) $(SRC_OO)
-	$(AR) crv $(BIN_DIR)/$(TARGET).a $(OBJ_CPP_LIST) $(OBJ_LIST) $(VER_O)
+	$(AR) crv $(BIN_DIR)/$(TARGET).a $(OBJ_DIR)/*/*.oo $(OBJ_LIST) $(VER_O)
 	cp $(BIN_DIR)/$(TARGET).a $(SDKROOTDIR)/component/soc/realtek/8710c/misc/bsp/lib/common/GCC/$(TARGET).a
 
 # -------------------------------------------------------------------
@@ -55,13 +55,16 @@ prerequirement:
 # -------------------------------------------------------------------
 $(SRC_OO): %_$(TARGET).oo : %.cpp | prerequirement
 	$(CC) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
-	$(CC) $(CPPFLAGS) $(INCLUDES) -c $< -MM -MT $@ -MF $(OBJ_DIR)/$(notdir $(patsubst %.oo,%.d,$@))
-	@cp $@ $(OBJ_DIR)/$(notdir $@)
-ifneq ($(findstring _dm,$(DEVICE_TYPE)),_dm)
-	@cp $*_$(TARGET).s $(INFO_DIR)
-	@cp $*_$(TARGET).ii $(INFO_DIR)
-endif
-	@chmod 777 $(OBJ_DIR)/$(notdir $@)
+	@foldername=$$(basename $$(dirname $<)); \
+	mkdir -p $(OBJ_DIR)/$${foldername}; \
+	mkdir -p $(INFO_DIR)/$${foldername}; \
+	$(CC) $(CPPFLAGS) $(INCLUDES) -c $< -MM -MT $@ -MF $(OBJ_DIR)/$${foldername}/$(notdir $(patsubst %.oo,%.d,$@)); \
+	cp $@ $(OBJ_DIR)/$${foldername}/$(notdir $@); \
+	if [[ "$${DEVICE_TYPE}" != *_dm ]]; then \
+		cp $*_$(TARGET).ii $(INFO_DIR)/$${foldername}/$(notdir $@).ii; \
+		cp $*_$(TARGET).s $(INFO_DIR)/$${foldername}/$(notdir $@).s; \
+	fi; \
+	chmod 777 $(OBJ_DIR)/$${foldername}/$(notdir $@);
 
 $(SRC_O): %_$(TARGET).o : %.c | prerequirement
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@

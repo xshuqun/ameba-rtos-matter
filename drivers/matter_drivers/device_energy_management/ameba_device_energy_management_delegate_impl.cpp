@@ -20,6 +20,8 @@
 #include <device_energy_management/ameba_device_energy_management_manufacturer_delegate.h>
 #include <device_energy_management/ameba_energy_time_utils.h>
 #include <app/EventLogging.h>
+#include <app/reporting/reporting.h>
+#include <platform/CHIPDeviceLayer.h>
 #include <protocols/interaction_model/StatusCode.h>
 
 using namespace chip;

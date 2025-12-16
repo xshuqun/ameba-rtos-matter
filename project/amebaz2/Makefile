@@ -41,7 +41,7 @@ endif
 #                            MATTER ZAP files                                 #
 #*****************************************************************************#
 ALL_CLUSTERS_FILE			= $(CHIPDIR)/examples/all-clusters-app/ameba/build/chip/codegen/cluster-file.txt
-ALL_CLUSTERS_ZAP			= $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/all-clusters-app.zap
+ALL_CLUSTERS_ZAP			= $(MATTER_EXAMPLE_DIR)/chiptest/all-clusters-app.zap
 AIR_PURIFIER_FILE			= $(CHIPDIR)/examples/air-purifier-app/ameba/build/chip/codegen/cluster-file.txt
 AIR_PURIFIER_ZAP			= $(CHIPDIR)/examples/air-purifier-app/air-purifier-common/air-purifier-app.zap
 LIGHTING_FILE				= $(CHIPDIR)/examples/lighting-app/ameba/build/chip/codegen/cluster-file.txt
@@ -93,7 +93,6 @@ define GENERATE_ZAP
 endef
 
 $(ALL_CLUSTERS_FILE): $(ALL_CLUSTERS_ZAP)
-	@cp $(MATTER_EXAMPLE_DIR)/chiptest/all-clusters-app.zap $(ALL_CLUSTERS_ZAP)
 	$(call GENERATE_ZAP,$(CHIPDIR)/examples/all-clusters-app/ameba,$^,$(CHIPDIR)/examples/all-clusters-app/all-clusters-common/all-clusters-app.matter,$@)
 
 $(AIR_PURIFIER_FILE): $(AIR_PURIFIER_ZAP)

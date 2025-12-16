@@ -103,8 +103,6 @@ SRC_CPP += $(MATTER_DRIVER_DIR)/matter_drivers/microwave_oven_mode/ameba_microwa
 SRC_CPP += $(MATTER_DRIVER_DIR)/matter_drivers/microwave_oven_mode/ameba_microwave_oven_mode_instance.cpp
 # mode select cluster
 SRC_CPP += $(MATTER_DRIVER_DIR)/matter_drivers/mode_select/ameba_mode_select_manager.cpp
-# occupancy sensing cluster
-SRC_CPP += $(MATTER_DRIVER_DIR)/matter_drivers/occupancy_sensing/ameba_occupancy_sensing_instance.cpp
 # operational state cluster
 SRC_CPP += $(MATTER_DRIVER_DIR)/matter_drivers/operational_state/ameba_operational_state_delegate.cpp
 SRC_CPP += $(MATTER_DRIVER_DIR)/matter_drivers/operational_state/ameba_operational_state_instance.cpp

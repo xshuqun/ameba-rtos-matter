@@ -18,8 +18,7 @@
 
 #include "controller/InvokeInteraction.h"
 #include "controller/ReadInteraction.h"
-#include <app/clusters/occupancy-sensor-server/occupancy-hal.h>
-#include <app/clusters/occupancy-sensor-server/occupancy-sensor-server.h>
+#include <app/clusters/occupancy-sensor-server/OccupancySensingCluster.h>
 
 #if CONFIG_ENABLE_CHIP_SHELL
 #include "lib/shell/Engine.h"

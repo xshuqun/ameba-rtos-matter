@@ -95,8 +95,6 @@ CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/microwave_oven_mode/ameba_microwav
 CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/microwave_oven_mode/ameba_microwave_oven_mode_instance.cpp
 # mode select cluster
 CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/mode_select/ameba_mode_select_manager.cpp
-# occupancy sensing cluster
-CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/occupancy_sensing/ameba_occupancy_sensing_instance.cpp
 # operational state cluster
 CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/operational_state/ameba_operational_state_delegate.cpp
 CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/operational_state/ameba_operational_state_instance.cpp

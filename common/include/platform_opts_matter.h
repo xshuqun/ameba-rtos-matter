@@ -74,7 +74,7 @@
  *            if backup enabled, the total module number is 4 + 1*4 = 8, the size is 4*8 = 32k;
  *            if wear leveling enabled, the total module number is 4 + 2*4 + 3*4 = 24, the size is 96k
  */
-#define MATTER_KVS_ENABLE_BACKUP                0
+#define MATTER_KVS_ENABLE_BACKUP                1
 #define MATTER_KVS_ENABLE_WEAR_LEVELING         0
 
 /****************************************************************
@@ -125,8 +125,8 @@
 #define MATTER_KVS_BEGIN_ADDR                   (0x400000 - 0xC000)     // 0x3F4000 ~ 0x3FB000 (28K)
 #define MATTER_KVS_BEGIN_ADDR2                  (0x400000 - 0x19000)    // 0x3E7000 ~ 0x3F4000 (52K)
 #elif (MATTER_KVS_ENABLE_BACKUP == 1)
-#define MATTER_KVS_BEGIN_ADDR                   (0x400000 - 0x12000)    // 0x3EE000 ~ 0x3FB000 (52K)
-#define MATTER_KVS_BEGIN_ADDR2                  (0x400000 - 0x2B000)     // 0x3D5000 ~ 0x3EE000 (100K)
+#define MATTER_KVS_BEGIN_ADDR                   (0x3C6000)    // 0x3C6000 ~ 0x3D3000 (6 modules w backup 13 * 4KB = 52KB)
+#define MATTER_KVS_BEGIN_ADDR2                  (0x3D3000)    // 0x3D3000 ~ 0x3EC000 (12 modules w backup 25 * 4KB = 100KB)
 #endif /* MATTER_KVS_ENABLE_BACKUP */
 
 #elif defined(CONFIG_PLATFORM_8721D)

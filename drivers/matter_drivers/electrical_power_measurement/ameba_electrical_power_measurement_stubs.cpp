@@ -17,9 +17,12 @@
  */
 
 #include <electrical_power_measurement/ameba_electrical_power_measurement_delegate.h>
+#include <app/reporting/reporting.h>
 
 using namespace chip;
+using namespace chip::app;
 using namespace chip::app::Clusters;
+using namespace chip::app::DataModel;
 using namespace chip::app::Clusters::ElectricalPowerMeasurement;
 
 static std::unique_ptr<ElectricalPowerMeasurementDelegate> gEPMDelegate;
@@ -35,18 +38,13 @@ void emberAfElectricalPowerMeasurementClusterInitCallback(chip::EndpointId endpo
     {
         gEPMInstance = std::make_unique<ElectricalPowerMeasurementInstance>(
             endpointId, *gEPMDelegate,
-            BitMask<Feature, uint32_t>(Feature::kDirectCurrent),
-            BitMask<OptionalAttributes, uint32_t>(
-                OptionalAttributes::kOptionalAttributeRanges, OptionalAttributes::kOptionalAttributeVoltage,
-                OptionalAttributes::kOptionalAttributeActiveCurrent, OptionalAttributes::kOptionalAttributeReactiveCurrent,
-                OptionalAttributes::kOptionalAttributeApparentCurrent, OptionalAttributes::kOptionalAttributeReactivePower,
-                OptionalAttributes::kOptionalAttributeApparentPower, OptionalAttributes::kOptionalAttributeRMSVoltage,
-                OptionalAttributes::kOptionalAttributeRMSCurrent, OptionalAttributes::kOptionalAttributeRMSPower,
-                OptionalAttributes::kOptionalAttributeFrequency, OptionalAttributes::kOptionalAttributePowerFactor,
-                OptionalAttributes::kOptionalAttributeNeutralCurrent));
+            BitMask<Feature, uint32_t>(0),
+            BitMask<OptionalAttributes, uint32_t>(0));
 
         gEPMInstance->Init();
 
         gEPMDelegate->SetPowerMode(PowerModeEnum::kAc);
+        DataModel::Nullable<int64_t> newValue = 1000;
+        gEPMDelegate->SetActivePower(newValue);
     }
 }

@@ -51,7 +51,11 @@ endif
 # -------------------------------------------------------------------
 # Source Files (Example)
 # -------------------------------------------------------------------
-SRC_CPP += $(MATTER_DRIVER_DIR)/device/fan_driver.cpp
+SRC_CPP += $(MATTER_DRIVER_DIR)/matter_drivers/electrical_energy_measurement/ameba_electrical_energy_measurement_stubs.cpp
+SRC_CPP += $(MATTER_DRIVER_DIR)/matter_drivers/electrical_power_measurement/ameba_electrical_power_measurement.cpp
+SRC_CPP += $(MATTER_DRIVER_DIR)/matter_drivers/electrical_power_measurement/ameba_electrical_power_measurement_stubs.cpp
+SRC_CPP += $(MATTER_DRIVER_DIR)/matter_drivers/power_topology/ameba_power_topology_delegate.cpp
+SRC_CPP += $(MATTER_DRIVER_DIR)/matter_drivers/power_topology/ameba_power_topology_stub.cpp
 SRC_CPP += $(MATTER_EXAMPLE_DIR)/$(DEVICE_TYPE)/example_matter_$(DEVICE_TYPE).cpp
 SRC_CPP += $(MATTER_EXAMPLE_DIR)/$(DEVICE_TYPE)/matter_drivers.cpp
 

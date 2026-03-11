@@ -71,6 +71,8 @@ ROOM_AIR_CONDITIONER_FILE	= $(MATTER_EXAMPLE_DIR)/room_air_conditioner/build/chi
 ROOM_AIR_CONDITIONER_ZAP	= $(MATTER_EXAMPLE_DIR)/room_air_conditioner/room-air-conditioner-app.zap
 TEMPERATURE_SENSOR_FILE		= $(MATTER_EXAMPLE_DIR)/temperature_sensor/build/chip/codegen/cluster-file.txt
 TEMPERATURE_SENSOR_ZAP		= $(MATTER_EXAMPLE_DIR)/temperature_sensor/temperature-sensor-app.zap
+WINDOW_COVERING_FILE		= $(MATTER_EXAMPLE_DIR)/window_covering/build/chip/codegen/cluster-file.txt
+WINDOW_COVERING_ZAP			= $(MATTER_EXAMPLE_DIR)/window_covering/window-covering-app.zap
 
 #*****************************************************************************#
 #                      RULES TO MAKE MATTER DIRS                              #
@@ -139,6 +141,9 @@ $(TEMPERATURE_SENSOR_FILE): $(TEMPERATURE_SENSOR_ZAP)
 
 $(THERMOSTAT_FILE): $(THERMOSTAT_ZAP)
 	$(call GENERATE_ZAP,$(CHIPDIR)/examples/thermostat/ameba,$^,$(CHIPDIR)/examples/thermostat/thermostat-common/thermostat.matter,$@)
+
+$(WINDOW_COVERING_FILE): $(WINDOW_COVERING_ZAP)
+	$(call GENERATE_ZAP,$(MATTER_EXAMPLE_DIR)/window_covering,$^,$(MATTER_EXAMPLE_DIR)/window_covering/window-covering-app.matter,$@)
 
 copy_gen_files_bridge_dm:
 	@cp $(MATTER_EXAMPLE_DIR)/bridge_dm/endpoint_config.h $(MATTER_EXAMPLE_DIR)/bridge_dm/build/chip/codegen/zap-generated
@@ -236,6 +241,11 @@ thermostat_port: toolchain_matter $(THERMOSTAT_FILE)
 	$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_core.mk all
 	$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_main.mk all
 
+.PHONY: window_covering_port
+window_covering_port: toolchain_matter $(WINDOW_COVERING_FILE)
+	$(MAKE) -f $(MATTER_MAKE_DIR)/window_covering/lib_chip_window_covering_core.mk all
+	$(MAKE) -f $(MATTER_MAKE_DIR)/window_covering/lib_chip_window_covering_main.mk all
+
 _clean_chip_core:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/all_clusters/lib_chip.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/air_purifier/lib_chip_air_purifier_core.mk clean
@@ -254,6 +264,7 @@ _clean_chip_core:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/room_air_conditioner/lib_chip_room_air_conditioner_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/temperature_sensor/lib_chip_temperature_sensor_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/window_covering/lib_chip_window_covering_core.mk clean
 
 _clean_chip_main:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/all_clusters/lib_chip_main.mk clean
@@ -273,6 +284,7 @@ _clean_chip_main:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/room_air_conditioner/lib_chip_room_air_conditioner_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/temperature_sensor/lib_chip_temperature_sensor_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/thermostat/lib_chip_thermostat_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/window_covering/lib_chip_window_covering_main.mk clean
 
 
 .PHONY: clean_matter_libs

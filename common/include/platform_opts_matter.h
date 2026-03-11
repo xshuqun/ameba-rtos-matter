@@ -35,6 +35,7 @@
 #define CONFIG_EXAMPLE_MATTER_ROOM_AIR_CONDITIONER      0
 #define CONFIG_EXAMPLE_MATTER_TEMPERATURE_SENSOR        0
 #define CONFIG_EXAMPLE_MATTER_THERMOSTAT                0
+#define CONFIG_EXAMPLE_MATTER_WINDOW_COVERING           0
 
 /** CONFIG_ENABLE_AMEBA_CRYPTO is declared and enabled in Makefile.include.matter
  */

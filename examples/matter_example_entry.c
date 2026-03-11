@@ -51,6 +51,8 @@
 #include <temperature_sensor/example_matter_temperature_sensor.h>
 #elif defined(CONFIG_EXAMPLE_MATTER_THERMOSTAT) && (CONFIG_EXAMPLE_MATTER_THERMOSTAT == 1)
 #include <thermostat/example_matter_thermostat.h>
+#elif defined(CONFIG_EXAMPLE_MATTER_WINDOW_COVERING) && (CONFIG_EXAMPLE_MATTER_WINDOW_COVERING == 1)
+#include <window_covering/example_matter_window_covering.h>
 #endif
 
 #if defined(CONFIG_PLATFORM_8710C)
@@ -111,6 +113,8 @@ void matter_example_entry(void)
     example_matter_temperature_sensor();
 #elif defined(CONFIG_EXAMPLE_MATTER_THERMOSTAT) && (CONFIG_EXAMPLE_MATTER_THERMOSTAT == 1)
     example_matter_thermostat();
+#elif defined(CONFIG_EXAMPLE_MATTER_WINDOW_COVERING) && (CONFIG_EXAMPLE_MATTER_WINDOW_COVERING == 1)
+    example_matter_window_covering();
 #endif
 }
 

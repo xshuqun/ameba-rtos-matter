@@ -1,11 +1,11 @@
 # Matter Basic Video Player Example
 
-This example demonstrates an implementation of the **Matter Window Covering** device type.
+This example demonstrates an implementation of the **Matter OnOff Plug-in unit** device type.
 
 ## 📘 ZAP Configuration
 
-- **ZAP File:** `window-covering.zap`
-- **Device Type ID:** `0x0202` (Matter Basic Video Player)
+- **ZAP File:** `onoff-plugin.zap`
+- **Device Type ID:** `0x010A` (Matter Basic Video Player)
 
 > **Note:**
 > Before implementation, review the Matter Specification to ensure compliance with required device types and cluster configurations.
@@ -16,7 +16,7 @@ The example defines **three endpoints**:
 
 | **Endpoint ID** | **Device Name**        | **Description** |
 |-----------------|------------------------|-----------------|
-| **1** | Window Covering | Main functional endpoint for  |
+| **1** | OnOff Plug-In Unit | Main functional endpoint for  |
 
 > **Note:**
 > You may exclude or modify them according to your device requirements.
@@ -86,7 +86,7 @@ They provide the main interfaces for peripheral initialization, event handling, 
 
 | **API / Task** | **Purpose** | **Function / Description** |
 |----------------|-------------|----------------------------|
-| `matter_driver_window_covering_init()` | Window covering initialization | Initializes the Window covering device, setting up PWM or GPIO peripherals, and synchronizes Matter attributes with hardware. |
+| `matter_driver_onoff_plugin_init()` | OnOff Plugin initialization | Initializes the OnOff Plugin device, setting up PWM or GPIO peripherals, and synchronizes Matter attributes with hardware. |
 | `matter_driver_uplink_update_handler()` | Matter → Driver event handler | Processes cluster/attribute changes from the Matter stack (uplink) and updates hardware peripherals |
 | `matter_driver_downlink_update_handler()` | Driver → Matter event handler | Processes hardware or external input events (downlink) and updates Matter attributes |
 
@@ -96,8 +96,8 @@ They provide the main interfaces for peripheral initialization, event handling, 
 
 | **Component** | **Description** |
 |----------------|-----------------|
-| **ZAP File** | `window-covering-app.zap` |
-| **Main Example Entry** | `example_matter_window_covering.cpp` |
+| **ZAP File** | `onoff-plugin-app.zap` |
+| **Main Example Entry** | `example_matter_onoff_plugin.cpp` |
 | **Main Matter Driver File** | `matter_drivers.cpp` |
 
 ---
@@ -111,7 +111,7 @@ They provide the main interfaces for peripheral initialization, event handling, 
 ## How to build
 
 ### Configurations
-Enable `CONFIG_EXAMPLE_MATTER` and `CONFIG_EXAMPLE_MATTER_WINDOW_COVERING` in `platform_opts_matter.h`.
+Enable `CONFIG_EXAMPLE_MATTER` and `CONFIG_EXAMPLE_MATTER_ONOFF_PLUGIN` in `platform_opts_matter.h`.
 Ensure that `CONFIG_EXAMPLE_MATTER_CHIPTEST` is disabled.
 
 ### Setup the Build Environment
@@ -125,7 +125,7 @@ Ensure that `CONFIG_EXAMPLE_MATTER_CHIPTEST` is disabled.
 ### Build Matter Libraries
 
     cd amebaz2_sdk/project/realtek_amebaXX_v0_example/GCC-RELEASE/
-    make window_covering_port
+    make onoff_plugin_port
 
 ### Build the Final Firmware
 

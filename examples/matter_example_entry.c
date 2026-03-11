@@ -45,6 +45,8 @@
 #include <light/example_matter_light.h>
 #elif defined(CONFIG_EXAMPLE_MATTER_MICROWAVE_OVEN) && (CONFIG_EXAMPLE_MATTER_MICROWAVE_OVEN == 1)
 #include <microwave_oven/example_matter_microwave_oven.h>
+#elif defined(CONFIG_EXAMPLE_MATTER_ONOFF_PLUGIN) && (CONFIG_EXAMPLE_MATTER_ONOFF_PLUGIN == 1)
+#include <onoff_plugin/example_matter_onoff_plugin.h>
 #elif defined(CONFIG_EXAMPLE_MATTER_REFRIGERATOR) && (CONFIG_EXAMPLE_MATTER_REFRIGERATOR == 1)
 #include <refrigerator/example_matter_refrigerator.h>
 #elif defined(CONFIG_EXAMPLE_MATTER_TEMPERATURE_SENSOR) && (CONFIG_EXAMPLE_MATTER_TEMPERATURE_SENSOR == 1)
@@ -105,6 +107,8 @@ void matter_example_entry(void)
     example_matter_laundry_washer();
 #elif defined(CONFIG_EXAMPLE_MATTER_LIGHT) && (CONFIG_EXAMPLE_MATTER_LIGHT == 1)
     example_matter_light();
+#elif defined(CONFIG_EXAMPLE_MATTER_ONOFF_PLUGIN) && (CONFIG_EXAMPLE_MATTER_ONOFF_PLUGIN == 1)
+    example_matter_onoff_plugin();
 #elif defined(CONFIG_EXAMPLE_MATTER_MICROWAVE_OVEN) && (CONFIG_EXAMPLE_MATTER_MICROWAVE_OVEN == 1)
     example_matter_microwave_oven();
 #elif defined(CONFIG_EXAMPLE_MATTER_REFRIGERATOR) && (CONFIG_EXAMPLE_MATTER_REFRIGERATOR == 1)

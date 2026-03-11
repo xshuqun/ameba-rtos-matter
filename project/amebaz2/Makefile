@@ -65,6 +65,8 @@ LAUNDRY_WASHER_FILE			= $(MATTER_EXAMPLE_DIR)/laundry_washer/build/chip/codegen/
 LAUNDRY_WASHER_ZAP			= $(MATTER_EXAMPLE_DIR)/laundry_washer/laundry-washer-app.zap
 MICROWAVE_OVEN_FILE			= $(MATTER_EXAMPLE_DIR)/microwave_oven/build/chip/codegen/cluster-file.txt
 MICROWAVE_OVEN_ZAP			= $(MATTER_EXAMPLE_DIR)/microwave_oven/microwave-oven-app.zap
+ONOFF_PLUGIN_FILE			= $(MATTER_EXAMPLE_DIR)/onoff_plugin/build/chip/codegen/cluster-file.txt
+ONOFF_PLUGIN_ZAP				= $(MATTER_EXAMPLE_DIR)/onoff_plugin/onoff-plugin-app.zap
 REFRIGERATOR_FILE			= $(MATTER_EXAMPLE_DIR)/refrigerator/build/chip/codegen/cluster-file.txt
 REFRIGERATOR_ZAP			= $(MATTER_EXAMPLE_DIR)/refrigerator/refrigerator-app.zap
 ROOM_AIR_CONDITIONER_FILE	= $(MATTER_EXAMPLE_DIR)/room_air_conditioner/build/chip/codegen/cluster-file.txt
@@ -129,6 +131,9 @@ $(LAUNDRY_WASHER_FILE): $(LAUNDRY_WASHER_ZAP)
 
 $(MICROWAVE_OVEN_FILE): $(MICROWAVE_OVEN_ZAP)
 	$(call GENERATE_ZAP,$(MATTER_EXAMPLE_DIR)/microwave_oven,$^,$(MATTER_EXAMPLE_DIR)/microwave_oven/microwave-oven-app.matter,$@)
+
+$(ONOFF_PLUGIN_FILE): $(ONOFF_PLUGIN_ZAP)
+	$(call GENERATE_ZAP,$(MATTER_EXAMPLE_DIR)/onoff_plugin,$^,$(MATTER_EXAMPLE_DIR)/onoff_plugin/onoff-plugin-app.matter,$@)
 
 $(REFRIGERATOR_FILE): $(REFRIGERATOR_ZAP)
 	$(call GENERATE_ZAP,$(MATTER_EXAMPLE_DIR)/refrigerator,$^,$(MATTER_EXAMPLE_DIR)/refrigerator/refrigerator-app.matter,$@)
@@ -221,6 +226,11 @@ microwave_oven_port: toolchain_matter $(MICROWAVE_OVEN_FILE)
 	$(MAKE) -f $(MATTER_MAKE_DIR)/microwave_oven/lib_chip_microwave_oven_core.mk all
 	$(MAKE) -f $(MATTER_MAKE_DIR)/microwave_oven/lib_chip_microwave_oven_main.mk all
 
+.PHONY: onoff_plugin_port
+onoff_plugin_port: toolchain_matter $(ONOFF_PLUGIN_FILE)
+	$(MAKE) -f $(MATTER_MAKE_DIR)/onoff_plugin/lib_chip_onoff_plugin_core.mk all
+	$(MAKE) -f $(MATTER_MAKE_DIR)/onoff_plugin/lib_chip_onoff_plugin_main.mk all
+
 .PHONY: refrigerator_port
 refrigerator_port: toolchain_matter $(REFRIGERATOR_FILE)
 	$(MAKE) -f $(MATTER_MAKE_DIR)/refrigerator/lib_chip_refrigerator_core.mk all
@@ -260,6 +270,7 @@ _clean_chip_core:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/light_port/lib_chip_light_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/light_switch/lib_chip_light_switch_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/microwave_oven/lib_chip_microwave_oven_core.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/onoff_plugin/lib_chip_onoff_plugin_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/refrigerator/lib_chip_refrigerator_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/room_air_conditioner/lib_chip_room_air_conditioner_core.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/temperature_sensor/lib_chip_temperature_sensor_core.mk clean
@@ -280,6 +291,7 @@ _clean_chip_main:
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/light_port/lib_chip_light_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/light_switch/lib_chip_light_switch_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/microwave_oven/lib_chip_microwave_oven_main.mk clean
+	@$(MAKE) -f $(MATTER_MAKE_DIR)/onoff_plugin/lib_chip_onoff_plugin_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/refrigerator/lib_chip_refrigerator_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/room_air_conditioner/lib_chip_room_air_conditioner_main.mk clean
 	@$(MAKE) -f $(MATTER_MAKE_DIR)/temperature_sensor/lib_chip_temperature_sensor_main.mk clean

@@ -37,7 +37,6 @@ CHIP_ERROR matter_driver_onoff_plugin_init(void)
 {
     chip::DeviceLayer::PlatformMgr().LockChipStack();
     CHIP_ERROR err = CHIP_NO_ERROR;
-
     chip::DeviceLayer::PlatformMgr().UnlockChipStack();
     return err;
 }

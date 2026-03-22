@@ -27,11 +27,14 @@ static std::unique_ptr<ElectricalEnergyMeasurementAttrAccess> gAttrAccess;
 
 void emberAfElectricalEnergyMeasurementClusterInitCallback(chip::EndpointId endpointId)
 {
+    printf("==>%s %d\n", __FUNCTION__, __LINE__);
     VerifyOrDie(endpointId == 1); // this cluster is only enabled for endpoint 1.
+    printf("==>%s %d\n", __FUNCTION__, __LINE__);
     VerifyOrDie(!gAttrAccess);
+    printf("==>%s %d\n", __FUNCTION__, __LINE__);
 
     gAttrAccess = std::make_unique<ElectricalEnergyMeasurementAttrAccess>(
-        BitMask<Feature, uint32_t>(Feature::kImportedEnergy, Feature::kCumulativeEnergy),
+        BitMask<Feature, uint32_t>(Feature::kExportedEnergy, Feature::kCumulativeEnergy),
         BitMask<OptionalAttributes, uint32_t>(OptionalAttributes::kOptionalAttributeCumulativeEnergyReset));
 
     if (gAttrAccess)

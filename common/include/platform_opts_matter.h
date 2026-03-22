@@ -22,7 +22,7 @@
 
 // Ameba Matter Device Type Example
 #define CONFIG_EXAMPLE_MATTER                           1
-#define CONFIG_EXAMPLE_MATTER_CHIPTEST                  1
+#define CONFIG_EXAMPLE_MATTER_CHIPTEST                  0
 #define CONFIG_EXAMPLE_MATTER_BRIDGE                    0
 #define CONFIG_EXAMPLE_MATTER_BASIC_VIDEO_PLAYER        0
 #define CONFIG_EXAMPLE_MATTER_DISHWASHER                0
@@ -31,7 +31,7 @@
 #define CONFIG_EXAMPLE_MATTER_LIGHT                     0
 #define CONFIG_EXAMPLE_MATTER_LAUNDRY_WASHER            0
 #define CONFIG_EXAMPLE_MATTER_MICROWAVE_OVEN            0
-#define CONFIG_EXAMPLE_MATTER_ONOFF_PLUGIN              0
+#define CONFIG_EXAMPLE_MATTER_ONOFF_PLUGIN              1
 #define CONFIG_EXAMPLE_MATTER_REFRIGERATOR              0
 #define CONFIG_EXAMPLE_MATTER_ROOM_AIR_CONDITIONER      0
 #define CONFIG_EXAMPLE_MATTER_TEMPERATURE_SENSOR        0

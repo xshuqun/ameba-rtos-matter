@@ -1,6 +1,7 @@
 #include <matter_drivers.h>
 #include <matter_interaction.h>
 #include <washer_driver.h>
+#include <laundry_washer_mode/ameba_laundry_washer_mode_instance.h>
 #include <operational_state/ameba_operational_state_delegate.h>
 #include <operational_state/ameba_operational_state_instance.h>
 
@@ -8,6 +9,7 @@
 #include <app-common/zap-generated/attributes/Accessors.h>
 #include <app-common/zap-generated/ids/Attributes.h>
 #include <app-common/zap-generated/ids/Clusters.h>
+#include <clusters/mode-select-server/ModeSelectCluster.h>
 #include <clusters/laundry-washer-controls-server/laundry-washer-controls-server.h>
 #include <protocols/interaction_model/StatusCode.h>
 
@@ -171,19 +173,19 @@ void matter_driver_downlink_update_handler(AppEvent *event)
             DataModel::Nullable<uint8_t> value;
             value.SetNonNull(event->value._u8);
             ChipLogProgress(DeviceLayer, "Set Spin Speed0x%x", event->value._u8);
-            LaundryWasherControlsServer::Instance().SetSpinSpeedCurrent(1, value);
+            LaundryWasherControlsServer::SetSpinSpeedCurrent(1, value);
         }
         break;
     case AppEvent::kEventType_Downlink_LW_NumberOfRinses:
         {
             ChipLogProgress(DeviceLayer, "Set Number Of Rinses 0x%x", event->value._u8);
-            LaundryWasherControlsServer::Instance().SetNumberOfRinses(1, (NumberOfRinsesEnum) event->value._u8);
+            LaundryWasherControlsServer::SetNumberOfRinses(1, (NumberOfRinsesEnum) event->value._u8);
         }
         break;
     case AppEvent::kEventType_Downlink_LW_Mode:
         {
             ChipLogProgress(DeviceLayer, "Change Mode to 0x%x", event->value._u8);
-            Clusters::ModeSelect::Attributes::CurrentMode::Set(1, event->value._u8);
+            Clusters::LaundryWasherMode::GetAmebaLaundryWasherModeInstance()->UpdateCurrentMode(event->value._u8);
         }
         break;
     default:

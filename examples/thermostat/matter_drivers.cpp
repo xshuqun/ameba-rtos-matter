@@ -9,6 +9,7 @@
 #include <app-common/zap-generated/attributes/Accessors.h>
 #include <app-common/zap-generated/ids/Attributes.h>
 #include <app-common/zap-generated/ids/Clusters.h>
+#include <app/clusters/thermostat-server/AttributeAccessorShim.h>
 #include <protocols/interaction_model/StatusCode.h>
 
 using namespace ::chip::app;

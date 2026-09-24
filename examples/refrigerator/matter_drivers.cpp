@@ -106,14 +106,6 @@ CHIP_ERROR matter_driver_refrigerator_set_startup_value(void)
         err = CHIP_ERROR_INTERNAL;
     }
 
-    BitMask<AlarmMap> supported; // Set refrigerator alarm supported value
-    supported.SetField(AlarmMap::kDoorOpen, 1);
-    status = refrigeratorAlarmObject.SetSupportedValue(1, supported);
-    if (status != Status::Success) {
-        ChipLogProgress(DeviceLayer, "Failed to set Refrigerator Alarm Supported Value!\n");
-        err = CHIP_ERROR_INTERNAL;
-    }
-
     BitMask<AlarmMap> mask; // Set refrigerator alarm mask value
     mask.SetField(AlarmMap::kDoorOpen, 1);
     status = refrigeratorAlarmObject.SetMaskValue(1, mask);

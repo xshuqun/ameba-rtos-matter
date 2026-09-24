@@ -31,19 +31,9 @@ CHIP_ERROR DishwasherAlarm::AmebaDishWasherAlarmInstanceInit(chip::EndpointId en
 {
     Status status = Status::Success;
 
-    BitMask<DishwasherAlarm::AlarmMap> supported;
-    supported.SetField(DishwasherAlarm::AlarmMap::kDoorError, 1);
-    status = DishwasherAlarm::DishwasherAlarmServer::Instance().SetSupportedValue(endpoint, supported);
-    VerifyOrReturnError(status == Status::Success, CHIP_ERROR_INTERNAL);
-
     BitMask<DishwasherAlarm::AlarmMap> mask;
     mask.SetField(DishwasherAlarm::AlarmMap::kDoorError, 1);
     status = DishwasherAlarm::DishwasherAlarmServer::Instance().SetMaskValue(endpoint, mask);
-    VerifyOrReturnError(status == Status::Success, CHIP_ERROR_INTERNAL);
-
-    BitMask<DishwasherAlarm::AlarmMap> latch;
-    latch.SetField(DishwasherAlarm::AlarmMap::kDoorError, 1);
-    status = DishwasherAlarm::DishwasherAlarmServer::Instance().SetLatchValue(endpoint, latch);
     VerifyOrReturnError(status == Status::Success, CHIP_ERROR_INTERNAL);
 
     BitMask<DishwasherAlarm::AlarmMap> state;

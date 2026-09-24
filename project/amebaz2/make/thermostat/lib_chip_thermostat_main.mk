@@ -55,6 +55,7 @@ endif
 # -------------------------------------------------------------------
 SRC_CPP += $(MATTER_DRIVER_DIR)/device/thermostat_driver.cpp
 SRC_CPP += $(MATTER_DRIVER_DIR)/device/thermostat_ui_driver.cpp
+SRC_CPP += $(MATTER_DRIVER_DIR)/matter_drivers/thermostat_mode/ameba_thermostat_mode_stub.cpp
 SRC_CPP += $(MATTER_EXAMPLE_DIR)/$(DEVICE_TYPE)/example_matter_thermostat.cpp
 SRC_CPP += $(MATTER_EXAMPLE_DIR)/$(DEVICE_TYPE)/matter_drivers.cpp
 

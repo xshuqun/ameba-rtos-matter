@@ -18,37 +18,23 @@
  */
 #pragma once
 
-#include <app-common/zap-generated/cluster-objects.h>
-#include <app-common/zap-generated/ids/Attributes.h>
-#include <app-common/zap-generated/ids/Clusters.h>
-#include <app/TestEventTriggerDelegate.h>
-#include <app/clusters/smoke-co-alarm-server/smoke-co-alarm-server.h>
-#include <system/SystemLayer.h>
+#include <app/clusters/thermostat-server/CodegenIntegration.h>
+#include <app/clusters/thermostat-server/ThermostatCluster.h>
+
+#include <thermostat-delegate-impl.h>
+#include <thermostat-hold-delegate-impl.h>
+#include <thermostat-presets-delegate-impl.h>
+#include <thermostat-setpoints-delegate-impl.h>
+#include <thermostat-suggestions-delegate-impl.h>
 
 namespace chip {
 namespace app {
 namespace Clusters {
-namespace SmokeCoAlarm {
+namespace Thermostat {
 
-class AmebaSmokeCoAlarmEvent : public chip::TestEventTriggerHandler
-{
-public:
-    AmebaSmokeCoAlarmEvent()  = default;
-    ~AmebaSmokeCoAlarmEvent() = default;
+CHIP_ERROR AmebaThermostatDelegateInit(EndpointId endpoint);
 
-    void SelfTestingEventHandler(void);
-
-    /**
-     *   @brief
-     *   Timer callback which finishes the self-test: clears TestInProgress and
-     *   recomputes the ExpressedState according to the priority order.
-     */
-    static void EndSelfTestingEventHandler(System::Layer *systemLayer, void *appState);
-};
-
-CHIP_ERROR AmebaSmokeCoAlarmTestEventInit(EndpointId endpoint);
-
-} // namespace SmokeCoAlarm
+} // namespace Thermostat
 } // namespace Clusters
 } // namespace app
 } // namespace chip

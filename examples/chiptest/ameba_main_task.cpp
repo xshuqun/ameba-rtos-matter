@@ -24,6 +24,7 @@
 
 #include <fan_control/ameba_fan_control_manager.h>
 #include <energy_evse/ameba_energy_evse_main.h>
+#include <occupancy_sensing/ameba_occupancy_sensing_instance.h>
 #include <valve_control/ameba_valve_control_delegate.h>
 #include <water_heater_management/ameba_water_heater_management_main.h>
 #include <mode_select/ameba_mode_select_manager.h>
@@ -77,6 +78,11 @@ void AppTaskInit(void)
                 CHIP_NO_ERROR);
     VerifyOrDie(Clusters::UnitLocalization::UnitLocalizationServer::Instance().SetTemperatureUnit(
                                 Clusters::UnitLocalization::TempUnitEnum::kFahrenheit) == CHIP_NO_ERROR);
+
+    ret = OccupancySensing::AmebaOccupancySensingInstanceInit(1);
+    if (ret != CHIP_NO_ERROR) {
+        ChipLogProgress(Zcl, "AmebaOccupancySensingInstanceInit Failed");
+    }
 
 #if CONFIG_ENABLE_AMEBA_TEST_EVENT_TRIGGER
     ret = SmokeCoAlarm::AmebaSmokeCoAlarmTestEventInit(1);

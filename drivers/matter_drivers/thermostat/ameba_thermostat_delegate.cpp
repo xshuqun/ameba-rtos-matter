@@ -39,8 +39,3 @@ CHIP_ERROR Thermostat::AmebaThermostatDelegateInit(EndpointId endpoint)
 
     return CHIP_NO_ERROR;
 }
-
-void MatterThermostatClusterInitCallback(chip::EndpointId endpointId)
-{
-    Clusters::Thermostat::AmebaThermostatDelegateInit(endpointId);
-}

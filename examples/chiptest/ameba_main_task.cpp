@@ -28,6 +28,7 @@
 #include <valve_control/ameba_valve_control_delegate.h>
 #include <water_heater_management/ameba_water_heater_management_main.h>
 #include <mode_select/ameba_mode_select_manager.h>
+#include <thermostat/ameba_thermostat_delegate.h>
 #if CONFIG_ENABLE_AMEBA_TEST_EVENT_TRIGGER
 #include <smoke_co_alarm/ameba_smoke_co_alarm_test_event.h>
 #include <app/clusters/water-heater-management-server/WaterHeaterManagementTestEventTriggerHandler.h>
@@ -69,6 +70,7 @@ void AppTaskInit(void)
     app::Clusters::ModeSelect::setSupportedModesManager(&sAmebaSupportedModesManager);
     WaterHeaterApplicationInit();
     AllClustersEvseApplicationInit();
+    Clusters::Thermostat::AmebaThermostatDelegateInit(1);
 
     Clusters::UnitLocalization::TempUnitEnum supportedUnits[2] = { Clusters::UnitLocalization::TempUnitEnum::kFahrenheit,
                                                                    Clusters::UnitLocalization::TempUnitEnum::kCelsius

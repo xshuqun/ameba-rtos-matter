@@ -16,7 +16,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-#include <occupancy_sensor/ameba_occupancy_sensor_instance.h>
+#include <occupancy_sensing/ameba_occupancy_sensing_instance.h>
 #include <app/util/generic-callbacks.h>
 
 using namespace chip;

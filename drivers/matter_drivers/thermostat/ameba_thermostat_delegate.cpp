@@ -28,15 +28,14 @@ constexpr EndpointId gThermostatEndpoint(1);
 
 ThermostatDelegate gThermostatDelegate(gThermostatEndpoint);
 ThermostatSetpointsDelegate gSetpointsDelegate(gThermostatEndpoint);
-ThermostatHoldDelegate gHoldDelegate(gThermostatEndpoint);
-ThermostatPresetsDelegate gPresetsDelegate(gThermostatEndpoint);
-ThermostatSuggestionsDelegate gSuggestionsDelegate(gThermostatEndpoint, gPresetsDelegate);
+//ThermostatHoldDelegate gHoldDelegate(gThermostatEndpoint);
+//ThermostatPresetsDelegate gPresetsDelegate(gThermostatEndpoint);
+//ThermostatSuggestionsDelegate gSuggestionsDelegate(gThermostatEndpoint, gPresetsDelegate);
 } // namespace
 
 CHIP_ERROR Thermostat::AmebaThermostatDelegateInit(EndpointId endpoint)
 {
-    Clusters::Thermostat::ServerInit(endpoint, gThermostatDelegate, gSetpointsDelegate, gHoldDelegate, gPresetsDelegate,
-                                     gSuggestionsDelegate);
+    Clusters::Thermostat::ServerInit(endpoint, gThermostatDelegate, gSetpointsDelegate);
 
     return CHIP_NO_ERROR;
 }

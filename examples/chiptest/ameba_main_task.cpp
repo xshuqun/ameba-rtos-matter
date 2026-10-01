@@ -70,7 +70,6 @@ void AppTaskInit(void)
     app::Clusters::ModeSelect::setSupportedModesManager(&sAmebaSupportedModesManager);
     WaterHeaterApplicationInit();
     AllClustersEvseApplicationInit();
-    Clusters::Thermostat::AmebaThermostatDelegateInit(1);
 
     Clusters::UnitLocalization::TempUnitEnum supportedUnits[2] = { Clusters::UnitLocalization::TempUnitEnum::kFahrenheit,
                                                                    Clusters::UnitLocalization::TempUnitEnum::kCelsius

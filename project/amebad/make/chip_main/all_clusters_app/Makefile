@@ -142,16 +142,15 @@ CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/switch/ameba_switch_event.cpp
 # temperature controls cluster
 CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/temperature_control/ameba_temperature_control_delegate.cpp
 # thermostat cluster
-CPPSRC += $(CHIPDIR)/examples/thermostat/thermostat-common/src/thermostat-delegate-impl.cpp
+CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/thermostat/ameba_thermostat_delegate.cpp
+# thermostat mode cluster
+CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/thermostat_mode/ameba_thermostat_mode_delegate.cpp
+CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/thermostat_mode/ameba_thermostat_mode_instance.cpp
+# thermostat cluster (hold, presets, sensors, suggestions)
 CPPSRC += $(CHIPDIR)/examples/thermostat/thermostat-common/src/thermostat-hold-delegate-impl.cpp
-CPPSRC += $(CHIPDIR)/examples/thermostat/thermostat-common/src/thermostat-mode-delegate-impl.cpp
-CPPSRC += $(CHIPDIR)/examples/thermostat/thermostat-common/src/thermostat-occupancy-delegate-impl.cpp
 CPPSRC += $(CHIPDIR)/examples/thermostat/thermostat-common/src/thermostat-presets-delegate-impl.cpp
 CPPSRC += $(CHIPDIR)/examples/thermostat/thermostat-common/src/thermostat-sensors-delegate-impl.cpp
-CPPSRC += $(CHIPDIR)/examples/thermostat/thermostat-common/src/thermostat-setpoints-delegate-impl.cpp
 CPPSRC += $(CHIPDIR)/examples/thermostat/thermostat-common/src/thermostat-suggestions-delegate-impl.cpp
-CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/thermostat/ameba_thermostat_delegate.cpp
-CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/thermostat_mode/ameba_thermostat_mode_stub.cpp
 # valve control cluster
 CPPSRC += $(MATTER_DRIVER_DIR)/matter_drivers/valve_control/ameba_valve_control_delegate.cpp
 # water heater management cluster

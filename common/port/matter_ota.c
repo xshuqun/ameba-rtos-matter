@@ -40,7 +40,39 @@ static const char *const TAG = "MATTER_OTA";
 
 #define MATTER_OTA_SECTOR_SIZE 4096
 
+/*
+ * The OTA payload is the Ameba OTA container produced by the SDK build
+ * (`ota_all.bin`; see tools/ota/ota_all_tool.py). The requestor peels off the
+ * 32-byte container header below and writes the application image that follows
+ * it to the base of the OTA slot, which is where the bootloader expects the
+ * certificate (BOOT_OTA_SlotSelect reads Cert[i] from IMG_APP_OTAxx).
+ *
+ *   [0]  FwVer      u32 LE   container format version
+ *   [4]  HdrNum     u32 LE   number of image sub-headers (1 for ota_all.bin)
+ *   [8]  sub-header #0 (24 B):
+ *          +0  Signature  4 B   "OTA1" ("OTA" followed by a digit)
+ *          +4  ImgHdrLen  u32   length of this sub-header (24)
+ *          +8  Checksum   u32   sum of all image bytes, modulo 2**32
+ *          +12 ImgLen     u32   length of the application image
+ *          +16 Offset     u32   offset of the image within the container
+ *          +20 ImgID      u32   0 = bootloader, 1 = application
+ *   [32] application image
+ */
 #define MATTER_OTA_HEADER_SIZE 32
+
+#define MATTER_OTA_OFF_HDR_NUM      4
+#define MATTER_OTA_SUB_HDR_OFFSET   8
+#define MATTER_OTA_OFF_SIGNATURE    (MATTER_OTA_SUB_HDR_OFFSET + 0)
+#define MATTER_OTA_OFF_IMG_HDR_LEN  (MATTER_OTA_SUB_HDR_OFFSET + 4)
+#define MATTER_OTA_OFF_CHECKSUM     (MATTER_OTA_SUB_HDR_OFFSET + 8)
+#define MATTER_OTA_OFF_IMG_LEN      (MATTER_OTA_SUB_HDR_OFFSET + 12)
+#define MATTER_OTA_OFF_IMG_ID       (MATTER_OTA_SUB_HDR_OFFSET + 20)
+
+#define MATTER_OTA_SIGNATURE_LEN    3 /* "OTA" prefix of the image signature */
+#define MATTER_OTA_SUB_HDR_SIZE     24 /* ImgHdrLen the SDK emits */
+#define MATTER_OTA_HDR_NUM          1  /* ota_all.bin carries a single image */
+#define MATTER_OTA_IMG_ID_APP       1
+
 #define MATTER_OTA_FIRMWARE_LENGTH   0x1EC000
 flash_t matter_ota_flash;
 #if (defined(CONFIG_AMEBARTOS_V1_0) && (CONFIG_AMEBARTOS_V1_0 == 1)) || \
@@ -54,6 +86,29 @@ ota_download_ctrl_t matterOtaCtrl = {0};
 ota_hdr_manager_t matterOtaTargetHdr = {0};
 #endif
 
+/*
+ * Number of bytes at the head of the application image that the certificate /
+ * manifest update claims. This must match what the SDK's manifest-update
+ * routine writes at the base of the slot, because those bytes are held back
+ * from the stream and written by that routine instead:
+ *
+ *   v1.2      ota_storage_update_manifest() writes sizeof(ota_manifest_t)
+ *   v1.0/v1.1 ota_update_manifest()         writes sizeof(Manifest_TypeDef)
+ *
+ * The two generations use different structures, so the size follows the
+ * version in use. Holding these bytes back and writing them last means an
+ * interrupted update never leaves a slot whose certificate pattern already
+ * looks valid.
+ */
+#if (defined(CONFIG_AMEBARTOS_V1_2) && (CONFIG_AMEBARTOS_V1_2 == 1))
+#define MATTER_OTA_MANIFEST_SIZE    ((uint32_t)sizeof(ota_manifest_t))
+#else
+#define MATTER_OTA_MANIFEST_SIZE    ((uint32_t)sizeof(Manifest_TypeDef))
+#endif
+
+_Static_assert(MATTER_OTA_MANIFEST_SIZE <= MATTER_OTA_SECTOR_SIZE,
+               "manifest header must fit in the first flash sector");
+
 static bool matter_ota_first_sector_written = false;
 static uint32_t matter_ota_flash_sector_base;
 static uint32_t matter_ota_new_firmware_addr_start;
@@ -63,6 +118,29 @@ static uint8_t matter_ota_header[MATTER_OTA_HEADER_SIZE];
 static uint8_t matter_ota_header_size = 0; // variable to track size of ota header
 static uint16_t matter_ota_buffer_size = 0; // variable to track size of buffer
 static uint8_t *matter_ota_buffer;
+
+/*
+ * Values parsed out of the Ameba OTA container header. The header is received
+ * first and never written to flash; it only tells us what the image that
+ * follows should look like.
+ */
+static bool matter_ota_header_parsed = false;
+static uint32_t matter_ota_expected_checksum = 0;
+static uint32_t matter_ota_expected_image_len = 0;
+
+/*
+ * Integrity state over the application image bytes, used to check the image
+ * against the container header before the new slot is committed.
+ */
+static uint32_t matter_ota_image_bytes = 0;    // image bytes received so far
+static uint32_t matter_ota_image_checksum = 0; // running sum over those bytes
+
+/*
+ * The certificate/manifest bytes at the head of the image are held back from
+ * flash and written only once the whole image has arrived and verified.
+ */
+static uint8_t matter_ota_manifest[MATTER_OTA_MANIFEST_SIZE];
+static uint32_t matter_ota_manifest_size = 0; // manifest bytes received so far
 
 static const char *kOTACompleted = "ota_completed";
 
@@ -189,6 +267,14 @@ void matter_ota_prepare_partition(void)
     matter_ota_header_size = 0;
     matter_ota_buffer_size = 0;
 
+    matter_ota_header_parsed = false;
+    matter_ota_expected_checksum = 0;
+    matter_ota_expected_image_len = 0;
+    matter_ota_image_bytes = 0;
+    matter_ota_image_checksum = 0;
+    memset(matter_ota_manifest, 0, sizeof(matter_ota_manifest));
+    matter_ota_manifest_size = 0;
+
     memset(&matterCtx, 0, sizeof(matterCtx));
     memset(&matterOtaCtrl, 0, sizeof(matterOtaCtrl));
     memset(&matterOtaTargetHdr, 0, sizeof(matterOtaTargetHdr));
@@ -276,6 +362,109 @@ int8_t matter_ota_store_header(uint8_t *data, uint32_t size)
     memcpy(&(matter_ota_header[matter_ota_header_size]), data, size);
     matter_ota_header_size += size;
 
+    /* The container header is fully received once it reaches its full size;
+     * validate it before any image bytes are accepted. */
+    if (matter_ota_header_size == MATTER_OTA_HEADER_SIZE) {
+        return matter_ota_parse_header();
+    }
+
+    return OTA_SUCCESS;
+}
+
+static uint32_t matter_ota_read_le32(const uint8_t *buf)
+{
+    return (uint32_t)buf[0] | ((uint32_t)buf[1] << 8) |
+           ((uint32_t)buf[2] << 16) | ((uint32_t)buf[3] << 24);
+}
+
+/**
+ * @brief  Validate the received Ameba OTA container header.
+ *
+ * The header is only 32 bytes and describes the application image that follows
+ * it. Rejecting a malformed header here refuses the update before anything is
+ * committed to the new slot.
+ *
+ * @return OTA_SUCCESS if the header is well formed; OTA_ERROR otherwise.
+ */
+int8_t matter_ota_parse_header(void)
+{
+    if (matter_ota_header_size != MATTER_OTA_HEADER_SIZE) {
+        RTK_LOGE(TAG, "Ameba OTA header incomplete (%u/%u bytes)\n",
+                 (unsigned int)matter_ota_header_size, (unsigned int)MATTER_OTA_HEADER_SIZE);
+        return OTA_ERROR;
+    }
+
+    if (matter_ota_read_le32(&matter_ota_header[MATTER_OTA_OFF_HDR_NUM]) != MATTER_OTA_HDR_NUM) {
+        RTK_LOGE(TAG, "Ameba OTA header declares %u images, expected %u\n",
+                 (unsigned int)matter_ota_read_le32(&matter_ota_header[MATTER_OTA_OFF_HDR_NUM]),
+                 (unsigned int)MATTER_OTA_HDR_NUM);
+        return OTA_ERROR;
+    }
+
+    if (memcmp(&matter_ota_header[MATTER_OTA_OFF_SIGNATURE], "OTA", MATTER_OTA_SIGNATURE_LEN) != 0) {
+        RTK_LOGE(TAG, "Ameba OTA image signature is not \"OTA...\"\n");
+        return OTA_ERROR;
+    }
+
+    if (matter_ota_read_le32(&matter_ota_header[MATTER_OTA_OFF_IMG_HDR_LEN]) != MATTER_OTA_SUB_HDR_SIZE) {
+        RTK_LOGE(TAG, "Ameba OTA image header length is %u, expected %u\n",
+                 (unsigned int)matter_ota_read_le32(&matter_ota_header[MATTER_OTA_OFF_IMG_HDR_LEN]),
+                 (unsigned int)MATTER_OTA_SUB_HDR_SIZE);
+        return OTA_ERROR;
+    }
+
+    if (matter_ota_read_le32(&matter_ota_header[MATTER_OTA_OFF_IMG_ID]) != MATTER_OTA_IMG_ID_APP) {
+        RTK_LOGE(TAG, "Ameba OTA image ID is %u, expected %u (application)\n",
+                 (unsigned int)matter_ota_read_le32(&matter_ota_header[MATTER_OTA_OFF_IMG_ID]),
+                 (unsigned int)MATTER_OTA_IMG_ID_APP);
+        return OTA_ERROR;
+    }
+
+    matter_ota_expected_image_len = matter_ota_read_le32(&matter_ota_header[MATTER_OTA_OFF_IMG_LEN]);
+    matter_ota_expected_checksum = matter_ota_read_le32(&matter_ota_header[MATTER_OTA_OFF_CHECKSUM]);
+    matter_ota_header_parsed = true;
+
+    RTK_LOGI(TAG, "Ameba OTA header OK: image length %u, checksum 0x%08x\n",
+             (unsigned int)matter_ota_expected_image_len,
+             (unsigned int)matter_ota_expected_checksum);
+
+    return OTA_SUCCESS;
+}
+
+/**
+ * @brief  Check the application image against the container header.
+ *
+ * Compares the received length and byte sum with what the header declared. A
+ * byte sum is a weak check, but it is what the Ameba OTA container carries, and
+ * it does catch a truncated or corrupted transfer.
+ *
+ * @return OTA_SUCCESS if the image matches the header; OTA_ERROR otherwise.
+ */
+int8_t matter_ota_verify_image(void)
+{
+    if (!matter_ota_header_parsed) {
+        RTK_LOGE(TAG, "Ameba OTA header was never received\n");
+        return OTA_ERROR;
+    }
+
+    if (matter_ota_image_bytes != matter_ota_expected_image_len) {
+        RTK_LOGE(TAG, "Ameba OTA image length mismatch: got %u, header declares %u\n",
+                 (unsigned int)matter_ota_image_bytes,
+                 (unsigned int)matter_ota_expected_image_len);
+        return OTA_ERROR;
+    }
+
+    if (matter_ota_image_checksum != matter_ota_expected_checksum) {
+        RTK_LOGE(TAG, "Ameba OTA image checksum mismatch: computed 0x%08x, header declares 0x%08x\n",
+                 (unsigned int)matter_ota_image_checksum,
+                 (unsigned int)matter_ota_expected_checksum);
+        return OTA_ERROR;
+    }
+
+    RTK_LOGI(TAG, "Ameba OTA image verified: %u bytes, checksum 0x%08x\n",
+             (unsigned int)matter_ota_image_bytes,
+             (unsigned int)matter_ota_image_checksum);
+
     return OTA_SUCCESS;
 }
 
@@ -285,15 +474,45 @@ int8_t matter_ota_flash_burst_write(uint8_t *data, uint32_t size)
         return OTA_SUCCESS;
     }
 
+    /* Account for every application image byte, including the manifest header
+     * held back below, so the image can be checked against the container
+     * header once it has all arrived. */
+    for (uint32_t i = 0; i < size; i++) {
+        matter_ota_image_checksum += data[i];
+    }
+    matter_ota_image_bytes += size;
+
+    /*
+     * Hold back the certificate/manifest header at the head of the image. It is
+     * written last, so an interrupted update never leaves a slot whose
+     * certificate pattern already marks it bootable.
+     */
+    if (matter_ota_manifest_size < MATTER_OTA_MANIFEST_SIZE) {
+        uint32_t take = MATTER_OTA_MANIFEST_SIZE - matter_ota_manifest_size;
+        if (take > size) {
+            take = size;
+        }
+        memcpy(matter_ota_manifest + matter_ota_manifest_size, data, take);
+        matter_ota_manifest_size += take;
+        data += take;
+        size -= take;
+
+        if (size == 0) {
+            return OTA_SUCCESS;
+        }
+    }
+
     bool overflow = false;
     uint32_t sectorBase = matter_ota_flash_sector_base;
     uint32_t writeLength = MATTER_OTA_SECTOR_SIZE;
     int16_t bufferRemainSize = (int16_t)(MATTER_OTA_SECTOR_SIZE - matter_ota_buffer_size);
 
     if (!matter_ota_first_sector_written) {
-        sectorBase += matter_ota_header_size; // leave first 32-bytes for header
-        writeLength -= matter_ota_header_size;
-        bufferRemainSize -= matter_ota_header_size;
+        /* The manifest header occupies the head of the first sector and is
+         * written last, so the streamed image starts after it. */
+        sectorBase += MATTER_OTA_MANIFEST_SIZE;
+        writeLength -= MATTER_OTA_MANIFEST_SIZE;
+        bufferRemainSize -= MATTER_OTA_MANIFEST_SIZE;
     }
 
     if (bufferRemainSize >= size) {
@@ -319,7 +538,7 @@ int8_t matter_ota_flash_burst_write(uint8_t *data, uint32_t size)
         } else { // NAND
             if (!matter_ota_first_sector_written) {
                 // For NAND, first sector will be written at last together with manifest update
-                memcpy(matter_ota_nand_first_sector + matter_ota_header_size, matter_ota_buffer, writeLength);
+                memcpy(matter_ota_nand_first_sector + MATTER_OTA_MANIFEST_SIZE, matter_ota_buffer, writeLength);
                 // Immediately abort OTA if first sector is bad block
                 if (matter_ota_nand_block_status(matter_ota_nand_region_block_id_start) == MATTER_OTA_NAND_BBT_BAD) {
                     RTK_LOGE(TAG_NAND, "CRITICAL ERROR: FIRST BLOCK IS BAD BLOCK, OTA MAY NOT PROCEED!!!!!\n");
@@ -366,16 +585,35 @@ int8_t matter_ota_flash_burst_write(uint8_t *data, uint32_t size)
 
 int8_t matter_ota_flush_last(void)
 {
+    /*
+     * The certificate/manifest header was held back from the stream. It is not
+     * written here: the commit path writes it to the base of the slot, from the
+     * buffer matter_ota_update_signature fills in.
+     */
+    if (matter_ota_manifest_size != MATTER_OTA_MANIFEST_SIZE) {
+        RTK_LOGE(TAG, "Ameba OTA manifest header incomplete (%u/%u bytes)\n",
+                 (unsigned int)matter_ota_manifest_size, (unsigned int)MATTER_OTA_MANIFEST_SIZE);
+        return OTA_ERROR;
+    }
+
     if (matter_ota_buffer_size > 0) {
+        /*
+         * When the image is smaller than a single sector the first sector never
+         * filled, so the streamed data starts past the reserved manifest header.
+         */
+        uint32_t sectorBase = matter_ota_flash_sector_base;
+        if (!matter_ota_first_sector_written) {
+            sectorBase += MATTER_OTA_MANIFEST_SIZE;
+        }
 #if defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBAGREEN2)
         flash_erase_sector(&matter_ota_flash, matter_ota_flash_sector_base);
-        flash_burst_write(&matter_ota_flash, matter_ota_flash_sector_base, matter_ota_buffer_size, matter_ota_buffer);
+        flash_burst_write(&matter_ota_flash, sectorBase, matter_ota_buffer_size, matter_ota_buffer);
 #elif defined(CONFIG_AMEBASMART)
         if (boot_from_nor) { // NOR
             flash_erase_sector(&matter_ota_flash, matter_ota_flash_sector_base);
-            flash_burst_write(&matter_ota_flash, matter_ota_flash_sector_base, matter_ota_buffer_size, matter_ota_buffer);
+            flash_burst_write(&matter_ota_flash, sectorBase, matter_ota_buffer_size, matter_ota_buffer);
         } else { // NAND
-            if (matter_ota_nand_flash_program(matter_ota_flash_sector_base, matter_ota_buffer_size, matter_ota_buffer) != OTA_SUCCESS) {
+            if (matter_ota_nand_flash_program(sectorBase, matter_ota_buffer_size, matter_ota_buffer) != OTA_SUCCESS) {
                 // Bad block detected, abort OTA!
                 return OTA_ERROR;
             }
@@ -395,9 +633,22 @@ int8_t matter_ota_flush_last(void)
 
 int8_t matter_ota_update_signature(void)
 {
+    /* The image must match the container header before the slot is committed. */
+    if (matter_ota_verify_image() != OTA_SUCCESS) {
+        return OTA_ERROR;
+    }
+
+    /* The certificate/manifest header was held back while streaming; write it
+     * now that the whole image is known to be intact. */
 #if (defined(CONFIG_AMEBARTOS_V1_0) && (CONFIG_AMEBARTOS_V1_0 == 1)) || \
     (defined(CONFIG_AMEBARTOS_V1_1) && (CONFIG_AMEBARTOS_V1_1 == 1))
-    memcpy(&(matterCtx.otaTargetHdr->Manifest[matterCtx.otactrl->index]), matter_ota_header, sizeof(Manifest_TypeDef));
+    memcpy(&(matterCtx.otaTargetHdr->Manifest[matterCtx.otactrl->index]), matter_ota_manifest, MATTER_OTA_MANIFEST_SIZE);
+#elif (defined(CONFIG_AMEBARTOS_V1_2) && (CONFIG_AMEBARTOS_V1_2 == 1))
+    memcpy(&(matterCtx.otaHdrManager->Manifest[matterCtx.otaCtrl->index]), matter_ota_manifest, MATTER_OTA_MANIFEST_SIZE);
+#endif
+
+#if (defined(CONFIG_AMEBARTOS_V1_0) && (CONFIG_AMEBARTOS_V1_0 == 1)) || \
+    (defined(CONFIG_AMEBARTOS_V1_1) && (CONFIG_AMEBARTOS_V1_1 == 1))
 #if defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBAGREEN2)
     if (!ota_update_manifest(matterCtx.otaTargetHdr, matterCtx.otactrl->targetIdx, matterCtx.otactrl->index)) {
         return OTA_ERROR;
@@ -414,7 +665,6 @@ int8_t matter_ota_update_signature(void)
     }
 #endif // CONFIG_AMEBAXXX
 #elif (defined(CONFIG_AMEBARTOS_V1_2) && (CONFIG_AMEBARTOS_V1_2 == 1))
-    memcpy(&(matterCtx.otaHdrManager->Manifest[matterCtx.otaCtrl->index]), matter_ota_header, sizeof(Manifest_TypeDef));
 #if defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBAGREEN2)
     if (ota_storage_update_manifest(matterCtx.otaHdrManager, matterCtx.otaCtrl->slotIdx, matterCtx.otaCtrl->index) != OTA_OK) {
         return OTA_ERROR;

@@ -154,6 +154,19 @@ else()
     ameba_list_append(matter_defintions CONFIG_ENABLE_OTA_REQUESTOR=0)
 endif()
 
+# Matter Device Identity Flags
+# Vendor ID, product ID and software version reported by the device, and the
+# software version that the Matter OTA image header must declare. Keeping the
+# version in one place means the firmware and the image it accepts always agree;
+# tools/scripts/matter_ota_image reads the same values back out of the
+# menuconfig when it builds the image.
+ameba_list_append(matter_defintions
+    CHIP_DEVICE_CONFIG_DEVICE_VENDOR_ID=${CONFIG_MATTER_DEVICE_VENDOR_ID}
+    CHIP_DEVICE_CONFIG_DEVICE_PRODUCT_ID=${CONFIG_MATTER_DEVICE_PRODUCT_ID}
+    CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION=${CONFIG_MATTER_DEVICE_SOFTWARE_VERSION}
+    CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION_STRING=\"${CONFIG_MATTER_DEVICE_SOFTWARE_VERSION_STR}\"
+)
+
 # Matter ICD Flags
 if(CHIP_ENABLE_ICD)
     ameba_list_append(matter_defintions CHIP_CONFIG_ENABLE_ICD_SERVER=1)

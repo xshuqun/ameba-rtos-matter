@@ -48,6 +48,40 @@ menu "Matter Config"
         config MATTER_TIME_SYNC_EN
             bool "Enable Matter Time Sync"
             default n
+
+        config MATTER_DEVICE_VENDOR_ID
+            hex "Matter device vendor ID"
+            default 0xFFF1
+            help
+              Vendor ID reported in the Basic Information cluster and written into
+              the Matter OTA image header. Use your CSA-allocated vendor ID for
+              products; 0xFFF1 is the test vendor ID.
+
+        config MATTER_DEVICE_PRODUCT_ID
+            hex "Matter device product ID"
+            default 0x8001
+            help
+              Product ID reported in the Basic Information cluster and written
+              into the Matter OTA image header. 0x8001 is the test product ID.
+
+        config MATTER_DEVICE_SOFTWARE_VERSION
+            int "Matter device software version"
+            default 2
+            help
+              Numeric software version compiled into the firmware and written
+              into the Matter OTA image header. Keep the two in step: after the
+              update reboots, the new firmware confirms the image by comparing
+              its own version against the one the OTA image declared, so an
+              image built with a different version is not reported as applied.
+              Bump this before building an image to distribute over OTA.
+
+        config MATTER_DEVICE_SOFTWARE_VERSION_STR
+            string "Matter device software version string"
+            default "2.0"
+            help
+              Human-readable software version, reported alongside the numeric
+              version. "2.0" is the test version string.
+
         config MATTER_SECURE_EN
             bool "Enable Matter Secure"
             default n

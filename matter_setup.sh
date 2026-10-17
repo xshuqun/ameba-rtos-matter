@@ -47,7 +47,6 @@ create_matter_env_script(){
         echo "  git submodule sync" >> "$MATTER_ENV_SCRIPT"
         echo "  git submodule update --init --recursive" >> "$MATTER_ENV_SCRIPT"
         echo "  source \"$file_path\"" >> "$MATTER_ENV_SCRIPT"
-        echo "  pip install -r \"$PATH_TO_AMEBA_RTOS/tools/requirements.txt\"" >> "$MATTER_ENV_SCRIPT"
         echo "  deactivate" >> "$MATTER_ENV_SCRIPT"
         echo "fi" >> "$MATTER_ENV_SCRIPT"
       elif [[ "$file_path" == *"activate.sh" ]]; then
@@ -58,6 +57,7 @@ create_matter_env_script(){
         echo "# Ameba Env Activate" >> "$MATTER_ENV_SCRIPT"
         echo "cd \"$PATH_TO_AMEBA_RTOS\"" >> "$MATTER_ENV_SCRIPT"
         echo "source \"$file_path\"" >> "$MATTER_ENV_SCRIPT"
+        echo "python3 -m pip install -r \"$PATH_TO_AMEBA_RTOS/tools/requirements.txt\"" >> "$MATTER_ENV_SCRIPT"
       fi
       echo '' >> "$MATTER_ENV_SCRIPT"
     else
@@ -72,6 +72,7 @@ create_matter_env_script(){
   echo "chmod u+x \"$PATH_TO_AMEBA_RTOS_MATTER_SCRIPTS\"/matter_*" >> "$MATTER_ENV_SCRIPT"
   echo "source \"$PATH_TO_AMEBA_RTOS_MATTER_SCRIPTS/completion_script/matter_build_proj_completion.bash\"" >> "$MATTER_ENV_SCRIPT"
   echo "source \"$PATH_TO_AMEBA_RTOS_MATTER_SCRIPTS/completion_script/matter_apply_conf_completion.bash\"" >> "$MATTER_ENV_SCRIPT"
+  echo "source \"$PATH_TO_AMEBA_RTOS_MATTER_SCRIPTS/completion_script/matter_ota_image_completion.bash\"" >> "$MATTER_ENV_SCRIPT"
 }
 
 turn_off_wifi_fast_reconnect() {
